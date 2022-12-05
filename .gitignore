@@ -1,0 +1,35 @@
+# DSStore
+.DS_Store
+
+# Generated files
+bin/
+build/
+ci/
+
+# IntelliJ
+*.iml
+**/.idea/
+
+# Secrets
+**/*/values/secrets.xml
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Coverage tools
+jacoco.exec
+
+# Application files
+*.apk
+*.aar
+*.aab
+
+# Dex files for ART/Dalvik VM
+*.dex
+
+# Gradle files
+.gradle/
+build/

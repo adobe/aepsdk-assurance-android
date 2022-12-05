@@ -1,0 +1,86 @@
+{
+  "manifest": {
+    "uses-permission": [
+      {
+        "android:name": "android.permission.INTERNET"
+      },
+      {
+        "android:name": "android.permission.ACCESS_NETWORK_STATE"
+      },
+      {
+        "android:name": "android.permission.ACCESS_FINE_LOCATION"
+      },
+      {
+        "android:name": "android.permission.ACCESS_COARSE_LOCATION"
+      }
+    ],
+    "application": {
+      "activity": [
+        {
+          "android:name": ".ThirdActivity"
+        },
+        {
+          "android:name": ".SecondActivity"
+        },
+        {
+          "intent-filter": [
+            {
+              "action": {
+                "android:name": "android.intent.action.MAIN"
+              },
+              "category": {
+                "android:name": "android.intent.category.LAUNCHER"
+              }
+            },
+            {
+              "action": {
+                "android:name": "android.intent.action.VIEW"
+              },
+              "category": [
+                {
+                  "android:name": "android.intent.category.DEFAULT"
+                },
+                {
+                  "android:name": "android.intent.category.BROWSABLE"
+                }
+              ],
+              "data": {
+                "android:scheme": "com.adobe.marketing.mobile.assurance.testapp"
+              }
+            }
+          ],
+          "android:name": ".MainActivity"
+        },
+        {
+          "android:name": "com.adobe.marketing.mobile.FullscreenMessageActivity"
+        }
+      ],
+      "receiver": {
+        "meta-data": [
+          {
+            "android:name": "meta1",
+            "android:value": "metavalue1"
+          },
+          {
+            "android:name": "meta2",
+            "android:resource": "@string/metaValue1"
+          },
+          {
+            "android:name": "meta3",
+            "android:value": "@array/metaarr"
+          }
+        ],
+        "android:name": "com.adobe.marketing.mobile.LocalNotificationHandler"
+      },
+      "android:name": ".App",
+      "android:allowBackup": "true",
+      "android:icon": "@mipmap/ic_launcher",
+      "android:label": "@string/app_name",
+      "android:roundIcon": "@mipmap/ic_launcher_round",
+      "android:supportsRtl": "true",
+      "android:theme": "@style/AppTheme"
+    },
+    "xmlns:android": "http://schemas.android.com/apk/res/android",
+    "package": "com.adobe.marketing.mobile.assurance.testapp"
+  }
+}
