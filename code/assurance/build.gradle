@@ -113,6 +113,12 @@ task javadocPublish(type: Jar) {
     archiveClassifier.set('javadoc')
 }
 
+def isJitPackBuild() {
+    return hasProperty('jitpack')
+}
+
+def groupIdForPublish = isJitPackBuild()? 'com.github.adobe.aepsdk-assurance-android': 'com.adobe.marketing.mobile'
+
 def isReleaseBuild() {
     return hasProperty('release')
 }
@@ -120,11 +126,13 @@ def isReleaseBuild() {
 version = isReleaseBuild() ? rootProject.moduleVersion : rootProject.moduleVersion+"-SNAPSHOT"
 
 publish.dependsOn('assemblePhone')
+publishToMavenLocal.dependsOn('assemblePhone')
+tasks.withType(Javadoc).all { enabled = false }
 
 publishing {
     publications {
         release(MavenPublication) {
-            groupId = 'com.adobe.marketing.mobile'
+            groupId = groupIdForPublish
             artifactId = rootProject.moduleName
             version = version
             artifact("$buildDir/outputs/aar/${rootProject.moduleAARName}")
