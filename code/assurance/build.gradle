@@ -14,7 +14,11 @@ plugins {
     id 'jacoco'
     id 'maven-publish'
     id 'signing'
+    id 'com.diffplug.spotless'
 }
+
+// Apply local gradle tasks
+apply from: '../codeformat.gradle'
 
 jacoco {
     toolVersion = rootProject.ext.jacocoVersion

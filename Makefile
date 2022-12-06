@@ -19,6 +19,12 @@ clean:
 create-ci: clean
 	(mkdir -p ci)
 
+ci-checkformat:
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessCheck)
+
+ci-format:
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessApply)
+
 ci-build: create-ci
 	(mkdir -p ci/assemble)
 
