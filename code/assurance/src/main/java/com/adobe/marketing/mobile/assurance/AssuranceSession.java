@@ -165,8 +165,23 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
 		assuranceSessionPresentationManager.onSessionConnecting();
 
 		final String envString = AssuranceUtil.getURLFormatForEnvironment(assuranceEnvironment);
+		String orgId = assuranceStateManager.getOrgId(true);
+
+		if (StringUtils.isNullOrEmpty(orgId)) {
+			// if configuration does not have org-id, try extracting it from stored connection url
+			final String reconnectionURL = connectionDataStore.getStoredConnectionURL();
+			if (reconnectionURL == null) {
+				Log.debug(Assurance.LOG_TAG, LOG_TAG, "Cannot connect. No orgId from Configuration state or stored url.");
+				return;
+			}
+
+			final Uri uri = Uri.parse(reconnectionURL);
+			orgId = uri.getQueryParameter(AssuranceConstants.SocketURLKeys.ORG_ID);
+			Log.debug(Assurance.LOG_TAG, LOG_TAG, "Using orgId from stored reconnection url.");
+		}
+
 		final String connectionString = String.format(CONNECTION_URL_FORMAT, envString,
-										sessionId, pin, assuranceStateManager.getOrgId(true), assuranceStateManager.getClientId());
+				sessionId, pin, orgId, assuranceStateManager.getClientId());
 		Log.debug(Assurance.LOG_TAG, LOG_TAG, "Connecting to session with URL: " + connectionString);
 		socket.connect(connectionString);
 	}

@@ -155,6 +155,32 @@ public class AssuranceSessionTest {
 	}
 
 	@Test
+	public void test_connect_orgIdFromConfigStateUnavailable() throws Exception {
+		when(mockAssuranceStateManager.getOrgId(true)).thenReturn("");
+		when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
+				.thenReturn("wss://connect.griffon.adobe.com/client/v1?" +
+						"sessionId=SampleSessionId&token=1234&orgId=StoredOrg@AdobeOrg&clientId=sampleClientID");
+		PowerMockito.mockStatic(Uri.class);
+		final Uri mockUri = mock(Uri.class);
+		PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
+		when(mockUri.getQueryParameter("orgId")).thenReturn("StoredOrg@AdobeOrg");
+
+		assuranceSession.connect("1234");
+
+		String expectedURL = String.format(
+				"wss://connect.griffon.adobe.com/client/v1?sessionId=%s&token=%s&orgId=%s&clientId=%s",
+				"SampleSessionID",
+				"1234",
+				"StoredOrg@AdobeOrg",
+				"sampleClientID"
+
+		);
+
+		verify(mockAssuranceSessionPresentationManager).onSessionConnecting();
+		verify(mockAssuranceWebViewSocket).connect(expectedURL);
+	}
+
+	@Test
 	public void test_disconnect() {
 		assuranceSession.disconnect();
 

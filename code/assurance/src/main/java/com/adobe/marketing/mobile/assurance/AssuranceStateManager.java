@@ -120,7 +120,7 @@ class AssuranceStateManager {
 	 */
 	String getOrgId(final boolean urlEncoded) {
 		final SharedStateResult latestConfigSharedStateResult = extensionApi.getSharedState(
-					AssuranceConstants.SDKSharedStateName.CONFIGURATION, lastSDKEvent, true, SharedStateResolution.ANY);
+					AssuranceConstants.SDKSharedStateName.CONFIGURATION, lastSDKEvent, false, SharedStateResolution.ANY);
 
 		if (!isSharedStateSet(latestConfigSharedStateResult)) {
 			Log.error(Assurance.LOG_TAG, LOG_TAG, "SDK configuration is not available to read OrgId");
@@ -156,7 +156,7 @@ class AssuranceStateManager {
 	List<AssuranceEvent> getAllExtensionStateData() {
 		final List<AssuranceEvent> states = new ArrayList<>();
 		final SharedStateResult eventHubSharedStateResult = extensionApi.getSharedState(
-					AssuranceConstants.SDKSharedStateName.EVENTHUB, lastSDKEvent, true, SharedStateResolution.ANY);
+					AssuranceConstants.SDKSharedStateName.EVENTHUB, lastSDKEvent, false, SharedStateResolution.ANY);
 
 		if (!isSharedStateSet(eventHubSharedStateResult)) {
 			return states;
@@ -203,7 +203,7 @@ class AssuranceStateManager {
 		final List<AssuranceEvent> stateEvents = new ArrayList<>();
 
 		// create an event if the extension has a regular shared state
-		final SharedStateResult regularSharedState = extensionApi.getSharedState(stateOwner, lastSDKEvent, true,
+		final SharedStateResult regularSharedState = extensionApi.getSharedState(stateOwner, lastSDKEvent, false,
 				SharedStateResolution.ANY);
 
 		if (isSharedStateSet(regularSharedState) && !AssuranceUtil.isNullOrEmpty(regularSharedState.getValue())) {
@@ -211,7 +211,7 @@ class AssuranceStateManager {
 		}
 
 		// create an event if the extension has a xdm shared state
-		final SharedStateResult xdmSharedState = extensionApi.getXDMSharedState(stateOwner, lastSDKEvent, true,
+		final SharedStateResult xdmSharedState = extensionApi.getXDMSharedState(stateOwner, lastSDKEvent, false,
 				SharedStateResolution.ANY);
 
 		if (isSharedStateSet(xdmSharedState) && !AssuranceUtil.isNullOrEmpty(xdmSharedState.getValue())) {

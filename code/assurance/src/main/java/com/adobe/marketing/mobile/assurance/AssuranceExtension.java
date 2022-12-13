@@ -279,10 +279,10 @@ public final class AssuranceExtension extends Extension {
 			// Event Name for XDM shared 		= "Shared state content"
 			// Event Name for Regular  shared 	= "Shared state content (XDM)"
 			if (XDM_SHARED_STATE_CHANGE.equals(event.getName())) {
-				sharedStateResult = getApi().getXDMSharedState(stateOwner, event, true, SharedStateResolution.ANY);
+				sharedStateResult = getApi().getXDMSharedState(stateOwner, event, false, SharedStateResolution.ANY);
 				stateDataKey = XDM_STATE_DATA;
 			} else {
-				sharedStateResult = getApi().getSharedState(stateOwner, event, true, SharedStateResolution.ANY);
+				sharedStateResult = getApi().getSharedState(stateOwner, event, false, SharedStateResolution.ANY);
 				stateDataKey = STATE_DATA;
 			}
 

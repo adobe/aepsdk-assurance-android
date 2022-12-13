@@ -288,6 +288,6 @@ public class AssuranceStateManagerTest extends TestCase {
 
 		SharedStateResult res = new SharedStateResult(SharedStateStatus.SET, configSharedState);
 		doReturn(res).when(mockApi).getSharedState(AssuranceTestConstants.SDKSharedStateName.CONFIGURATION,
-				null, true, SharedStateResolution.ANY);
+				null, false, SharedStateResolution.ANY);
 	}
 }
