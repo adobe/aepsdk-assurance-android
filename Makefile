@@ -66,7 +66,9 @@ ci-publish-main: clean build-release
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository -Prelease)
 
 ci-publish-maven-local:
-		(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} assemblePhone)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
 
 ci-publish-jitpack:
-		(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack -x signReleasePublication)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} assemblePhone)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack -x signReleasePublication)
