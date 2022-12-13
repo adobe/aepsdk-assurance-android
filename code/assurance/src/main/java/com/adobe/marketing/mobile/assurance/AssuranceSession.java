@@ -168,9 +168,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
 		String orgId = assuranceStateManager.getOrgId(true);
 
 		if (StringUtils.isNullOrEmpty(orgId)) {
-			// Configuration may not have set the state with org id yet.
-			// But this since this is a reconnection usecase, it is OK to send the stored session reconnection url
-			// for fetching org id
+			// if configuration does not have org-id, try extracting it from stored connection url
 			final String reconnectionURL = connectionDataStore.getStoredConnectionURL();
 			if (reconnectionURL == null) {
 				Log.debug(Assurance.LOG_TAG, LOG_TAG, "Cannot connect. No orgId from Configuration state or stored url.");
