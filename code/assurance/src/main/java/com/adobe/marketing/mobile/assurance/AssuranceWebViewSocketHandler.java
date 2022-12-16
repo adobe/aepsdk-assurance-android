@@ -13,10 +13,19 @@ package com.adobe.marketing.mobile.assurance;
 
 @SuppressWarnings("unused")
 interface AssuranceWebViewSocketHandler {
-	void onSocketDataReceived(final AssuranceWebViewSocket socket, final String message);
-	void onSocketConnected(final AssuranceWebViewSocket socket);
-	void onSocketDisconnected(final AssuranceWebViewSocket socket, final String errorReason, final int closeCode,
-							  final boolean wasClean);
-	void onSocketError(final AssuranceWebViewSocket socket);
-	void onSocketStateChange(final AssuranceWebViewSocket socket, final AssuranceWebViewSocket.SocketReadyState state);
+    void onSocketDataReceived(final AssuranceWebViewSocket socket, final String message);
+
+    void onSocketConnected(final AssuranceWebViewSocket socket);
+
+    void onSocketDisconnected(
+            final AssuranceWebViewSocket socket,
+            final String errorReason,
+            final int closeCode,
+            final boolean wasClean);
+
+    void onSocketError(final AssuranceWebViewSocket socket);
+
+    void onSocketStateChange(
+            final AssuranceWebViewSocket socket,
+            final AssuranceWebViewSocket.SocketReadyState state);
 }
