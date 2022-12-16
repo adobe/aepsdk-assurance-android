@@ -12,65 +12,71 @@
 package com.adobe.marketing.mobile.assurance;
 
 public class AssuranceTestConstants {
-	static final String EXTENSION_VERSION 		= "2.0.0";
-	static final String VENDOR_ASSURANCE_MOBILE = "com.adobe.griffon.mobile";
+    static final String EXTENSION_VERSION = "2.0.0";
+    static final String VENDOR_ASSURANCE_MOBILE = "com.adobe.griffon.mobile";
 
-	final class GenericEventPayloadKey {
-		static final String ACP_EXTENSION_EVENT_TYPE = "ACPExtensionEventType";
-		static final String ACP_EXTENSION_EVENT_SOURCE = "ACPExtensionEventSource";
-		static final String ACP_EXTENSION_EVENT_NAME = "ACPExtensionEventName";
-		static final String ACP_EXTENSION_EVENT_DATA = "ACPExtensionEventData";
-		static final String ACP_EXTENSION_EVENT_UNIQUE_IDENTIFIER = "ACPExtensionEventUniqueIdentifier";
-		static final String ACP_EXTENSION_EVENT_NUMBER = "ACPExtensionEventNumber";
-		private GenericEventPayloadKey() { }
-	}
+    final class GenericEventPayloadKey {
+        static final String ACP_EXTENSION_EVENT_TYPE = "ACPExtensionEventType";
+        static final String ACP_EXTENSION_EVENT_SOURCE = "ACPExtensionEventSource";
+        static final String ACP_EXTENSION_EVENT_NAME = "ACPExtensionEventName";
+        static final String ACP_EXTENSION_EVENT_DATA = "ACPExtensionEventData";
+        static final String ACP_EXTENSION_EVENT_UNIQUE_IDENTIFIER =
+                "ACPExtensionEventUniqueIdentifier";
+        static final String ACP_EXTENSION_EVENT_NUMBER = "ACPExtensionEventNumber";
 
+        private GenericEventPayloadKey() {}
+    }
 
-	final class SDKSharedStateName {
-		static final String CONFIGURATION = "com.adobe.module.configuration";
-		private SDKSharedStateName() { }
-	}
+    final class SDKSharedStateName {
+        static final String CONFIGURATION = "com.adobe.module.configuration";
 
-	final class SDKConfigurationKey {
-		static final String ORG_ID = "experienceCloud.org";
-		private SDKConfigurationKey() { }
-	}
+        private SDKSharedStateName() {}
+    }
 
-	final class AssuranceEventType {
-		static final String GENERIC			= "generic";
-		static final String LOG				= "log";
-		static final String CONTROL			= "control";
-		static final String CLIENT			= "client";
-		static final String BLOB 			= "blob";
-		private AssuranceEventType() { }
-	}
+    final class SDKConfigurationKey {
+        static final String ORG_ID = "experienceCloud.org";
 
-	final class ControlType {
-		static final String START_EVENT_FORWARDING = "startEventForwarding";
-		static final String SCREENSHOT 			   = "screenshot";
-		static final String LOG_FORWARDING		   = "logForwarding";
-		static final String FAKE_EVENT			   = "fakeEvent";
-		static final String CONFIG_UPDATE		   = "configUpdate";
-		static final String NONE		   	   	   = "none";
-		static final String WILDCARD		   	   = "wildcard";
-		private ControlType() { }
-	}
+        private SDKConfigurationKey() {}
+    }
 
-	final class SharedStateKeys {
-		static final String ASSURANCE_STATE_SESSION_ID 			= "sessionid";
-		static final String ASSURANCE_STATE_CLIENT_ID 			= "clientid";
-		static final String ASSURANCE_STATE_INTEGRATION_ID 		= "integrationid";
+    final class AssuranceEventType {
+        static final String GENERIC = "generic";
+        static final String LOG = "log";
+        static final String CONTROL = "control";
+        static final String CLIENT = "client";
+        static final String BLOB = "blob";
 
-		private SharedStateKeys() { }
-	}
+        private AssuranceEventType() {}
+    }
 
-	final class PayloadDataKeys {
-		static final String ANALYTICS_DEBUG_API_ENABLED = "analytics.debugApiEnabled";
-		static final String XDM_STATE_DATA	 			= "xdm.state.data";
-		static final String STATE_CONTENTS 				= "state.data";
-		static final String METADATA 					= "metadata";
-		static final String TYPE 						= "type";
-		static final String DETAIL 						= "detail";
-		private PayloadDataKeys() { }
-	}
+    final class ControlType {
+        static final String START_EVENT_FORWARDING = "startEventForwarding";
+        static final String SCREENSHOT = "screenshot";
+        static final String LOG_FORWARDING = "logForwarding";
+        static final String FAKE_EVENT = "fakeEvent";
+        static final String CONFIG_UPDATE = "configUpdate";
+        static final String NONE = "none";
+        static final String WILDCARD = "wildcard";
+
+        private ControlType() {}
+    }
+
+    final class SharedStateKeys {
+        static final String ASSURANCE_STATE_SESSION_ID = "sessionid";
+        static final String ASSURANCE_STATE_CLIENT_ID = "clientid";
+        static final String ASSURANCE_STATE_INTEGRATION_ID = "integrationid";
+
+        private SharedStateKeys() {}
+    }
+
+    final class PayloadDataKeys {
+        static final String ANALYTICS_DEBUG_API_ENABLED = "analytics.debugApiEnabled";
+        static final String XDM_STATE_DATA = "xdm.state.data";
+        static final String STATE_CONTENTS = "state.data";
+        static final String METADATA = "metadata";
+        static final String TYPE = "type";
+        static final String DETAIL = "detail";
+
+        private PayloadDataKeys() {}
+    }
 }

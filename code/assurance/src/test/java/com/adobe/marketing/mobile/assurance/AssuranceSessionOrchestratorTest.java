@@ -19,15 +19,8 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 
 import android.app.Application;
 import android.net.Uri;
-
-import com.adobe.marketing.mobile.assurance.AssuranceConnectionDataStore;
-import com.adobe.marketing.mobile.assurance.AssuranceConstants;
-import com.adobe.marketing.mobile.assurance.AssuranceEvent;
-import com.adobe.marketing.mobile.assurance.AssurancePlugin;
-import com.adobe.marketing.mobile.assurance.AssuranceSession;
-import com.adobe.marketing.mobile.assurance.AssuranceSessionOrchestrator;
-import com.adobe.marketing.mobile.assurance.AssuranceStateManager;
-
+import java.util.Collections;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,239 +35,265 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import java.util.Collections;
-import java.util.List;
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Uri.class})
 public class AssuranceSessionOrchestratorTest {
 
-	@Mock
-	private Application mockApplication;
-	@Mock
-	private AssuranceSessionOrchestrator.ApplicationHandle mockApplicationHandle;
+    @Mock private Application mockApplication;
+    @Mock private AssuranceSessionOrchestrator.ApplicationHandle mockApplicationHandle;
 
-	@Mock
-	private AssuranceStateManager mockAssuranceStateManager;
-	@Mock
-	private List<AssurancePlugin> mockPluginList;
-	@Mock
-	private AssuranceConnectionDataStore mockAssuranceConnectionDataStore;
-	@Mock
-	private AssuranceSessionOrchestrator.AssuranceSessionCreator mockAssuranceSessionCreator;
-	@Mock
-	private AssuranceSession mockAssuranceSession;
+    @Mock private AssuranceStateManager mockAssuranceStateManager;
+    @Mock private List<AssurancePlugin> mockPluginList;
+    @Mock private AssuranceConnectionDataStore mockAssuranceConnectionDataStore;
+    @Mock private AssuranceSessionOrchestrator.AssuranceSessionCreator mockAssuranceSessionCreator;
+    @Mock private AssuranceSession mockAssuranceSession;
 
-	private AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver hostAppActivityLifecycleObserver;
+    private AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver
+            hostAppActivityLifecycleObserver;
 
-	private AssuranceSessionOrchestrator assuranceSessionOrchestrator;
+    private AssuranceSessionOrchestrator assuranceSessionOrchestrator;
 
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
 
-		assuranceSessionOrchestrator = new AssuranceSessionOrchestrator(mockApplication,
-				mockAssuranceStateManager, mockPluginList, mockAssuranceConnectionDataStore, mockApplicationHandle,
-				mockAssuranceSessionCreator);
+        assuranceSessionOrchestrator =
+                new AssuranceSessionOrchestrator(
+                        mockApplication,
+                        mockAssuranceStateManager,
+                        mockPluginList,
+                        mockAssuranceConnectionDataStore,
+                        mockApplicationHandle,
+                        mockAssuranceSessionCreator);
 
-		ArgumentCaptor<AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver> lifecycleObserverArgumentCaptor =
-			ArgumentCaptor.forClass(AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver.class);
+        ArgumentCaptor<AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver>
+                lifecycleObserverArgumentCaptor =
+                        ArgumentCaptor.forClass(
+                                AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver
+                                        .class);
 
-		verify(mockApplication).registerActivityLifecycleCallbacks(lifecycleObserverArgumentCaptor.capture());
-		hostAppActivityLifecycleObserver = lifecycleObserverArgumentCaptor.getValue();
-	}
+        verify(mockApplication)
+                .registerActivityLifecycleCallbacks(lifecycleObserverArgumentCaptor.capture());
+        hostAppActivityLifecycleObserver = lifecycleObserverArgumentCaptor.getValue();
+    }
 
-	@Test
-	public void testCreateSession_WithoutPin() {
-		when(mockAssuranceSessionCreator.create(eq("SessionID"), eq(AssuranceConstants.AssuranceEnvironment.PROD),
-												eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()), eq(mockAssuranceStateManager),
-												eq(mockPluginList), eq(mockAssuranceConnectionDataStore), eq(mockApplicationHandle),
-												ArgumentMatchers.<List<AssuranceEvent>>any()))
-		.thenReturn(mockAssuranceSession);
-		Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
+    @Test
+    public void testCreateSession_WithoutPin() {
+        when(mockAssuranceSessionCreator.create(
+                        eq("SessionID"),
+                        eq(AssuranceConstants.AssuranceEnvironment.PROD),
+                        eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()),
+                        eq(mockAssuranceStateManager),
+                        eq(mockPluginList),
+                        eq(mockAssuranceConnectionDataStore),
+                        eq(mockApplicationHandle),
+                        ArgumentMatchers.<List<AssuranceEvent>>any()))
+                .thenReturn(mockAssuranceSession);
+        Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
 
+        assuranceSessionOrchestrator.createSession(
+                "SessionID", AssuranceConstants.AssuranceEnvironment.PROD, null);
 
-		assuranceSessionOrchestrator.createSession("SessionID",
-				AssuranceConstants.AssuranceEnvironment.PROD, null);
+        Assert.assertNotNull(assuranceSessionOrchestrator.getActiveSession());
 
-		Assert.assertNotNull(assuranceSessionOrchestrator.getActiveSession());
+        verify(mockAssuranceSession)
+                .registerStatusListener(
+                        assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
+        verify(mockAssuranceStateManager).shareAssuranceSharedState("SessionID");
+        verify(mockAssuranceSession).connect(null);
+    }
 
-		verify(mockAssuranceSession).registerStatusListener(assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
-		verify(mockAssuranceStateManager).shareAssuranceSharedState("SessionID");
-		verify(mockAssuranceSession).connect(null);
-	}
+    @Test
+    public void testCreateSession_WithPin() {
+        when(mockAssuranceSessionCreator.create(
+                        eq("SessionID"),
+                        eq(AssuranceConstants.AssuranceEnvironment.PROD),
+                        eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()),
+                        eq(mockAssuranceStateManager),
+                        eq(mockPluginList),
+                        eq(mockAssuranceConnectionDataStore),
+                        eq(mockApplicationHandle),
+                        ArgumentMatchers.<List<AssuranceEvent>>any()))
+                .thenReturn(mockAssuranceSession);
+        Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
 
-	@Test
-	public void testCreateSession_WithPin() {
-		when(mockAssuranceSessionCreator.create(eq("SessionID"), eq(AssuranceConstants.AssuranceEnvironment.PROD),
-												eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()), eq(mockAssuranceStateManager),
-												eq(mockPluginList), eq(mockAssuranceConnectionDataStore), eq(mockApplicationHandle),
-												ArgumentMatchers.<List<AssuranceEvent>>any()))
-		.thenReturn(mockAssuranceSession);
-		Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
+        assuranceSessionOrchestrator.createSession(
+                "SessionID", AssuranceConstants.AssuranceEnvironment.PROD, "1234");
 
+        Assert.assertNotNull(assuranceSessionOrchestrator.getActiveSession());
 
-		assuranceSessionOrchestrator.createSession("SessionID",
-				AssuranceConstants.AssuranceEnvironment.PROD, "1234");
+        verify(mockAssuranceSession)
+                .registerStatusListener(
+                        assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
+        verify(mockAssuranceStateManager).shareAssuranceSharedState("SessionID");
+        verify(mockAssuranceSession).connect("1234");
+    }
 
-		Assert.assertNotNull(assuranceSessionOrchestrator.getActiveSession());
+    @Test
+    public void testTerminateSession() {
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
 
-		verify(mockAssuranceSession).registerStatusListener(assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
-		verify(mockAssuranceStateManager).shareAssuranceSharedState("SessionID");
-		verify(mockAssuranceSession).connect("1234");
-	}
+        assuranceSessionOrchestrator.terminateSession();
 
-	@Test
-	public void testTerminateSession() {
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+        verify(mockAssuranceStateManager).clearAssuranceSharedState();
+        verify(mockAssuranceSession)
+                .unregisterStatusListener(
+                        assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
+        verify(mockAssuranceSession).disconnect();
+        Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
+    }
 
-		assuranceSessionOrchestrator.terminateSession();
+    @Test
+    public void testReconnectToStoredSession_NoStoredSessionURL() {
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL()).thenReturn(null);
 
-		verify(mockAssuranceStateManager).clearAssuranceSharedState();
-		verify(mockAssuranceSession).unregisterStatusListener(assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
-		verify(mockAssuranceSession).disconnect();
-		Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
-	}
+        Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
+    }
 
-	@Test
-	public void testReconnectToStoredSession_NoStoredSessionURL() {
-		when(mockAssuranceConnectionDataStore.getStoredConnectionURL()).thenReturn(null);
+    @Test
+    public void testReconnectToStoredSession_BadStoredSessionURL() throws Exception {
+        // wss://connect.griffon.adobe.com/client/v1?sessionId=5ccd5a20-1c00-4d6e-bf77-bbe85bc0c758&token=9004&orgId=972C898555E9F7BC7F000101%40AdobeOrg&clientId=89942ef1-11c2-46fb-bcc7-bb797c84e638
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL()).thenReturn("");
+        Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
 
-		Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
-	}
+        PowerMockito.mockStatic(Uri.class);
+        Uri mockUri = mock(Uri.class);
+        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
+        when(mockUri.getQueryParameter("sessionId")).thenReturn((null));
+        when(mockUri.getQueryParameter("token")).thenReturn(("1232"));
+        when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrgId");
+        when(mockUri.getQueryParameter("clientId")).thenReturn(("clientID"));
 
+        Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
 
-	@Test
-	public void testReconnectToStoredSession_BadStoredSessionURL() throws Exception {
-		// wss://connect.griffon.adobe.com/client/v1?sessionId=5ccd5a20-1c00-4d6e-bf77-bbe85bc0c758&token=9004&orgId=972C898555E9F7BC7F000101%40AdobeOrg&clientId=89942ef1-11c2-46fb-bcc7-bb797c84e638
-		when(mockAssuranceConnectionDataStore.getStoredConnectionURL()).thenReturn("");
-		Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
+        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
+        when(mockUri.getQueryParameter("sessionId")).thenReturn(("sampleSessionID"));
+        when(mockUri.getQueryParameter("token")).thenReturn((null));
+        when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrgID");
+        when(mockUri.getQueryParameter("clientId")).thenReturn(("sampleClientID"));
 
-		PowerMockito.mockStatic(Uri.class);
-		Uri mockUri = mock(Uri.class);
-		PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
-		when(mockUri.getQueryParameter("sessionId")).thenReturn((null));
-		when(mockUri.getQueryParameter("token")).thenReturn(("1232"));
-		when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrgId");
-		when(mockUri.getQueryParameter("clientId")).thenReturn(("clientID"));
+        Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
+    }
 
-		Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
+    @Test
+    public void testReconnectToStoredSession_HasStoredSessionURL() throws Exception {
+        // wss://connect.griffon.adobe.com/client/v1?sessionId=5ccd5a20-1c00-4d6e-bf77-bbe85bc0c758&token=9004&
+        // orgId=972C898555E9F7BC7F000101%40AdobeOrg&clientId=89942ef1-11c2-46fb-bcc7-bb797c84e638
+        when(mockAssuranceSessionCreator.create(
+                        anyString(),
+                        eq(AssuranceConstants.AssuranceEnvironment.PROD),
+                        eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()),
+                        eq(mockAssuranceStateManager),
+                        eq(mockPluginList),
+                        eq(mockAssuranceConnectionDataStore),
+                        eq(mockApplicationHandle),
+                        ArgumentMatchers.<List<AssuranceEvent>>any()))
+                .thenReturn(mockAssuranceSession);
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
+                .thenReturn(buildURL("SampleSessionID", "1234", "SampleOrg", "SampleClientID"));
+        PowerMockito.mockStatic(Uri.class);
+        Uri mockUri = mock(Uri.class);
+        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
+        when(mockUri.getQueryParameter("sessionId")).thenReturn(("SampleSessionID"));
+        when(mockUri.getQueryParameter("token")).thenReturn(("1234"));
+        when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrg");
+        when(mockUri.getQueryParameter("clientId")).thenReturn(("SampleClientID"));
 
-		PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
-		when(mockUri.getQueryParameter("sessionId")).thenReturn(("sampleSessionID"));
-		when(mockUri.getQueryParameter("token")).thenReturn((null));
-		when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrgID");
-		when(mockUri.getQueryParameter("clientId")).thenReturn(("sampleClientID"));
+        Assert.assertTrue(assuranceSessionOrchestrator.reconnectToStoredSession());
+        verify(mockAssuranceSessionCreator)
+                .create(
+                        eq("SampleSessionID"),
+                        eq(AssuranceConstants.AssuranceEnvironment.PROD),
+                        eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()),
+                        eq(mockAssuranceStateManager),
+                        eq(mockPluginList),
+                        eq(mockAssuranceConnectionDataStore),
+                        eq(mockApplicationHandle),
+                        ArgumentMatchers.<List<AssuranceEvent>>any());
+    }
 
-		Assert.assertFalse(assuranceSessionOrchestrator.reconnectToStoredSession());
-	}
+    @Test
+    public void testQueueEvent_SessionNotEstablished() {
+        final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
 
-	@Test
-	public void testReconnectToStoredSession_HasStoredSessionURL() throws Exception {
-		// wss://connect.griffon.adobe.com/client/v1?sessionId=5ccd5a20-1c00-4d6e-bf77-bbe85bc0c758&token=9004&
-		// orgId=972C898555E9F7BC7F000101%40AdobeOrg&clientId=89942ef1-11c2-46fb-bcc7-bb797c84e638
-		when(mockAssuranceSessionCreator.create(anyString(), eq(AssuranceConstants.AssuranceEnvironment.PROD),
-												eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()), eq(mockAssuranceStateManager),
-												eq(mockPluginList), eq(mockAssuranceConnectionDataStore), eq(mockApplicationHandle),
-												ArgumentMatchers.<List<AssuranceEvent>>any()))
-		.thenReturn(mockAssuranceSession);
-		when(mockAssuranceConnectionDataStore.getStoredConnectionURL()).thenReturn(buildURL("SampleSessionID", "1234",
-				"SampleOrg", "SampleClientID"));
-		PowerMockito.mockStatic(Uri.class);
-		Uri mockUri = mock(Uri.class);
-		PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
-		when(mockUri.getQueryParameter("sessionId")).thenReturn(("SampleSessionID"));
-		when(mockUri.getQueryParameter("token")).thenReturn(("1234"));
-		when(mockUri.getQueryParameter("orgId")).thenReturn("sampleOrg");
-		when(mockUri.getQueryParameter("clientId")).thenReturn(("SampleClientID"));
+        AssuranceEvent event = new AssuranceEvent("EventName", Collections.EMPTY_MAP);
+        assuranceSessionOrchestrator.queueEvent(event);
 
-		Assert.assertTrue(assuranceSessionOrchestrator.reconnectToStoredSession());
-		verify(mockAssuranceSessionCreator).create(eq("SampleSessionID"), eq(AssuranceConstants.AssuranceEnvironment.PROD),
-				eq(assuranceSessionOrchestrator.getSessionUIOperationHandler()), eq(mockAssuranceStateManager),
-				eq(mockPluginList), eq(mockAssuranceConnectionDataStore), eq(mockApplicationHandle),
-				ArgumentMatchers.<List<AssuranceEvent>>any());
-	}
+        verify(mockBuffer).add(event);
+    }
 
-	@Test
-	public void testQueueEvent_SessionNotEstablished() {
-		final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
+    @Test
+    public void testQueueEvent_SessionEstablished_NotConnected() {
+        final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
 
-		AssuranceEvent event = new AssuranceEvent("EventName", Collections.EMPTY_MAP);
-		assuranceSessionOrchestrator.queueEvent(event);
+        AssuranceEvent event = new AssuranceEvent("EventName", Collections.EMPTY_MAP);
+        assuranceSessionOrchestrator.queueEvent(event);
 
-		verify(mockBuffer).add(event);
-	}
+        verify(mockBuffer).add(event);
+        verify(mockAssuranceSession).queueOutboundEvent(event);
+    }
 
-	@Test
-	public void testQueueEvent_SessionEstablished_NotConnected() {
-		final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+    @Test
+    public void testCanProcessSDKEvents() {
+        Whitebox.setInternalState(
+                assuranceSessionOrchestrator, "outboundEventBuffer", (Object[]) null);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", (Object[]) null);
+        Assert.assertFalse(assuranceSessionOrchestrator.canProcessSDKEvents());
 
-		AssuranceEvent event = new AssuranceEvent("EventName", Collections.EMPTY_MAP);
-		assuranceSessionOrchestrator.queueEvent(event);
+        final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
+        Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
 
-		verify(mockBuffer).add(event);
-		verify(mockAssuranceSession).queueOutboundEvent(event);
-	}
+        Whitebox.setInternalState(
+                assuranceSessionOrchestrator, "outboundEventBuffer", (Object[]) null);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+        Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
 
-	@Test
-	public void testCanProcessSDKEvents() {
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", (Object[]) null);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", (Object[]) null);
-		Assert.assertFalse(assuranceSessionOrchestrator.canProcessSDKEvents());
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+        Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
+    }
 
-		final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
-		Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
+    @Test
+    public void testSessionUIOperationHandler_OnConnect() {
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
 
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", (Object[]) null);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
-		Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
+        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+                assuranceSessionOrchestrator.getSessionUIOperationHandler();
+        Assert.assertNotNull(sessionUIOperationHandler);
 
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
-		Assert.assertTrue(assuranceSessionOrchestrator.canProcessSDKEvents());
-	}
+        sessionUIOperationHandler.onConnect("1234");
 
-	@Test
-	public void testSessionUIOperationHandler_OnConnect() {
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+        verify(mockAssuranceSession).connect("1234");
+    }
 
-		AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
-			assuranceSessionOrchestrator.getSessionUIOperationHandler();
-		Assert.assertNotNull(sessionUIOperationHandler);
+    @Test
+    public void testSessionUIOperationHandler_OnDisconnect() {
+        Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
+        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+                assuranceSessionOrchestrator.getSessionUIOperationHandler();
+        Assert.assertNotNull(sessionUIOperationHandler);
 
-		sessionUIOperationHandler.onConnect("1234");
+        sessionUIOperationHandler.onDisconnect();
 
-		verify(mockAssuranceSession).connect("1234");
-	}
+        verify(mockAssuranceSession)
+                .unregisterStatusListener(
+                        assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
+        verify(mockAssuranceSession).disconnect();
+        Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
+    }
 
-	@Test
-	public void testSessionUIOperationHandler_OnDisconnect() {
-		Whitebox.setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
-		AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
-			assuranceSessionOrchestrator.getSessionUIOperationHandler();
-		Assert.assertNotNull(sessionUIOperationHandler);
-
-		sessionUIOperationHandler.onDisconnect();
-
-		verify(mockAssuranceSession).unregisterStatusListener(assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
-		verify(mockAssuranceSession).disconnect();
-		Assert.assertNull(assuranceSessionOrchestrator.getActiveSession());
-	}
-
-	private String buildURL(final String sessionID,
-							final String token,
-							final String orgId,
-							final String clientID) throws Exception {
-		return String.format(
-				   "wss://connect.griffon.adobe.com/client/v1?sessionId=%s&token=%s&orgId=%s&clientId=%s",
-				   (sessionID == null ? "" : sessionID),
-				   (token == null ? "" : token),
-				   (orgId == null ? "" : orgId),
-				   (clientID == null ? "" : clientID)
-			   );
-	}
+    private String buildURL(
+            final String sessionID, final String token, final String orgId, final String clientID)
+            throws Exception {
+        return String.format(
+                "wss://connect.griffon.adobe.com/client/v1?sessionId=%s&token=%s&orgId=%s&clientId=%s",
+                (sessionID == null ? "" : sessionID),
+                (token == null ? "" : token),
+                (orgId == null ? "" : orgId),
+                (clientID == null ? "" : clientID));
+    }
 }

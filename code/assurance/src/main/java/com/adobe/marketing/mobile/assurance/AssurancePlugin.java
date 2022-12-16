@@ -13,54 +13,53 @@ package com.adobe.marketing.mobile.assurance;
 
 interface AssurancePlugin {
 
-	/**
-	 * Returns the vendor name
-	 * <p>
-	 * The Plugin will only receive the Control Events from the provided vendor.
-	 *
-	 * @return the vendor name
-	 */
-	String getVendor();
+    /**
+     * Returns the vendor name
+     *
+     * <p>The Plugin will only receive the Control Events from the provided vendor.
+     *
+     * @return the vendor name
+     */
+    String getVendor();
 
-	/**
-	 * Returns the control type
-	 * <p>
-	 * For {@link AssuranceEvent} events, controlType is available in the payload under the key "type"
-	 * The Plugin will only receive the Control Events with the provided ControlType.
-	 *
-	 * @return the control type
-	 */
-	String getControlType();
+    /**
+     * Returns the control type
+     *
+     * <p>For {@link AssuranceEvent} events, controlType is available in the payload under the key
+     * "type" The Plugin will only receive the Control Events with the provided ControlType.
+     *
+     * @return the control type
+     */
+    String getControlType();
 
-	/**
-	 * Invoked when a AssuranceEvent is received for a specific vendor and specific control type
-	 *
-	 * @param event is AssuranceEvent
-	 */
-	void onEventReceived(final AssuranceEvent event);
+    /**
+     * Invoked when a AssuranceEvent is received for a specific vendor and specific control type
+     *
+     * @param event is AssuranceEvent
+     */
+    void onEventReceived(final AssuranceEvent event);
 
-	/**
-	 * Invoked when plugin is successfully registered to the AssuranceSession
-	 *
-	 * @param parentSession an instance of the active AssuranceSession
-	 */
-	void onRegistered(final AssuranceSession parentSession);
+    /**
+     * Invoked when plugin is successfully registered to the AssuranceSession
+     *
+     * @param parentSession an instance of the active AssuranceSession
+     */
+    void onRegistered(final AssuranceSession parentSession);
 
-	/**
-	 * Invoked when a successful Assurance web socket connection is established
-	 */
-	void onSessionConnected();
+    /** Invoked when a successful Assurance web socket connection is established */
+    void onSessionConnected();
 
-	/**
-	 * Invoked when an Assurance session is disconnected.
-	 * More information about various close code could be found here : https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-	 *
-	 * @param code  an integer value representing the reason for websocket session disconnect
-	 */
-	void onSessionDisconnected(final int code);
+    /**
+     * Invoked when an Assurance session is disconnected. More information about various close code
+     * could be found here : https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+     *
+     * @param code an integer value representing the reason for websocket session disconnect
+     */
+    void onSessionDisconnected(final int code);
 
-	/**
-	 * Invocation of this method guarantees that the Assurance session is completely terminated and the Assurance extension will not reconnect the session on the next app launch.
-	 */
-	void onSessionTerminated();
+    /**
+     * Invocation of this method guarantees that the Assurance session is completely terminated and
+     * the Assurance extension will not reconnect the session on the next app launch.
+     */
+    void onSessionTerminated();
 }

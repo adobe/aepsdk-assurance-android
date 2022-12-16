@@ -18,12 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import com.adobe.marketing.mobile.assurance.AssuranceConstants;
-import com.adobe.marketing.mobile.assurance.AssuranceEvent;
-import com.adobe.marketing.mobile.assurance.AssurancePlugin;
-import com.adobe.marketing.mobile.assurance.AssurancePluginManager;
-import com.adobe.marketing.mobile.assurance.AssuranceSession;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,106 +27,103 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 public class AssurancePluginManagerTest {
-	@Mock
-	private AssuranceSession mockAssuranceSession;
-	@Mock
-	private AssurancePlugin mockPlugin1;
-	@Mock
-	private AssurancePlugin mockPlugin2;
+    @Mock private AssuranceSession mockAssuranceSession;
+    @Mock private AssurancePlugin mockPlugin1;
+    @Mock private AssurancePlugin mockPlugin2;
 
-	private AssurancePluginManager assurancePluginManager;
+    private AssurancePluginManager assurancePluginManager;
 
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
 
-		when(mockPlugin1.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
-		when(mockPlugin2.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
-		assurancePluginManager = new AssurancePluginManager(mockAssuranceSession);
-	}
+        when(mockPlugin1.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+        when(mockPlugin2.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+        assurancePluginManager = new AssurancePluginManager(mockAssuranceSession);
+    }
 
-	@Test
-	public void test_addPlugin_nullPlugin() {
-		try {
-			assurancePluginManager.addPlugin(null);
-		} catch (Exception e) {
-			fail();
-		}
-	}
+    @Test
+    public void test_addPlugin_nullPlugin() {
+        try {
+            assurancePluginManager.addPlugin(null);
+        } catch (Exception e) {
+            fail();
+        }
+    }
 
-	@Test
-	public void test_addPlugin_notifiesPlugin() {
-		assurancePluginManager.addPlugin(mockPlugin1);
+    @Test
+    public void test_addPlugin_notifiesPlugin() {
+        assurancePluginManager.addPlugin(mockPlugin1);
 
-		verify(mockPlugin1).onRegistered(mockAssuranceSession);
-	}
+        verify(mockPlugin1).onRegistered(mockAssuranceSession);
+    }
 
-	@Test
-	public void test_onAssuranceEvent_nullOrEmptyVendor() {
-		when(mockPlugin1.getControlType()).thenReturn(null);
-		when(mockPlugin2.getControlType()).thenReturn("");
-		assurancePluginManager.addPlugin(mockPlugin1);
-		assurancePluginManager.addPlugin(mockPlugin2);
-		AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
-		when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+    @Test
+    public void test_onAssuranceEvent_nullOrEmptyVendor() {
+        when(mockPlugin1.getControlType()).thenReturn(null);
+        when(mockPlugin2.getControlType()).thenReturn("");
+        assurancePluginManager.addPlugin(mockPlugin1);
+        assurancePluginManager.addPlugin(mockPlugin2);
+        AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
+        when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
 
-		assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
+        assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
 
-		verify(mockPlugin1, never()).onEventReceived(mockAssuranceEvent);
-		verify(mockPlugin2, never()).onEventReceived(mockAssuranceEvent);
-	}
+        verify(mockPlugin1, never()).onEventReceived(mockAssuranceEvent);
+        verify(mockPlugin2, never()).onEventReceived(mockAssuranceEvent);
+    }
 
-	@Test
-	public void test_onAssuranceEvent_wildCardEvent() {
-		when(mockPlugin1.getControlType()).thenReturn(AssuranceConstants.ControlType.WILDCARD);
-		assurancePluginManager.addPlugin(mockPlugin1);
-		AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
-		when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+    @Test
+    public void test_onAssuranceEvent_wildCardEvent() {
+        when(mockPlugin1.getControlType()).thenReturn(AssuranceConstants.ControlType.WILDCARD);
+        assurancePluginManager.addPlugin(mockPlugin1);
+        AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
+        when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
 
-		assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
+        assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
 
-		verify(mockPlugin1, times(1)).onEventReceived(mockAssuranceEvent);
-	}
+        verify(mockPlugin1, times(1)).onEventReceived(mockAssuranceEvent);
+    }
 
-	@Test
-	public void test_onAssuranceEvent_matchingControlType() {
-		when(mockPlugin1.getControlType()).thenReturn(AssuranceConstants.ControlType.SCREENSHOT);
-		assurancePluginManager.addPlugin(mockPlugin1);
-		AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
-		when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
-		when(mockAssuranceEvent.getControlType()).thenReturn(AssuranceConstants.ControlType.SCREENSHOT);
+    @Test
+    public void test_onAssuranceEvent_matchingControlType() {
+        when(mockPlugin1.getControlType()).thenReturn(AssuranceConstants.ControlType.SCREENSHOT);
+        assurancePluginManager.addPlugin(mockPlugin1);
+        AssuranceEvent mockAssuranceEvent = mock(AssuranceEvent.class);
+        when(mockAssuranceEvent.getVendor()).thenReturn(AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+        when(mockAssuranceEvent.getControlType())
+                .thenReturn(AssuranceConstants.ControlType.SCREENSHOT);
 
-		assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
+        assurancePluginManager.onAssuranceEvent(mockAssuranceEvent);
 
+        verify(mockPlugin1, times(1)).onEventReceived(mockAssuranceEvent);
+    }
 
-		verify(mockPlugin1, times(1)).onEventReceived(mockAssuranceEvent);
-	}
+    @Test
+    public void test_onSessionConnected_notifiesPlugin() {
+        assurancePluginManager.addPlugin(mockPlugin1);
 
-	@Test
-	public void test_onSessionConnected_notifiesPlugin() {
-		assurancePluginManager.addPlugin(mockPlugin1);
+        assurancePluginManager.onSessionConnected();
 
-		assurancePluginManager.onSessionConnected();
+        verify(mockPlugin1, times(1)).onSessionConnected();
+    }
 
-		verify(mockPlugin1, times(1)).onSessionConnected();
-	}
+    @Test
+    public void test_onSessionDisconnected_notifiesPlugin() {
+        assurancePluginManager.addPlugin(mockPlugin1);
 
-	@Test
-	public void test_onSessionDisconnected_notifiesPlugin() {
-		assurancePluginManager.addPlugin(mockPlugin1);
+        assurancePluginManager.onSessionDisconnected(AssuranceConstants.SocketCloseCode.NORMAL);
 
-		assurancePluginManager.onSessionDisconnected(AssuranceConstants.SocketCloseCode.NORMAL);
+        verify(mockPlugin1, times(1))
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.NORMAL);
+    }
 
-		verify(mockPlugin1, times(1)).
-		onSessionDisconnected(AssuranceConstants.SocketCloseCode.NORMAL);
-	}
+    @Test
+    public void test_onSessionTerminated_notifiesPlugin() {
+        assurancePluginManager.addPlugin(mockPlugin1);
 
-	@Test
-	public void test_onSessionTerminated_notifiesPlugin() {
-		assurancePluginManager.addPlugin(mockPlugin1);
+        assurancePluginManager.onSessionTerminated();
 
-		assurancePluginManager.onSessionTerminated();
-
-		verify(mockPlugin1, times(1)).onSessionTerminated();
-	}
+        verify(mockPlugin1, times(1)).onSessionTerminated();
+    }
 }
