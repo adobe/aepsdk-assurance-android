@@ -11,8 +11,13 @@
 
 package com.adobe.marketing.mobile.assurance;
 
-import com.adobe.marketing.mobile.assurance.AssuranceIOUtils;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,73 +26,69 @@ import org.kxml2.io.KXmlParser;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.xmlpull.v1.XmlPullParser;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-
 @RunWith(MockitoJUnitRunner.class)
 public class AssuranceIOUtilTest {
 
-	@Test
-	public void testConvertXmlToJson() {
+    @Test
+    public void testConvertXmlToJson() {
 
+        final String xmlString = readResourceFile("AndroidManifest_Test.xml").replace("\n", "");
 
-		final String xmlString = readResourceFile("AndroidManifest_Test.xml").replace("\n", "");
+        final XmlPullParser xmlPullParser = new KXmlParser();
+        final Reader reader = new StringReader(xmlString);
 
-		final XmlPullParser xmlPullParser = new KXmlParser();
-		final Reader reader = new StringReader(xmlString);
+        try {
+            xmlPullParser.setInput(reader);
+            final JSONObject jsonObj = AssuranceIOUtils.convertXMLToJSON(xmlPullParser);
+            Assert.assertTrue(
+                    new JSONObject(readResourceFile("AndroidManifest_Test.json").replace("\n", ""))
+                            .toString()
+                            .equals(jsonObj.toString()));
+        } catch (final Exception e) {
+            Assert.fail("Exception while converting XML to JSON.");
+        } finally {
+            if (reader != null) {
+                closeStream(reader);
+            }
+        }
+    }
 
-		try {
-			xmlPullParser.setInput(reader);
-			final JSONObject jsonObj = AssuranceIOUtils.convertXMLToJSON(xmlPullParser);
-			Assert.assertTrue(new JSONObject(readResourceFile("AndroidManifest_Test.json").replace("\n",
-											 "")).toString().equals(jsonObj.toString()));
-		} catch (final Exception e) {
-			Assert.fail("Exception while converting XML to JSON.");
-		} finally {
-			if (reader != null) {
-				closeStream(reader);
-			}
-		}
-	}
+    /**
+     * Helper function to read resource file as text.
+     *
+     * @param fileName name of resource file.
+     * @return {@code String} text of resource file.
+     */
+    private String readResourceFile(final String fileName) {
+        InputStream inputStream = null;
+        InputStreamReader inputStreamReader = null;
 
-	/**
-	 * Helper function to read resource file as text.
-	 * @param fileName name of resource file.
-	 * @return {@code String} text of resource file.
-	 */
-	private String readResourceFile(final String fileName) {
-		InputStream inputStream = null;
-		InputStreamReader inputStreamReader = null;
+        try {
+            inputStream = this.getClass().getClassLoader().getResource(fileName).openStream();
+            inputStreamReader = new InputStreamReader(inputStream);
+            char[] chars;
+            chars = new char[inputStream.available()];
+            inputStreamReader.read(chars, 0, chars.length);
+            return new String(chars);
+        } catch (IOException e) {
+            return "";
+        } finally {
+            closeStream(inputStream);
+            closeStream(inputStreamReader);
+        }
+    }
 
-		try {
-			inputStream = this.getClass().getClassLoader().getResource(fileName).openStream();
-			inputStreamReader = new InputStreamReader(inputStream);
-			char[] chars;
-			chars = new char[inputStream.available()];
-			inputStreamReader.read(chars, 0, chars.length);
-			return new String(chars);
-		} catch (IOException e) {
-			return "";
-		} finally {
-			closeStream(inputStream);
-			closeStream(inputStreamReader);
-		}
-	}
-
-	/**
-	 * Helper function to close streams.
-	 * @param closeable instance of {@link Closeable}
-	 */
-	private void closeStream(Closeable closeable) {
-		try {
-			if (closeable != null) {
-				closeable.close();
-			}
-		} catch (IOException e) {
-		}
-	}
+    /**
+     * Helper function to close streams.
+     *
+     * @param closeable instance of {@link Closeable}
+     */
+    private void closeStream(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) {
+        }
+    }
 }

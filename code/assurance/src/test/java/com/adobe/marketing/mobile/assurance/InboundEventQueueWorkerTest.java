@@ -17,10 +17,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.adobe.marketing.mobile.assurance.AssuranceConstants;
-import com.adobe.marketing.mobile.assurance.AssuranceEvent;
-import com.adobe.marketing.mobile.assurance.InboundEventQueueWorker;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,89 +32,88 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
 @RunWith(PowerMockRunner.class)
 public class InboundEventQueueWorkerTest {
-	@Mock
-	private InboundEventQueueWorker.InboundQueueEventListener mockInboundQueueEventListener;
-	@Mock
-	private ExecutorService mockExecutorService;
-	private InboundEventQueueWorker inboundEventQueueWorker;
+    @Mock private InboundEventQueueWorker.InboundQueueEventListener mockInboundQueueEventListener;
+    @Mock private ExecutorService mockExecutorService;
+    private InboundEventQueueWorker inboundEventQueueWorker;
 
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		Mockito.doAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-				Runnable runnable = (Runnable) invocationOnMock.getArgument(0);
-				runnable.run();
-				return null;
-			}
-		}).when(mockExecutorService).submit(any(Runnable.class));
-		inboundEventQueueWorker = new InboundEventQueueWorker(mockExecutorService, mockInboundQueueEventListener);
-	}
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        Mockito.doAnswer(
+                        new Answer() {
+                            @Override
+                            public Object answer(InvocationOnMock invocationOnMock)
+                                    throws Throwable {
+                                Runnable runnable = (Runnable) invocationOnMock.getArgument(0);
+                                runnable.run();
+                                return null;
+                            }
+                        })
+                .when(mockExecutorService)
+                .submit(any(Runnable.class));
+        inboundEventQueueWorker =
+                new InboundEventQueueWorker(mockExecutorService, mockInboundQueueEventListener);
+    }
 
-	@Test
-	public void test_canWork() {
-		// Verify that the inbound queue worker can always process work.
-		assertTrue(inboundEventQueueWorker.canWork());
-	}
+    @Test
+    public void test_canWork() {
+        // Verify that the inbound queue worker can always process work.
+        assertTrue(inboundEventQueueWorker.canWork());
+    }
 
-	@Test
-	public void test_doWork_NullEvent() {
-		inboundEventQueueWorker.doWork(null);
+    @Test
+    public void test_doWork_NullEvent() {
+        inboundEventQueueWorker.doWork(null);
 
-		// Verify that listeners are not notified about null events.
-		verifyNoInteractions(mockInboundQueueEventListener);
-	}
+        // Verify that listeners are not notified about null events.
+        verifyNoInteractions(mockInboundQueueEventListener);
+    }
 
-	@Test
-	public void test_doWork_NullControlType() {
-		final AssuranceEvent assuranceEvent = new AssuranceEvent(null, Collections.EMPTY_MAP);
-		inboundEventQueueWorker.doWork(assuranceEvent);
+    @Test
+    public void test_doWork_NullControlType() {
+        final AssuranceEvent assuranceEvent = new AssuranceEvent(null, Collections.EMPTY_MAP);
+        inboundEventQueueWorker.doWork(assuranceEvent);
 
-		// Verify that listeners are not notified about non-control events.
-		verifyNoInteractions(mockInboundQueueEventListener);
-	}
+        // Verify that listeners are not notified about non-control events.
+        verifyNoInteractions(mockInboundQueueEventListener);
+    }
 
-	@Test
-	public void test_doWork_NotifiesListener() {
-		final AssuranceEvent assuranceEvent = constructAssuranceControlEvent();
-		inboundEventQueueWorker.doWork(assuranceEvent);
+    @Test
+    public void test_doWork_NotifiesListener() {
+        final AssuranceEvent assuranceEvent = constructAssuranceControlEvent();
+        inboundEventQueueWorker.doWork(assuranceEvent);
 
-		// Verify that listeners are notified about control events.
-		verify(mockInboundQueueEventListener, times(1)).onInboundEvent(assuranceEvent);
-	}
+        // Verify that listeners are notified about control events.
+        verify(mockInboundQueueEventListener, times(1)).onInboundEvent(assuranceEvent);
+    }
 
-	@Test
-	public void test_runnable_NotifiesListener() {
-		final AssuranceEvent assuranceEvent1 = constructAssuranceControlEvent();
-		final AssuranceEvent assuranceEvent2 = constructAssuranceControlEvent();
+    @Test
+    public void test_runnable_NotifiesListener() {
+        final AssuranceEvent assuranceEvent1 = constructAssuranceControlEvent();
+        final AssuranceEvent assuranceEvent2 = constructAssuranceControlEvent();
 
-		// Simulate worker being offered work after starting.
-		inboundEventQueueWorker.start();
-		inboundEventQueueWorker.offer(assuranceEvent1);
-		inboundEventQueueWorker.offer(assuranceEvent2);
+        // Simulate worker being offered work after starting.
+        inboundEventQueueWorker.start();
+        inboundEventQueueWorker.offer(assuranceEvent1);
+        inboundEventQueueWorker.offer(assuranceEvent2);
 
-		// Verify that the listener is notified about each of the events incident.
-		final ArgumentCaptor<AssuranceEvent> eventCaptor = ArgumentCaptor.forClass(AssuranceEvent.class);
-		verify(mockInboundQueueEventListener, times(2)).onInboundEvent(eventCaptor.capture());
-		final List<AssuranceEvent> capturedEvents = eventCaptor.getAllValues();
+        // Verify that the listener is notified about each of the events incident.
+        final ArgumentCaptor<AssuranceEvent> eventCaptor =
+                ArgumentCaptor.forClass(AssuranceEvent.class);
+        verify(mockInboundQueueEventListener, times(2)).onInboundEvent(eventCaptor.capture());
+        final List<AssuranceEvent> capturedEvents = eventCaptor.getAllValues();
 
-		// Verify that the events that the listener is notified of match the events enqueued to the worker.
-		assertEquals(assuranceEvent1, capturedEvents.get(0));
-		assertEquals(assuranceEvent2, capturedEvents.get(1));
-	}
+        // Verify that the events that the listener is notified of match the events enqueued to the
+        // worker.
+        assertEquals(assuranceEvent1, capturedEvents.get(0));
+        assertEquals(assuranceEvent2, capturedEvents.get(1));
+    }
 
-	private AssuranceEvent constructAssuranceControlEvent() {
-		final HashMap<String, Object> payload = new HashMap<>();
-		payload.put("type", AssuranceConstants.AssuranceEventType.CONTROL);
-		return new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL,
-								  payload);
-	}
+    private AssuranceEvent constructAssuranceControlEvent() {
+        final HashMap<String, Object> payload = new HashMap<>();
+        payload.put("type", AssuranceConstants.AssuranceEventType.CONTROL);
+        return new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+    }
 }

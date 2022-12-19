@@ -11,107 +11,123 @@
 
 package com.adobe.marketing.mobile.assurance;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import java.util.HashMap;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
-import com.adobe.marketing.mobile.assurance.AssuranceConstants;
-import com.adobe.marketing.mobile.assurance.AssuranceExtension;
-import com.adobe.marketing.mobile.assurance.AssuranceListenerHubPlacesRequests;
+import java.util.HashMap;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 public class AssuranceListenerHubPlacesRequestsTest {
 
-	private static final String COUNT_KEY = "count";
-	private static final String LATITUDE_KEY = "latitude";
-	private static final String LONGITUDE_KEY = "longitude";
+    private static final String COUNT_KEY = "count";
+    private static final String LATITUDE_KEY = "latitude";
+    private static final String LONGITUDE_KEY = "longitude";
 
-	private static final String GET_NEARBY_PLACES_EVENT_NAME = "requestgetnearbyplaces";
-	private static final String RESET_PLACES_EVENT_NAME = "requestreset";
+    private static final String GET_NEARBY_PLACES_EVENT_NAME = "requestgetnearbyplaces";
+    private static final String RESET_PLACES_EVENT_NAME = "requestreset";
 
+    AssuranceListenerHubPlacesRequests listener;
+    @Mock private AssuranceExtension mockAssuranceExtension;
 
-	AssuranceListenerHubPlacesRequests listener;
-	@Mock
-	private AssuranceExtension mockAssuranceExtension;
+    @Before
+    public void setup() {
+        mockAssuranceExtension = Mockito.mock(AssuranceExtension.class);
+        listener = new AssuranceListenerHubPlacesRequests(mockAssuranceExtension);
+    }
 
+    @Test
+    public void testHear_GetNearByPOIEvent() {
+        HashMap<String, Object> eventData = new HashMap<String, Object>();
+        eventData.put(COUNT_KEY, 5);
+        eventData.put(LATITUDE_KEY, 22.22);
+        eventData.put(LONGITUDE_KEY, 33.33);
 
-	@Before
-	public void setup() {
-		mockAssuranceExtension = Mockito.mock(AssuranceExtension.class);
-		listener = new AssuranceListenerHubPlacesRequests(mockAssuranceExtension);
-	}
+        Event event =
+                new Event.Builder(
+                                GET_NEARBY_PLACES_EVENT_NAME,
+                                EventType.PLACES,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(eventData)
+                        .build();
 
-	@Test
-	public void testHear_GetNearByPOIEvent() {
-		HashMap<String, Object> eventData = new HashMap<String, Object>();
-		eventData.put(COUNT_KEY, 5);
-		eventData.put(LATITUDE_KEY, 22.22);
-		eventData.put(LONGITUDE_KEY, 33.33);
+        // test
+        listener.hear(event);
 
-		Event event = new Event.Builder(GET_NEARBY_PLACES_EVENT_NAME, EventType.PLACES,
-										EventSource.REQUEST_CONTENT).setEventData(eventData).build();
+        // verify log message
+        verify(mockAssuranceExtension, times(1))
+                .logLocalUI(
+                        AssuranceConstants.UILogColorVisibility.NORMAL,
+                        "Places - Requesting 5 nearby POIs from (22.220000, 33.330000)");
+    }
 
-		// test
-		listener.hear(event);
+    @Test
+    public void testHear_ResetPOIEvent() {
+        // setup
+        HashMap<String, Object> eventData = new HashMap<String, Object>();
+        Event event =
+                new Event.Builder(
+                                RESET_PLACES_EVENT_NAME,
+                                EventType.PLACES,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(eventData)
+                        .build();
 
-		// verify log message
-		verify(mockAssuranceExtension, times(1)).logLocalUI(AssuranceConstants.UILogColorVisibility.NORMAL,
-				"Places - Requesting 5 nearby POIs from (22.220000, 33.330000)");
-	}
+        // test
+        listener.hear(event);
 
-	@Test
-	public void testHear_ResetPOIEvent() {
-		// setup
-		HashMap<String, Object> eventData = new HashMap<String, Object>();
-		Event event = new Event.Builder(RESET_PLACES_EVENT_NAME, EventType.PLACES,
-										EventSource.REQUEST_CONTENT).setEventData(eventData).build();
+        // verify log message
+        verify(mockAssuranceExtension, times(1))
+                .logLocalUI(
+                        AssuranceConstants.UILogColorVisibility.CRITICAL,
+                        "Places - Resetting Location");
+    }
 
-		// test
-		listener.hear(event);
+    @Test
+    public void testHear_GetNearByPOIEvent_whenNoEventData() {
+        // setup
+        Event event =
+                new Event.Builder(
+                                GET_NEARBY_PLACES_EVENT_NAME,
+                                EventType.PLACES,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(null)
+                        .build();
 
-		// verify log message
-		verify(mockAssuranceExtension, times(1)).logLocalUI(AssuranceConstants.UILogColorVisibility.CRITICAL,
-				"Places - Resetting Location");
-	}
+        // test
+        listener.hear(event);
 
-	@Test
-	public void testHear_GetNearByPOIEvent_whenNoEventData() {
-		// setup
-		Event event = new Event.Builder(GET_NEARBY_PLACES_EVENT_NAME, EventType.PLACES,
-										EventSource.REQUEST_CONTENT).setEventData(null).build();
+        // verify log message
+        verify(mockAssuranceExtension, times(0))
+                .logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
+    }
 
-		// test
-		listener.hear(event);
+    @Test
+    public void testHear_whenInvalidEventData() {
+        HashMap<String, Object> eventData = new HashMap<String, Object>();
+        eventData.put(COUNT_KEY, "Invalid Value");
+        eventData.put(LATITUDE_KEY, 22.22);
+        eventData.put(LONGITUDE_KEY, 33.33);
+        Event event =
+                new Event.Builder(
+                                GET_NEARBY_PLACES_EVENT_NAME,
+                                EventType.PLACES,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(eventData)
+                        .build();
 
-		// verify log message
-		verify(mockAssuranceExtension, times(0)).logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
-	}
+        // test
+        listener.hear(event);
 
-	@Test
-	public void testHear_whenInvalidEventData() {
-		HashMap<String, Object> eventData = new HashMap<String, Object>();
-		eventData.put(COUNT_KEY, "Invalid Value");
-		eventData.put(LATITUDE_KEY, 22.22);
-		eventData.put(LONGITUDE_KEY, 33.33);
-		Event event = new Event.Builder(GET_NEARBY_PLACES_EVENT_NAME, EventType.PLACES,
-										EventSource.REQUEST_CONTENT).setEventData(eventData).build();
-
-		// test
-		listener.hear(event);
-
-		// verify log message
-		verify(mockAssuranceExtension, times(0)).logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
-	}
+        // verify log message
+        verify(mockAssuranceExtension, times(0))
+                .logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
+    }
 }

@@ -11,6 +11,13 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+
+import com.adobe.marketing.mobile.Event;
+import com.adobe.marketing.mobile.ExtensionErrorCallback;
+import com.adobe.marketing.mobile.MobileCore;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,170 +26,171 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-
-import com.adobe.marketing.mobile.Event;
-import com.adobe.marketing.mobile.ExtensionErrorCallback;
-import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.assurance.AssuranceConstants;
-import com.adobe.marketing.mobile.assurance.AssuranceEvent;
-import com.adobe.marketing.mobile.assurance.AssurancePluginFakeEventGenerator;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(MobileCore.class)
 public class AssurancePluginFakeEventGeneratorTest {
 
-	private static final String EVENT_TYPE_FAKE_EVENT_GENERATOR  = "fakeEvent";
+    private static final String EVENT_TYPE_FAKE_EVENT_GENERATOR = "fakeEvent";
 
-	AssurancePluginFakeEventGenerator griffonPluginFakeEventGenerator;
+    AssurancePluginFakeEventGenerator griffonPluginFakeEventGenerator;
 
-	@Before
-	public void testSetup() {
-		griffonPluginFakeEventGenerator = new AssurancePluginFakeEventGenerator();
-		PowerMockito.mockStatic(MobileCore.class);
-	}
+    @Before
+    public void testSetup() {
+        griffonPluginFakeEventGenerator = new AssurancePluginFakeEventGenerator();
+        PowerMockito.mockStatic(MobileCore.class);
+    }
 
-	@Test
-	public void test_getVendorName() {
-		String vendor = griffonPluginFakeEventGenerator.getVendor();
-		assertEquals(vendor, AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
-	}
+    @Test
+    public void test_getVendorName() {
+        String vendor = griffonPluginFakeEventGenerator.getVendor();
+        assertEquals(vendor, AssuranceConstants.VENDOR_ASSURANCE_MOBILE);
+    }
 
-	@Test
-	public void test_onEventReceived_Happy() {
-		// setup
-		HashMap<String, Object> fakeEventDetails = new HashMap<>();
-		fakeEventDetails.put("eventName", "fakeEventName");
-		fakeEventDetails.put("eventType", "fakeEventType");
-		fakeEventDetails.put("eventSource", "fakeEventSource");
-		fakeEventDetails.put("eventData", new HashMap<String, Object>() {
-			{
-				put("payloadKey", "payloadValue");
-			}
-		});
+    @Test
+    public void test_onEventReceived_Happy() {
+        // setup
+        HashMap<String, Object> fakeEventDetails = new HashMap<>();
+        fakeEventDetails.put("eventName", "fakeEventName");
+        fakeEventDetails.put("eventType", "fakeEventType");
+        fakeEventDetails.put("eventSource", "fakeEventSource");
+        fakeEventDetails.put(
+                "eventData",
+                new HashMap<String, Object>() {
+                    {
+                        put("payloadKey", "payloadValue");
+                    }
+                });
 
-		HashMap<String, Object> payload = new HashMap<>();
-		payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
-		payload.put("detail", fakeEventDetails);
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
+        payload.put("detail", fakeEventDetails);
 
-		AssuranceEvent event = new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
-		final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-		final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackArgumentCaptor = ArgumentCaptor.forClass(
-					ExtensionErrorCallback.class);
+        AssuranceEvent event =
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackArgumentCaptor =
+                ArgumentCaptor.forClass(ExtensionErrorCallback.class);
 
-		// test
-		griffonPluginFakeEventGenerator.onEventReceived(event);
+        // test
+        griffonPluginFakeEventGenerator.onEventReceived(event);
 
-		// verify
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-		MobileCore.dispatchEvent(eventCaptor.capture());
+        // verify
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
+        MobileCore.dispatchEvent(eventCaptor.capture());
 
-		assertEquals("fakeEventName", eventCaptor.getValue().getName());
-		assertEquals("fakeEventType", eventCaptor.getValue().getType());
-		assertEquals("fakeEventSource", eventCaptor.getValue().getSource());
-		assertEquals(1, eventCaptor.getValue().getEventData().size());
-		assertEquals("payloadValue", eventCaptor.getValue().getEventData().get("payloadKey"));
-	}
+        assertEquals("fakeEventName", eventCaptor.getValue().getName());
+        assertEquals("fakeEventType", eventCaptor.getValue().getType());
+        assertEquals("fakeEventSource", eventCaptor.getValue().getSource());
+        assertEquals(1, eventCaptor.getValue().getEventData().size());
+        assertEquals("payloadValue", eventCaptor.getValue().getEventData().get("payloadKey"));
+    }
 
+    @Test
+    public void test_onEventReceived_NoEventName() {
+        // setup
+        HashMap fakeEventDetails = new HashMap<String, Object>();
+        fakeEventDetails.put("eventType", "fakeEventType");
+        fakeEventDetails.put("eventSource", "fakeEventSource");
+        fakeEventDetails.put(
+                "eventData",
+                new HashMap<String, Object>() {
+                    {
+                        put("payloadKey", "payloadValue");
+                    }
+                });
 
-	@Test
-	public void test_onEventReceived_NoEventName() {
-		// setup
-		HashMap fakeEventDetails = new HashMap<String, Object>();
-		fakeEventDetails.put("eventType", "fakeEventType");
-		fakeEventDetails.put("eventSource", "fakeEventSource");
-		fakeEventDetails.put("eventData", new HashMap<String, Object>() {
-			{
-				put("payloadKey", "payloadValue");
-			}
-		});
+        HashMap payload = new HashMap<String, Object>();
+        payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
+        payload.put("detail", fakeEventDetails);
+        AssuranceEvent event =
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
 
-		HashMap payload = new HashMap<String, Object>();
-		payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
-		payload.put("detail", fakeEventDetails);
-		AssuranceEvent event = new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+        // test
+        griffonPluginFakeEventGenerator.onEventReceived(event);
 
-		// test
-		griffonPluginFakeEventGenerator.onEventReceived(event);
+        // verify no event dispatched
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
+        MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+    }
 
-		// verify no event dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
-	}
+    @Test
+    public void test_onEventReceived_NoEventType() {
+        // setup
+        HashMap fakeEventDetails = new HashMap<String, Object>();
+        fakeEventDetails.put("eventName", "fakeEventName");
+        fakeEventDetails.put("eventSource", "fakeEventSource");
+        fakeEventDetails.put(
+                "eventData",
+                new HashMap<String, Object>() {
+                    {
+                        put("payloadKey", "payloadValue");
+                    }
+                });
 
-	@Test
-	public void test_onEventReceived_NoEventType() {
-		// setup
-		HashMap fakeEventDetails = new HashMap<String, Object>();
-		fakeEventDetails.put("eventName", "fakeEventName");
-		fakeEventDetails.put("eventSource", "fakeEventSource");
-		fakeEventDetails.put("eventData", new HashMap<String, Object>() {
-			{
-				put("payloadKey", "payloadValue");
-			}
-		});
+        HashMap payload = new HashMap<String, Object>();
+        payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
+        payload.put("detail", fakeEventDetails);
+        AssuranceEvent event =
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
 
-		HashMap payload = new HashMap<String, Object>();
-		payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
-		payload.put("detail", fakeEventDetails);
-		AssuranceEvent event = new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+        // test
+        griffonPluginFakeEventGenerator.onEventReceived(event);
 
-		// test
-		griffonPluginFakeEventGenerator.onEventReceived(event);
+        // verify no event dispatched
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
+        MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+    }
 
-		// verify no event dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
-	}
+    @Test
+    public void test_onEventReceived_NoEventSource() {
+        // setup
+        HashMap fakeEventDetails = new HashMap<String, Object>();
+        fakeEventDetails.put("eventName", "fakeEventName");
+        fakeEventDetails.put("eventType", "fakeEventType");
+        fakeEventDetails.put(
+                "eventData",
+                new HashMap<String, Object>() {
+                    {
+                        put("payloadKey", "payloadValue");
+                    }
+                });
 
-	@Test
-	public void test_onEventReceived_NoEventSource() {
-		// setup
-		HashMap fakeEventDetails = new HashMap<String, Object>();
-		fakeEventDetails.put("eventName", "fakeEventName");
-		fakeEventDetails.put("eventType", "fakeEventType");
-		fakeEventDetails.put("eventData", new HashMap<String, Object>() {
-			{
-				put("payloadKey", "payloadValue");
-			}
-		});
+        HashMap payload = new HashMap<String, Object>();
+        payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
+        payload.put("detail", fakeEventDetails);
+        AssuranceEvent event =
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
 
-		HashMap payload = new HashMap<String, Object>();
-		payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
-		payload.put("detail", fakeEventDetails);
-		AssuranceEvent event = new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+        // test
+        griffonPluginFakeEventGenerator.onEventReceived(event);
 
-		// test
-		griffonPluginFakeEventGenerator.onEventReceived(event);
+        // verify no event dispatched
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
+        MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+    }
 
-		// verify no event dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
-	}
+    @Test
+    public void test_onEventReceived_GriffonEventWithNoControlDetails() {
+        // setup
+        HashMap payload = new HashMap<String, Object>();
+        payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
+        AssuranceEvent event =
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
 
-	@Test
-	public void test_onEventReceived_GriffonEventWithNoControlDetails() {
-		// setup
-		HashMap payload = new HashMap<String, Object>();
-		payload.put("type", AssuranceConstants.ControlType.FAKE_EVENT);
-		AssuranceEvent event = new AssuranceEvent(AssuranceConstants.AssuranceEventType.CONTROL, payload);
+        // test
+        griffonPluginFakeEventGenerator.onEventReceived(event);
 
-		// test
-		griffonPluginFakeEventGenerator.onEventReceived(event);
+        // verify no event dispatched
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
+        MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
+    }
 
-		// verify no event dispatched
-		PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-		MobileCore.dispatchEvent(any(Event.class), any(ExtensionErrorCallback.class));
-	}
-
-	@Test
-	public void test_NoOpMethods_DoesNotCrash() {
-		griffonPluginFakeEventGenerator.onRegistered(null);
-		griffonPluginFakeEventGenerator.onSessionConnected();
-		griffonPluginFakeEventGenerator.onSessionDisconnected(0);
-		griffonPluginFakeEventGenerator.onSessionTerminated();
-	}
+    @Test
+    public void test_NoOpMethods_DoesNotCrash() {
+        griffonPluginFakeEventGenerator.onRegistered(null);
+        griffonPluginFakeEventGenerator.onSessionConnected();
+        griffonPluginFakeEventGenerator.onSessionDisconnected(0);
+        griffonPluginFakeEventGenerator.onSessionTerminated();
+    }
 }

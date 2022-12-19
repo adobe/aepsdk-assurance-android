@@ -11,9 +11,11 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+
 import android.app.Activity;
 
 interface AssuranceSessionLifecycleListener {
-	void onActivityResumed(final Activity activity);
-	void onActivityDestroyed(final Activity activity);
+    void onActivityResumed(final Activity activity);
+
+    void onActivityDestroyed(final Activity activity);
 }
