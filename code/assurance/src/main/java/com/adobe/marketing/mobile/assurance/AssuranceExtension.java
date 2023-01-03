@@ -173,6 +173,11 @@ public final class AssuranceExtension extends Extension {
     }
 
     @Override
+    protected String getFriendlyName() {
+        return Assurance.EXTENSION_FRIENDLY_NAME;
+    }
+
+    @Override
     protected String getVersion() {
         return Assurance.EXTENSION_VERSION;
     }
