@@ -23,6 +23,7 @@ public class Assurance {
     public static final String LOG_TAG = "Assurance";
     public static final String EXTENSION_VERSION = "2.0.0";
     public static final String EXTENSION_NAME = "com.adobe.assurance";
+    public static final String EXTENSION_FRIENDLY_NAME = "Assurance";
 
     private static final String DEEPLINK_SESSION_ID_KEY = "adb_validation_sessionid";
     private static final String START_SESSION_URL = "startSessionURL";
