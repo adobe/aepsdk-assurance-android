@@ -30,7 +30,7 @@ val extensionVersion: String = Assurance.extensionVersion()
 
 ## startSession
 
-The `startSession` API can be called to begin a AEP Assurance session. When called, the Mobile SDK displays a PIN authentication overlay to begin a session.
+The `startSession` API can be called to begin an Assurance session. When called, the Mobile SDK displays a PIN authentication overlay to begin a session.
 
 **Signature**
 
@@ -71,14 +71,14 @@ public static final Class<? extends Extension> EXTENSION = AssuranceExtension.cl
 #### Java
 
 ```java
-MobileCore.registerExtensions(Arrays.asList(Assurance.EXTENSION), new AdobeCallback<Object>() {
+MobileCore.registerExtensions(Arrays.asList(Assurance.EXTENSION, ...), new AdobeCallback<Object>() {
     // implement completion callback
 });
 ```
 
 #### Kotlin
 ```kotlin
-MobileCore.registerExtensions(listOf(Assurance.EXTENSION)){
+MobileCore.registerExtensions(listOf(Assurance.EXTENSION, ...)){
     // implement completion callback
 }
 ```

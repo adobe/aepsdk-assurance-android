@@ -18,6 +18,13 @@ Installation via [Maven](https://maven.apache.org/) & [Gradle](https://gradle.or
 implementation 'com.adobe.marketing.mobile:assurance:2.x.x'
 ```
 
+**Note**: Assurance SDK displays some UI components using the source app context. If you see an error similar to
+
+```
+AAPT: error: attribute layout_constraintStart_toStartOf (aka <your_app_name>:layout_constraintStart_toStartOf) not found
+```
+while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.x.x'` in your app.
+
 ## Development
 
 ### Setup
@@ -31,18 +38,18 @@ You should now be able to see `assurance` and `assurance-testapp` modules under 
 ### Build
 
 Navigate to the project root directory via command line and run the command:
--  `make ci-build` to build the `assurance` library 
--  `make ci-build-app` to build `assurance-testapp`
+-  `make build` to build the `assurance` library
+-  `make build-app` to build `assurance-testapp`
 
 ### Run unit tests
 
-Navigate to the project root directory via command line and run the command `make ci-unit-test` to run unit tests.
+Navigate to the project root directory via command line and run the command `make unit-test` to run unit tests.
 
 ### Run code format
 
 Navigate to the project root directory via command line and
--  run the command `make ci-checkformat` to verify formatting.
-- run the command `make ci-format` to fix issues in code format.
+- run the command `make checkformat` to verify formatting.
+- run the command `make format` to fix issues in code format.
 
 ## Contributing
 
