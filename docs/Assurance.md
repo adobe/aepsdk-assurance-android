@@ -2,25 +2,25 @@
 
 ---
 
-## extensionVersion
+### extensionVersion
 
 Returns the current version of the AEP Assurance extension.
 
-**Signature**
+#### Signature
 
 ```java
 public static String extensionVersion()
 ```
 
-**Usage**
+#### Usage
 
-#### Java
+##### Java
 
 ```java
 final String extensionVersion = Assurance.extensionVersion();
 ```
 
-#### Kotlin
+##### Kotlin
 
 ```kotlin
 val extensionVersion: String = Assurance.extensionVersion()
@@ -28,26 +28,26 @@ val extensionVersion: String = Assurance.extensionVersion()
 
 ---
 
-## startSession
+### startSession
 
 The `startSession` API can be called to begin an Assurance session. When called, the Mobile SDK displays a PIN authentication overlay to begin a session.
 
-**Signature**
+#### Signature
 
 ```java
 public static void startSession(final String url)
 ```
 
-**Usage**
+#### Usage
 
-#### Java
+##### Java
 
 ```java
 final String url = "<assurance_session_url>"
 Assurance.startSession(url);
 ```
 
-#### Kotlin
+##### Kotlin
 
 ```kotlin
 val url: String = "<assurance_session_url>"
@@ -56,28 +56,33 @@ Assurance.startSession(url)
 
 ---
 
-## EXTENSION
+### EXTENSION
 
 Represents a reference to `AssuranceExtension.class` that can be used to register with `MobileCore` via its `registerExtensions` api.
 
-**Signature**
+#### Signature
 
 ```java
 public static final Class<? extends Extension> EXTENSION = AssuranceExtension.class;
 ```
 
-**Usage**
+#### Usage
 
-#### Java
+##### Java
 
 ```java
+import com.adobe.marketing.mobile.Assurance;
+
 MobileCore.registerExtensions(Arrays.asList(Assurance.EXTENSION, ...), new AdobeCallback<Object>() {
     // implement completion callback
 });
 ```
 
-#### Kotlin
+##### Kotlin
+
 ```kotlin
+import com.adobe.marketing.mobile.Assurance
+
 MobileCore.registerExtensions(listOf(Assurance.EXTENSION, ...)){
     // implement completion callback
 }

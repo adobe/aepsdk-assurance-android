@@ -1,14 +1,19 @@
 
 # Adobe Experience Platform Assurance SDK
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.adobe.marketing.mobile/assurance.svg?logo=android&logoColor=green&label=assurance)](https://mvnrepository.com/artifact/com.adobe.marketing.mobile/assurance)
+
+
 ## About this project
 
 AEP Assurance Android SDK is a mobile extension for Adobe Experience Platform that allows integrating with [Adobe Experience Platform Assurance](https://developer.adobe.com/client-sdks/documentation/platform-assurance/) to help 
 inspect, proof, simulate, and validate how you collect data or serve experiences in your mobile app. This extension requires [`MobileCore`](https://github.com/adobe/aepsdk-core-android). 
 
+
 ## Requirements
 
 - Android API 19 or newer
+
 
 ## Installation
 
@@ -24,6 +29,7 @@ implementation 'com.adobe.marketing.mobile:assurance:2.x.x'
 AAPT: error: attribute layout_constraintStart_toStartOf (aka <your_app_name>:layout_constraintStart_toStartOf) not found
 ```
 while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.x.x'` in your app.
+
 
 ## Development
 
@@ -51,9 +57,11 @@ Navigate to the project root directory via command line and
 - run the command `make checkformat` to verify formatting.
 - run the command `make format` to fix issues in code format.
 
+
 ## Contributing
 
 Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
+
 
 ## Licensing
 
