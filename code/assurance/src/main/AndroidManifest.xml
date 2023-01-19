@@ -12,7 +12,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adobe.marketing.mobile.assurance">
     <application>
-        <activity android:name=".AssuranceFullScreenTakeoverActivity" android:exported="true"/>
-        <activity android:name=".AssuranceErrorDisplayActivity" android:exported="true"/>
+        <activity android:name=".AssuranceFullScreenTakeoverActivity" android:exported="false"/>
+        <activity android:name=".AssuranceErrorDisplayActivity" android:exported="false"/>
     </application>
 </manifest>
