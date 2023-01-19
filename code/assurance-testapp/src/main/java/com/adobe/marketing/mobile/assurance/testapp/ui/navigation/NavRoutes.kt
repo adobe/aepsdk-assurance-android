@@ -9,15 +9,9 @@
  * governing permissions and limitations under the License.
  */
 
-package com.adobe.marketing.mobile.assurance.testapp
+package com.adobe.marketing.mobile.assurance.testapp.ui.navigation
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-
-class ThirdActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_third)
-    }
+sealed class NavRoutes(val route: String, val title: String) {
+    object AssuranceRoute : NavRoutes("Assurance","Assurance")
+    object CoreRoute : NavRoutes("Core","Core")
 }

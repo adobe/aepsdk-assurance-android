@@ -12,11 +12,21 @@
 package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
+import android.os.FileUtils
 import android.util.Log
-import com.adobe.marketing.mobile.*
 import com.adobe.marketing.mobile.Assurance
+import com.adobe.marketing.mobile.Lifecycle
+import com.adobe.marketing.mobile.LoggingMode
+import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.Places
+import com.adobe.marketing.mobile.Signal
 
-class App : Application() {
+class AssuranceTestApp : Application() {
+
+    companion object {
+        private const val TAG = "App"
+        private const val APP_ID = "YOUR_APP_ID"
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -25,16 +35,19 @@ class App : Application() {
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
 
         try {
-            MobileCore.registerExtensions(listOf(Assurance.EXTENSION)){}
-
-           // Uncomment the below line to simulate, No Org ID found griffon error
-           // MobileCore.updateConfiguration(mutableMapOf<String, Any>("experienceCloud.org" to ""))
-        } catch (e: InvalidInitException) {
+            MobileCore.registerExtensions(
+                listOf(
+                    Assurance.EXTENSION,
+                    Places.EXTENSION,
+                    Lifecycle.EXTENSION,
+                )
+            ) {
+                //MobileCore.configureWithAppID(APP_ID)
+                MobileCore.configureWithAppID("94f571f308d5/d9220cd8c3aa/launch-2e799e530b10-development")
+            }
+        } catch (e: Exception) {
             Log.e(TAG, e.message ?: "")
         }
     }
 
-    companion object {
-        private const val TAG = "App"
-    }
 }

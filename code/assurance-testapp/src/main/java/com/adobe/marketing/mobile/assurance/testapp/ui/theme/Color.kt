@@ -9,15 +9,14 @@
  * governing permissions and limitations under the License.
  */
 
-package com.adobe.marketing.mobile.assurance.testapp
+package com.adobe.marketing.mobile.assurance.testapp.ui.theme
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import androidx.compose.ui.graphics.Color
 
-class SecondActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_second)
-    }
-}
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFF6200EE)
+val Purple700 = Color(0xFF3700B3)
+val Teal200 = Color(0xFF03DAC5)
+val Night200 = Color(0xFF434949)
+val Night500 = Color(0xFF242727)
+val Night700 = Color(0xFF000000)

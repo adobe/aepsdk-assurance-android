@@ -11,26 +11,12 @@
 
 package com.adobe.marketing.mobile.assurance.testapp
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-
-import com.adobe.marketing.mobile.Assurance
-import kotlinx.android.synthetic.main.activity_main.*
-
-class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        /********* Assurance **********/
-
-        version.text = Assurance.extensionVersion();
-
-        start.setOnClickListener {
-            Assurance.startSession(et_url.text.toString())
-        }
-
-        // TODO: Add other buttons when they migrate to Android Core 2.0
-    }
+object AssuranceTestAppConstants {
+    const val SMALL_EVENT_PAYLOAD_FILE = "assets/assurance_event_payload_key_value_5KB.txt"
+    const val LARGE_EVENT_PAYLOAD_FILE = "assets/assurance_large_event_payload_key_value_40KB.txt"
+    const val LARGE_HTML_PAYLOAD_FILE = "assets/assurance_large_event_payload_key_value_html.txt"
+    const val CHUNKED_EVENT_NAME = "AssuranceChunkingEvent"
+    const val CHUNKED_EVENT_SOURCE = "AssuranceChunking"
+    const val CHUNKED_EVENT_TYPE = "AssuranceChunking"
+    const val CHUNKED_EVENT_PAYLOAD_KEY = "largePayloadKey"
 }
