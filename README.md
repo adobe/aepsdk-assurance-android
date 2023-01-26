@@ -9,27 +9,9 @@
 AEP Assurance Android SDK is a mobile extension for Adobe Experience Platform that allows integrating with [Adobe Experience Platform Assurance](https://developer.adobe.com/client-sdks/documentation/platform-assurance/) to help 
 inspect, proof, simulate, and validate how you collect data or serve experiences in your mobile app. This extension requires [`MobileCore`](https://github.com/adobe/aepsdk-core-android). 
 
+## Getting Started
 
-## Requirements
-
-- Android API 19 or newer
-
-
-## Installation
-
-Installation via [Maven](https://maven.apache.org/) & [Gradle](https://gradle.org/) is the easiest and recommended way to get the AEP SDK into your Android app. In your `build.gradle` file, include the latest version of following dependency:
-
-```
-implementation 'com.adobe.marketing.mobile:assurance:2.x.x'
-```
-
-**Note**: Assurance SDK displays some UI components using the source app context. If you see an error similar to
-
-```
-AAPT: error: attribute layout_constraintStart_toStartOf (aka <your_app_name>:layout_constraintStart_toStartOf) not found
-```
-while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.x.x'` in your app.
-
+Refer to the [getting started guide](./Documentation/GettingStarted.md) for setting up and using the Assurance SDK with your application.
 
 ## Development
 
