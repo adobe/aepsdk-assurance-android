@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -34,6 +34,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.rememberNavController
 import com.adobe.marketing.mobile.assurance.testapp.ui.views.DrawerLayout
@@ -105,7 +106,12 @@ private fun MenuScaffold(
 @Composable
 private fun AssuranceTestAppTopBar(onNavIconClick: () -> Unit) {
     TopAppBar(
-        title = { Text(text = "Assurance Test App", textAlign = TextAlign.Center) },
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_top_bar_title),
+                textAlign = TextAlign.Center
+            )
+        },
         navigationIcon = {
             IconButton(
                 onClick = {
@@ -114,7 +120,7 @@ private fun AssuranceTestAppTopBar(onNavIconClick: () -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = "Open Navigation Drawer"
+                    contentDescription = stringResource(id = R.string.app_top_bar_description)
                 )
             }
         },

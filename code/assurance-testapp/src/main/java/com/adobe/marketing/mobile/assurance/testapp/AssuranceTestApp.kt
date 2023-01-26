@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
 import android.os.FileUtils
+import android.provider.ContactsContract.CommonDataKinds.Identity
 import android.util.Log
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Lifecycle
@@ -20,11 +21,12 @@ import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.Places
 import com.adobe.marketing.mobile.Signal
+import com.adobe.marketing.mobile.UserProfile
+import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TAG
 
 class AssuranceTestApp : Application() {
 
     companion object {
-        private const val TAG = "App"
         private const val APP_ID = "YOUR_APP_ID"
     }
 
@@ -33,20 +35,17 @@ class AssuranceTestApp : Application() {
 
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
+        MobileCore.configureWithAppID(APP_ID)
 
-        try {
-            MobileCore.registerExtensions(
-                listOf(
-                    Assurance.EXTENSION,
-                    Places.EXTENSION,
-                    Lifecycle.EXTENSION,
-                )
-            ) {
-                //MobileCore.configureWithAppID(APP_ID)
-                MobileCore.configureWithAppID("94f571f308d5/d9220cd8c3aa/launch-2e799e530b10-development")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, e.message ?: "")
+        MobileCore.registerExtensions(
+            listOf(
+                Assurance.EXTENSION,
+                Places.EXTENSION,
+                Lifecycle.EXTENSION,
+                Signal.EXTENSION
+            )
+        ) {
+            Log.d(TAG, "AEP Mobile SDK initialization complete.");
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -43,34 +43,46 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun AssuranceScreen(scope: CoroutineScope,
-                             assuranceTestAppViewModel: AssuranceTestAppViewModel) {
+internal fun AssuranceScreen(
+    scope: CoroutineScope,
+    assuranceTestAppViewModel: AssuranceTestAppViewModel
+) {
     Box() {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
 
-            Row(modifier = Modifier
-                .padding(vertical = 16.dp, horizontal = 8.dp)
-                .align(Alignment.CenterHorizontally)) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 AssuranceVersionLabel(version = Assurance.extensionVersion())
             }
-            Row(modifier = Modifier
-                .padding(vertical = 16.dp, horizontal = 8.dp)
-                .align(Alignment.CenterHorizontally)) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 AssuranceConnectionInput()
             }
 
-            Row(modifier = Modifier
-                .padding(vertical = 16.dp)
-                .align(Alignment.CenterHorizontally)) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 AssuranceEventChunking(scope, assuranceTestAppViewModel)
             }
 
-            Row(modifier = Modifier
-                .padding(vertical = 16.dp)
-                .align(Alignment.CenterHorizontally)) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
             }
         }
     }
@@ -103,15 +115,18 @@ private fun AssuranceConnectionInput() {
 
         Button(
             onClick = { Assurance.startSession(assuranceSessionUrl) },
-            modifier = Modifier.fillMaxWidth()) {
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(text = stringResource(id = R.string.assurance_connection_button_name))
         }
     }
 }
 
 @Composable
-private fun AssuranceEventChunking(scope: CoroutineScope,
-                                   assuranceTestAppViewModel: AssuranceTestAppViewModel) {
+private fun AssuranceEventChunking(
+    scope: CoroutineScope,
+    assuranceTestAppViewModel: AssuranceTestAppViewModel
+) {
     Column() {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(
@@ -123,14 +138,26 @@ private fun AssuranceEventChunking(scope: CoroutineScope,
 
         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(
-                onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.SMALL_EVENT_PAYLOAD_FILE) } },
+                onClick = {
+                    scope.launch {
+                        assuranceTestAppViewModel.sendEvent(
+                            AssuranceTestAppConstants.SMALL_EVENT_PAYLOAD_FILE
+                        )
+                    }
+                },
                 modifier = Modifier.padding(4.dp)
             ) {
                 Text(text = stringResource(id = R.string.send_small_payload_button_name))
             }
 
             Button(
-                onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.LARGE_EVENT_PAYLOAD_FILE) } },
+                onClick = {
+                    scope.launch {
+                        assuranceTestAppViewModel.sendEvent(
+                            AssuranceTestAppConstants.LARGE_EVENT_PAYLOAD_FILE
+                        )
+                    }
+                },
                 modifier = Modifier.padding(4.dp)
             ) {
                 Text(text = stringResource(id = R.string.send_large_payload_button_name))
@@ -139,7 +166,13 @@ private fun AssuranceEventChunking(scope: CoroutineScope,
 
         Row(horizontalArrangement = Arrangement.SpaceAround) {
             Button(
-                onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.LARGE_HTML_PAYLOAD_FILE) } },
+                onClick = {
+                    scope.launch {
+                        assuranceTestAppViewModel.sendEvent(
+                            AssuranceTestAppConstants.LARGE_HTML_PAYLOAD_FILE
+                        )
+                    }
+                },
                 modifier = Modifier.padding(4.dp)
             ) {
                 Text(text = stringResource(id = R.string.send_html_payload_button_name))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.assurance.testapp
 
 object AssuranceTestAppConstants {
+    const val TAG = "AssuranceTestApp"
     const val SMALL_EVENT_PAYLOAD_FILE = "assets/assurance_event_payload_key_value_5KB.txt"
     const val LARGE_EVENT_PAYLOAD_FILE = "assets/assurance_large_event_payload_key_value_40KB.txt"
     const val LARGE_HTML_PAYLOAD_FILE = "assets/assurance_large_event_payload_key_value_html.txt"

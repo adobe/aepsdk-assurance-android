@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -53,7 +53,8 @@ private fun PrivacySection() {
         Row(
             Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(16.dp)) {
+                .padding(16.dp)
+        ) {
             Text(
                 text = stringResource(id = R.string.privacy_status_section_title),
                 fontWeight = FontWeight.Bold,
@@ -99,7 +100,8 @@ private fun EventSection() {
         Row(
             Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(16.dp)) {
+                .padding(16.dp)
+        ) {
             Text(
                 text = stringResource(id = R.string.event_section_title),
                 fontWeight = FontWeight.Bold,
@@ -116,14 +118,24 @@ private fun EventSection() {
         ) {
 
             Button(
-                onClick = { MobileCore.trackAction(AssuranceTestAppConstants.TRACK_ACTION_NAME, mapOf("sampleKey" to "sampleValue")) },
+                onClick = {
+                    MobileCore.trackAction(
+                        AssuranceTestAppConstants.TRACK_ACTION_NAME,
+                        mapOf("sampleKey" to "sampleValue")
+                    )
+                },
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = stringResource(id = R.string.track_action_button))
             }
 
             Button(
-                onClick = { MobileCore.trackState(AssuranceTestAppConstants.TRACK_STATE_NAME, mapOf("sampleKey" to "sampleValue")) },
+                onClick = {
+                    MobileCore.trackState(
+                        AssuranceTestAppConstants.TRACK_STATE_NAME,
+                        mapOf("sampleKey" to "sampleValue")
+                    )
+                },
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = stringResource(id = R.string.track_state_button))
@@ -135,11 +147,12 @@ private fun EventSection() {
                         Event.Builder(
                             AssuranceTestAppConstants.TEST_EVENT_NAME,
                             AssuranceTestAppConstants.TEST_EVENT_TYPE,
-                            AssuranceTestAppConstants.TEST_EVENT_SOURCE)
+                            AssuranceTestAppConstants.TEST_EVENT_SOURCE
+                        )
                             .setEventData(mapOf("sampleKey" to "sampleValue"))
                             .build()
                     )
-                          },
+                },
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = stringResource(id = R.string.dispatch_event_button))
