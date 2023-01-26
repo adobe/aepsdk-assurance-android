@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance.testapp.ui.navigation
 
-sealed class NavRoutes(val route: String, val title: String) {
+internal sealed class NavRoutes(val route: String, val title: String) {
     object AssuranceRoute : NavRoutes("Assurance","Assurance")
     object CoreRoute : NavRoutes("Core","Core")
 }

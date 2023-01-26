@@ -30,13 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants
+import com.adobe.marketing.mobile.assurance.testapp.R
 import com.adobe.marketing.mobile.assurance.testapp.ui.viewmodel.AssuranceTestAppViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -96,14 +97,14 @@ private fun AssuranceConnectionInput() {
             ),
             value = assuranceSessionUrl,
             onValueChange = { assuranceSessionUrl = it },
-            placeholder = { Text(text = "Enter Assurance Connection URL") },
+            placeholder = { Text(text = stringResource(id = R.string.assurance_connection_input_hint)) },
             modifier = Modifier.fillMaxWidth()
         )
 
         Button(
             onClick = { Assurance.startSession(assuranceSessionUrl) },
             modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Start Session")
+            Text(text = stringResource(id = R.string.assurance_connection_button_name))
         }
     }
 }
@@ -114,10 +115,9 @@ private fun AssuranceEventChunking(scope: CoroutineScope,
     Column() {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(
-                text = "Event Chunking",
+                text = stringResource(id = R.string.event_chunking_section_title),
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                textDecoration = TextDecoration.Underline
+                fontSize = 18.sp
             )
         }
 
@@ -126,23 +126,23 @@ private fun AssuranceEventChunking(scope: CoroutineScope,
                 onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.SMALL_EVENT_PAYLOAD_FILE) } },
                 modifier = Modifier.padding(4.dp)
             ) {
-                Text(text = "Send Small Payload")
+                Text(text = stringResource(id = R.string.send_small_payload_button_name))
             }
 
             Button(
                 onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.LARGE_EVENT_PAYLOAD_FILE) } },
                 modifier = Modifier.padding(4.dp)
             ) {
-                Text(text = "Send Large Payload")
+                Text(text = stringResource(id = R.string.send_large_payload_button_name))
             }
         }
 
-        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(horizontalArrangement = Arrangement.SpaceAround) {
             Button(
                 onClick = { scope.launch { assuranceTestAppViewModel.sendEvent(AssuranceTestAppConstants.LARGE_HTML_PAYLOAD_FILE) } },
                 modifier = Modifier.padding(4.dp)
             ) {
-                Text(text = "Send Large HTML Payload")
+                Text(text = stringResource(id = R.string.send_html_payload_button_name))
             }
         }
     }

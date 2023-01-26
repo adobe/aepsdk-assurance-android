@@ -31,7 +31,7 @@ import com.adobe.marketing.mobile.assurance.testapp.ui.theme.Purple500
 import com.adobe.marketing.mobile.assurance.testapp.ui.theme.Purple700
 
 @Composable
-fun DrawerItem(item: NavRoutes, selected: Boolean, onItemClick: (NavRoutes) -> Unit) {
+internal fun DrawerItem(item: NavRoutes, selected: Boolean, onItemClick: (NavRoutes) -> Unit) {
     val background = if (selected) Purple700 else Purple500
     Row(
         verticalAlignment = Alignment.CenterVertically,

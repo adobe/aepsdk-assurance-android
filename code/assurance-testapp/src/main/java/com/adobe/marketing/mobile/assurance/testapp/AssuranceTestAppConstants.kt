@@ -19,4 +19,9 @@ object AssuranceTestAppConstants {
     const val CHUNKED_EVENT_SOURCE = "AssuranceChunking"
     const val CHUNKED_EVENT_TYPE = "AssuranceChunking"
     const val CHUNKED_EVENT_PAYLOAD_KEY = "largePayloadKey"
+    const val TRACK_ACTION_NAME = "TrackActionClicked"
+    const val TRACK_STATE_NAME = "SampleState"
+    const val TEST_EVENT_NAME = "TestEvent"
+    const val TEST_EVENT_SOURCE = "TestSource"
+    const val TEST_EVENT_TYPE = "TestType"
 }

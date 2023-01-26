@@ -30,13 +30,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun DrawerLayout(
+internal fun DrawerLayout(
     scope: CoroutineScope,
     scaffoldState: ScaffoldState,
     drawerItems: List<NavRoutes> = listOf(),
     navController: NavController
 ) {
-    Column(modifier = Modifier.background(Purple500).fillMaxHeight()) {
+    Column(modifier = Modifier
+        .background(Purple500)
+        .fillMaxHeight()) {
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,16 +56,16 @@ fun DrawerLayout(
                     navController.navigate(item.route) {
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
-                            saveState = true
+                                saveState = true
+                            }
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-                scope.launch {
-                    scaffoldState.drawerState.close()
-                }
-            })
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                })
         }
     }
 }
