@@ -41,14 +41,14 @@ public class AssuranceTest {
     }
 
     @Test
-    public void Test_ExtensionVersion() {
+    public void test_ExtensionVersion() {
         // test
         TestCase.assertEquals(
                 AssuranceTestConstants.EXTENSION_VERSION, Assurance.extensionVersion());
     }
 
     @Test
-    public void Test_StartSession() {
+    public void test_StartSession() {
         // prepare
         final String validSessionURL =
                 "assurance://?adb_validation_sessionid=de2ec9c3-9664-4c80-9ec0-bed891dc9471";
@@ -72,7 +72,7 @@ public class AssuranceTest {
     }
 
     @Test
-    public void Test_StartSession_InvalidUrl() {
+    public void test_StartSession_InvalidUrl() {
         // test
         Assurance.startSession("Invalid");
 
@@ -82,7 +82,17 @@ public class AssuranceTest {
     }
 
     @Test
-    public void Test_RegisterExtension() {
+    public void test_StartSession_NullUrl() {
+        // test
+        Assurance.startSession(null);
+
+        // verify
+        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
+        MobileCore.dispatchEvent(any(Event.class));
+    }
+
+    @Test
+    public void test_RegisterExtension() {
         // prepare
         final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor =
                 ArgumentCaptor.forClass(ExtensionErrorCallback.class);
