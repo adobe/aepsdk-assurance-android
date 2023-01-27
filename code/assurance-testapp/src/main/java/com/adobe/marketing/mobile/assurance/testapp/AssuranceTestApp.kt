@@ -12,8 +12,6 @@
 package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
-import android.os.FileUtils
-import android.provider.ContactsContract.CommonDataKinds.Identity
 import android.util.Log
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Lifecycle
@@ -21,7 +19,6 @@ import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.Places
 import com.adobe.marketing.mobile.Signal
-import com.adobe.marketing.mobile.UserProfile
 import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TAG
 
 class AssuranceTestApp : Application() {
