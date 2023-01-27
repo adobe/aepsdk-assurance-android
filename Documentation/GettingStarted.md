@@ -4,6 +4,7 @@
 
 Assurance extension has a dependency on [AEP Core SDK](https://github.com/adobe/aepsdk-core-ios#readme) which must be installed to use the extension.
 
+
 ## Add Assurance extension to your app
 
 1. Installation via [Maven](https://maven.apache.org/) & [Gradle](https://gradle.org/) is the easiest and recommended way to get the AEP SDK into your Android app. Add a dependency on Assurance and Core to your mobile application. To ensure consistent builds, it is best to explicitly  specify the dependency version and update them manually.
@@ -88,12 +89,14 @@ You can connect to an Assurance session via the `startSession()` api or, via a d
 Assurance extension is already setup to handle incoming intents to your app. It is sufficient to [add an intent filter for incoming links](https://developer.android.com/training/app-links/deep-linking) in your app to complete the deep link configuration. The combination of `android:host` and `android:scheme` (in the form of `<host>://<scheme>`) of this intent filter will serve as the `Base URL` while creating a session.
 
 ### Create a session
+
 1. Visit the [Adobe Experience Platform Assurance UI](https://experience.adobe.com/assurance) and log in using your credentials for the Experience Cloud.
 2. Select **Create Session**.
 3. In the **Create New Session** dialog, you will be prompted a `Session Name` and a `Base URL`. 
 4. Enter a name to identify the session. Provide a deeplink that was configured in your app as the `Base URL`. After providing these details, select **Next**.
 
 ### Connect to a session
+
 After you've created a session, you can begin connecting to it by following these steps:
 
 1. Ensure that you see a QR code and a PIN in the **Session Details** dialog.
