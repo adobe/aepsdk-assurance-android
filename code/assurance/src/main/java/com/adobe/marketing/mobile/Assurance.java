@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile;
 
 
+import androidx.annotation.NonNull;
 import com.adobe.marketing.mobile.assurance.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class Assurance {
      *
      * @return A {@link String} representing Assurance extension version
      */
+    @NonNull
     public static String extensionVersion() {
         return EXTENSION_VERSION;
     }
@@ -76,9 +78,9 @@ public class Assurance {
      *
      * @param url a valid Project Assurance deeplink URL to start a session
      */
-    public static void startSession(final String url) {
+    public static void startSession(@NonNull final String url) {
         // validate the obtained URL
-        if (!url.contains(DEEPLINK_SESSION_ID_KEY)) {
+        if (url == null || !url.contains(DEEPLINK_SESSION_ID_KEY)) {
             Log.warning(
                     LOG_TAG,
                     LOG_TAG,
@@ -89,7 +91,7 @@ public class Assurance {
             return;
         }
 
-        final Map<String, Object> startSessionEventData = new HashMap();
+        final Map<String, Object> startSessionEventData = new HashMap<>();
         startSessionEventData.put(START_SESSION_URL, url);
 
         final Event startSessionEvent =
