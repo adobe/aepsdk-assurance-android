@@ -74,13 +74,7 @@ dependencies {
     // implementation 'com.adobe.marketing.mobile:assurance:2.0.0'
     implementation project(':assurance')
     implementation 'com.adobe.marketing.mobile:core:2.0.0-SNAPSHOT'
-    implementation("com.adobe.marketing.mobile:lifecycle:2.0.0-SNAPSHOT") {
-        transitive = false
-    }
     implementation("com.adobe.marketing.mobile:signal:2.0.0-SNAPSHOT") {
-        transitive = false
-    }
-    implementation("com.adobe.marketing.mobile:userprofile:2.0.0-SNAPSHOT") {
         transitive = false
     }
     implementation("com.adobe.marketing.mobile:places:2.0.0-SNAPSHOT") {
