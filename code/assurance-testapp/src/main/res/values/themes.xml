@@ -10,12 +10,9 @@
   ~ governing permissions and limitations under the License.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#009688"
-    tools:context=".SecondActivity">
+<resources>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <style name="AppThemeLight" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+    </style>
+</resources>

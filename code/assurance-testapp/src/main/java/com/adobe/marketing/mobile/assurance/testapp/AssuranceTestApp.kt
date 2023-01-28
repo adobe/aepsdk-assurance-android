@@ -13,28 +13,37 @@ package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
 import android.util.Log
-import com.adobe.marketing.mobile.*
 import com.adobe.marketing.mobile.Assurance
+import com.adobe.marketing.mobile.Lifecycle
+import com.adobe.marketing.mobile.LoggingMode
+import com.adobe.marketing.mobile.MobileCore
+import com.adobe.marketing.mobile.Places
+import com.adobe.marketing.mobile.Signal
+import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TAG
 
-class App : Application() {
+class AssuranceTestApp : Application() {
+
+    companion object {
+        private const val APP_ID = "YOUR_APP_ID"
+    }
 
     override fun onCreate() {
         super.onCreate()
 
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
+        MobileCore.configureWithAppID(APP_ID)
 
-        try {
-            MobileCore.registerExtensions(listOf(Assurance.EXTENSION)){}
-
-           // Uncomment the below line to simulate, No Org ID found griffon error
-           // MobileCore.updateConfiguration(mutableMapOf<String, Any>("experienceCloud.org" to ""))
-        } catch (e: InvalidInitException) {
-            Log.e(TAG, e.message ?: "")
+        MobileCore.registerExtensions(
+            listOf(
+                Assurance.EXTENSION,
+                Places.EXTENSION,
+                Lifecycle.EXTENSION,
+                Signal.EXTENSION
+            )
+        ) {
+            Log.d(TAG, "AEP Mobile SDK initialization complete.");
         }
     }
 
-    companion object {
-        private const val TAG = "App"
-    }
 }
