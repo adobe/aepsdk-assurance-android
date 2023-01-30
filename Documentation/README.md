@@ -2,5 +2,5 @@
 
 ### Contents
 
-* [Getting Started](./GettingStarted.md)
-* [API Usage](./Usage.md)
+* [Getting Started](./getting-started.md)
+* [API Usage](./api-reference.md)

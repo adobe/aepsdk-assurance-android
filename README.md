@@ -11,7 +11,7 @@ inspect, proof, simulate, and validate how you collect data or serve experiences
 
 ## Getting Started
 
-Refer to the [getting started guide](./Documentation/GettingStarted.md) for setting up and using the Assurance SDK with your application.
+Refer to the [getting started guide](./Documentation/getting-started.md) for setting up and using the Assurance SDK with your application.
 
 ## Development
 

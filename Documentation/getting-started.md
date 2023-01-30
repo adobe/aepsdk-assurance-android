@@ -35,7 +35,7 @@ Assurance extension has a dependency on [AEP Core SDK](https://github.com/adobe/
     ```
     AAPT: error: attribute layout_constraintStart_toStartOf (aka <your_app_name>:layout_constraintStart_toStartOf) not found
     ```
-    while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.x.x'` or newer in your app.
+    while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.1.3'` or newer in your app.
 
 3. Import the Assurance library into your project and register it with `MobileCore`
    
