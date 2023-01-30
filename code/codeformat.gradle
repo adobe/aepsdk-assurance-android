@@ -6,7 +6,6 @@ spotless {
         importOrder()
         removeUnusedImports()
         endWithNewline()
-        formatAnnotations()
     }
     kotlin {
         target "src/*/java/**/*.kt"

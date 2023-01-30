@@ -14,7 +14,7 @@ plugins {
     // Android Gradle Plugin version
     id 'com.android.application' version '7.3.0' apply false
     id 'com.android.library' version '7.3.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
+    id 'org.jetbrains.kotlin.android' version '1.7.20' apply false
     id 'com.diffplug.gradle.spotless' version '6.11.0' apply false
 }
 
@@ -30,7 +30,6 @@ ext {
     targetCompatibility = JavaVersion.VERSION_1_8
 
     // kotlin config
-    kotlinVersion = "1.6.21"
     kotlinJvmTarget = "1.8"
 
     // dependencies

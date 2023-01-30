@@ -19,36 +19,28 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:name="com.adobe.marketing.mobile.assurance.testapp.App"
+        android:name=".AssuranceTestApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.adobe.marketing.mobile.assurance.testapp.ThirdActivity"></activity>
-        <activity android:name="com.adobe.marketing.mobile.assurance.testapp.SecondActivity" />
         <activity
-            android:name="com.adobe.marketing.mobile.assurance.testapp.MainActivity"
-            android:exported="true">
+            android:name=".AssuranceTestAppActivity"
+            android:exported="true"
+            android:label="@string/title_activity_assurance_test_app"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="com.adobe.marketing.mobile.assurance.testapp" />
-            </intent-filter>
             <intent-filter android:label="deeplink">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="griffon"/>
+                <data android:scheme="aepsdkassurance"/>
             </intent-filter>
         </activity>
     </application>

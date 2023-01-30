@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,15 +9,14 @@
  * governing permissions and limitations under the License.
  */
 
-package com.adobe.marketing.mobile.assurance.testapp
+package com.adobe.marketing.mobile.assurance.testapp.ui.theme
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import androidx.compose.ui.graphics.Color
 
-class ThirdActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_third)
-    }
-}
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFF6200EE)
+val Purple700 = Color(0xFF3700B3)
+val Teal200 = Color(0xFF03DAC5)
+val Night200 = Color(0xFF434949)
+val Night500 = Color(0xFF242727)
+val Night700 = Color(0xFF000000)

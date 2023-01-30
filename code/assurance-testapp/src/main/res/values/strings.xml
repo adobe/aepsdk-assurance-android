@@ -11,4 +11,26 @@
 
 <resources>
     <string name="app_name">AssuranceTestApp</string>
+    <string name="title_activity_assurance_test_app">AssuranceTestAppActivity</string>
+    <string name="app_top_bar_title">Assurance Test App</string>
+    <string name="app_top_bar_description">Open Navigation Drawer</string>
+
+    <string name="assurance_version">Assurance v%1$s</string>
+    <string name="assurance_connection_input_hint">Enter Assurance Connection URL</string>
+    <string name="assurance_connection_button_name">Start Session</string>
+
+    <string name="event_chunking_section_title">Event Chunking</string>
+    <string name="send_small_payload_button_name">Send Small Payload</string>
+    <string name="send_large_payload_button_name">Send Large Payload</string>
+    <string name="send_html_payload_button_name">Send Large HTML Payload</string>
+
+    <string name="privacy_status_section_title">Privacy Status</string>
+    <string name="privacy_status_button_opt_in">Opt In</string>
+    <string name="privacy_status_button_opt_out">Opt Out</string>
+    <string name="privacy_status_button_unknown">Unknown</string>
+
+    <string name="event_section_title">Dispatch Event</string>
+    <string name="track_action_button">Track Action</string>
+    <string name="track_state_button">Track State</string>
+    <string name="dispatch_event_button">Dispatch Event</string>
 </resources>
