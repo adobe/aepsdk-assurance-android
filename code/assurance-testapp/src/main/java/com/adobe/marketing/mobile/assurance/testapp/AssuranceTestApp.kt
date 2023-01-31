@@ -17,7 +17,6 @@ import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Lifecycle
 import com.adobe.marketing.mobile.LoggingMode
 import com.adobe.marketing.mobile.MobileCore
-import com.adobe.marketing.mobile.Places
 import com.adobe.marketing.mobile.Signal
 import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TAG
 
@@ -37,7 +36,6 @@ class AssuranceTestApp : Application() {
         MobileCore.registerExtensions(
             listOf(
                 Assurance.EXTENSION,
-                Places.EXTENSION,
                 Lifecycle.EXTENSION,
                 Signal.EXTENSION
             )
