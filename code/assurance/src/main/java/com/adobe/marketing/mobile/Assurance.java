@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.adobe.marketing.mobile.assurance.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Assurance {
@@ -44,12 +45,12 @@ public class Assurance {
     }
 
     /**
-     * Register Assurance extension with {@code MobileCore}
+     * Register Assurance extension with the Mobile SDK. This method should be called only once in
+     * you application class.
      *
-     * <p>This will allow the extension to send and receive events to and from the {@code
-     * MobileCore}.
-     *
-     * @return returns an boolean as a result of the Assurance extension registration.
+     * @return true if Assurance extension registration was successfully triggered, false otherwise.
+     * @deprecated as of 2.0.0, use {@link MobileCore#registerExtensions(List, AdobeCallback)} with
+     *     {@link Assurance#EXTENSION} instead.
      */
     @Deprecated
     public static boolean registerExtension() {
@@ -61,9 +62,7 @@ public class Assurance {
                                 LOG_TAG,
                                 LOG_TAG,
                                 String.format(
-                                        "Assurance registration failed with error %s. For more"
-                                            + " details refer to"
-                                            + " https://aep-sdks.gitbook.io/docs/beta/project-griffon/set-up-project-griffon#register-griffon-with-mobile-core",
+                                        "Assurance registration failed with error %s.",
                                         adbExtensionError.getErrorName()));
                     }
                 };
