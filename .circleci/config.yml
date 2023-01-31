@@ -1,0 +1,63 @@
+version: 2.1
+
+orbs:
+  android: circleci/android@2.0
+
+workflows:
+  version: 2
+  aepsdk-core-ci: 
+    jobs:
+      - build-and-unit-test
+      - functional-test
+
+jobs:
+  build-and-unit-test:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2022.01.1
+
+    steps:
+      - checkout
+
+      - run:
+          name: Check format
+          command: make checkformat
+
+      - run:
+          name: Generate release build
+          command: make generate-library-release
+
+      - run:
+          name: Generate JavaDoc
+          command: make javadoc
+
+      - run:
+          name: Run Unit tests
+          command: make unit-test
+
+      - store_artifacts:
+          path: code/assurance/build/reports
+
+      - store_test_results:
+          path: code/assurance/build/test-results/testPhoneDebugUnitTest
+
+  functional-test:
+      executor:
+        name: android/android-machine
+        resource-class: large
+        tag: 2022.01.1
+
+      steps:
+        - checkout
+        
+        - android/start-emulator-and-run-tests:
+            system-image: system-images;android-29;default;x86
+            post-emulator-launch-assemble-command: make build-release
+            test-command: make functional-test
+
+        - store_artifacts:
+            path: code/assurance/build/reports
+
+        - store_test_results:
+            path: code/assurance/build/outputs/androidTest-results
