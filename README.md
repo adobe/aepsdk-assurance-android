@@ -40,6 +40,13 @@ Navigate to the project root directory via command line and
 - run the command `make format` to fix issues in code format.
 
 
+## Related Projects
+
+| Project                                                                              | Description                                                                                          |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| [Core extensions](https://github.com/adobe/aepsdk-core-android)                      | The Mobile Core represents the foundation of the Adobe Experience Platform mobile SDK.               |
+
+
 ## Contributing
 
 Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
