@@ -17,6 +17,7 @@ import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDat
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventName.XDM_SHARED_STATE_CHANGE;
 
 import android.net.Uri;
+import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
@@ -66,27 +67,52 @@ public final class AssuranceExtension extends Extension {
      *     {@code MobileCore}.
      */
     AssuranceExtension(final ExtensionApi extensionApi) {
-        super(extensionApi);
-
-        assuranceStateManager =
-                new AssuranceStateManager(extensionApi, MobileCore.getApplication());
-        assuranceConnectionDataStore =
-                new AssuranceConnectionDataStore(MobileCore.getApplication());
-
-        final List<AssurancePlugin> plugins =
+        this(
+                extensionApi,
+                new AssuranceStateManager(extensionApi, MobileCore.getApplication()),
+                new AssuranceConnectionDataStore(MobileCore.getApplication()),
                 Collections.unmodifiableList(
                         Arrays.asList(
                                 new AssurancePluginLogForwarder(),
                                 new AssurancePluginScreenshot(),
                                 new AssurancePluginConfigSwitcher(),
-                                new AssurancePluginFakeEventGenerator()));
+                                new AssurancePluginFakeEventGenerator())));
+    }
 
-        assuranceSessionOrchestrator =
+    /**
+     * Cascading constructor for facilitating dependency injection of components needed for tests.
+     */
+    @VisibleForTesting
+    AssuranceExtension(
+            final ExtensionApi extensionApi,
+            final AssuranceStateManager assuranceStateManager,
+            final AssuranceConnectionDataStore assuranceConnectionDataStore,
+            final List<AssurancePlugin> plugins) {
+        this(
+                extensionApi,
+                assuranceStateManager,
+                assuranceConnectionDataStore,
                 new AssuranceSessionOrchestrator(
                         MobileCore.getApplication(),
                         assuranceStateManager,
                         plugins,
-                        assuranceConnectionDataStore);
+                        assuranceConnectionDataStore));
+    }
+
+    /**
+     * Cascading constructor for facilitating dependency injection of components needed for tests.
+     */
+    @VisibleForTesting
+    AssuranceExtension(
+            final ExtensionApi extensionApi,
+            final AssuranceStateManager assuranceStateManager,
+            final AssuranceConnectionDataStore assuranceConnectionDataStore,
+            final AssuranceSessionOrchestrator assuranceSessionOrchestrator) {
+        super(extensionApi);
+
+        this.assuranceStateManager = assuranceStateManager;
+        this.assuranceConnectionDataStore = assuranceConnectionDataStore;
+        this.assuranceSessionOrchestrator = assuranceSessionOrchestrator;
     }
 
     // ========================================================================================

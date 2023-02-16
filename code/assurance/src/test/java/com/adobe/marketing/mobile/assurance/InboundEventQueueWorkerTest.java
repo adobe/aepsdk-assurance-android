@@ -23,16 +23,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
 public class InboundEventQueueWorkerTest {
     @Mock private InboundEventQueueWorker.InboundQueueEventListener mockInboundQueueEventListener;
     @Mock private ExecutorService mockExecutorService;
@@ -40,7 +37,7 @@ public class InboundEventQueueWorkerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         Mockito.doAnswer(
                         new Answer() {
                             @Override

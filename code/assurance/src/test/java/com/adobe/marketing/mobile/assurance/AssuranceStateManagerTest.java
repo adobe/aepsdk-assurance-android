@@ -38,15 +38,12 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
 public class AssuranceStateManagerTest extends TestCase {
 
     @Mock private ExtensionApi mockApi;
@@ -59,11 +56,11 @@ public class AssuranceStateManagerTest extends TestCase {
 
     private AssuranceStateManager assuranceStateManager;
 
-    private Map SAMPLE_STATE_DATA;
-    private Map SAMPLE_XDM_STATE_DATA;
+    private Map<String, Object> SAMPLE_STATE_DATA;
+    private Map<String, Object> SAMPLE_XDM_STATE_DATA;
 
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         SAMPLE_STATE_DATA = new HashMap<String, Object>();
         SAMPLE_STATE_DATA.put("stateKey", "stateValue");

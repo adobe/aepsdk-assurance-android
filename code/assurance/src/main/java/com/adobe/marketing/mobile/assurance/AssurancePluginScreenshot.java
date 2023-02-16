@@ -15,6 +15,7 @@ package com.adobe.marketing.mobile.assurance;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.View;
+import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.UILogColorVisibility;
 import com.adobe.marketing.mobile.services.Log;
@@ -167,6 +168,26 @@ class AssurancePluginScreenshot implements AssurancePlugin {
                         }
                     }
                 });
+    }
+
+    /**
+     * Returns the session associated with this plugin.
+     *
+     * @return the {@code AssuranceSession} associated with this plugin.
+     */
+    @VisibleForTesting
+    AssuranceSession getParentSession() {
+        return parentSession;
+    }
+
+    /**
+     * Returns the screenshot listener associated with this plugin.
+     *
+     * @return the {@code CaptureScreenShotListener} for this plugin.
+     */
+    @VisibleForTesting
+    CaptureScreenShotListener getCaptureScreenShotListener() {
+        return listener;
     }
 
     interface CaptureScreenShotListener {

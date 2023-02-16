@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static com.adobe.marketing.mobile.assurance.AssuranceTestUtils.setInternalState;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -24,14 +25,10 @@ import android.content.Intent;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
-@RunWith(PowerMockRunner.class)
 public class AssuranceSessionPresentationManagerTest extends TestCase {
 
     private AssuranceSessionPresentationManager assuranceSessionPresentationManager;
@@ -51,18 +48,17 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         assuranceSessionPresentationManager =
                 new AssuranceSessionPresentationManager(
                         mockAssuranceStateManager,
                         mockSessionUIOperationHandler,
                         mockApplicationHandle);
-        Whitebox.setInternalState(
+        setInternalState(
                 assuranceSessionPresentationManager, "button", mockAssuranceFloatingButton);
-        Whitebox.setInternalState(
-                assuranceSessionPresentationManager, "statusUI", mockConnectionStatusUI);
-        Whitebox.setInternalState(
+        setInternalState(assuranceSessionPresentationManager, "statusUI", mockConnectionStatusUI);
+        setInternalState(
                 assuranceSessionPresentationManager, "urlProvider", mockPinCodeEntryURLProvider);
     }
 
