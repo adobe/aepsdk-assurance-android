@@ -11,7 +11,6 @@
 
 package com.adobe.marketing.mobile.assurance;
 
-import static android.content.Context.BATTERY_SERVICE;
 
 import android.Manifest;
 import android.app.Application;
@@ -36,6 +35,8 @@ import java.util.Map;
 final class AssuranceClientInfo {
 
     private static final String VALUE_UNKNOWN = "Unknown";
+    private static final String MANIFEST_FILE_NAME = "AndroidManifest.xml";
+    private static final String EVENT_TYPE_CONNECT = "connect";
 
     /**
      * Returns the payload for assurance ClientInfo event. ClientInfo event includes
@@ -51,16 +52,14 @@ final class AssuranceClientInfo {
      *
      * @return Returns {@link Map} representing clientInfo event payload
      */
-    final Map<String, Object> getData() {
-        final Map<String, Object> eventPayload = new HashMap<>(1);
+    Map<String, Object> getData() {
+        final Map<String, Object> eventPayload = new HashMap<>();
         eventPayload.put(AssuranceConstants.ClientInfoKeys.VERSION, Assurance.extensionVersion());
         eventPayload.put(AssuranceConstants.ClientInfoKeys.DEVICE_INFO, getDeviceInfo());
-        eventPayload.put(AssuranceConstants.PayloadDataKeys.TYPE, "connect");
-
-        // TODO : https://jira.corp.adobe.com/browse/AMSDK-10653 send Manifest xml using blob
-        // service
-        // eventPayload.put(AssuranceConstants.ClientInfoKeys.APP_SETTINGS,
-        // AssuranceIOUtils.parseXMLResourceFileToJson("AndroidManifest.xml"));
+        eventPayload.put(AssuranceConstants.PayloadDataKeys.TYPE, EVENT_TYPE_CONNECT);
+        eventPayload.put(
+                AssuranceConstants.ClientInfoKeys.APP_SETTINGS,
+                AssuranceIOUtils.parseXMLResourceFileToJson(MANIFEST_FILE_NAME));
         return eventPayload;
     }
 
@@ -87,16 +86,25 @@ final class AssuranceClientInfo {
      */
     private HashMap<String, Object> getDeviceInfo() {
         final HashMap<String, Object> deviceInfo = new HashMap<>();
-        deviceInfo.put("Canonical platform name", "Android");
-        deviceInfo.put("Device name", Build.MODEL);
-        deviceInfo.put("Device manufacturer", Build.MANUFACTURER);
-        deviceInfo.put("Operating system", "Android " + Build.VERSION.RELEASE);
-        deviceInfo.put("Carrier name", getMobileCarrierName());
-        deviceInfo.put("Battery level ", getBatteryPercentage());
-        deviceInfo.put("Screen size ", getScreenSize());
-        deviceInfo.put("Location service enabled", isLocationEnabled());
-        deviceInfo.put("Location authorization status", getCurrentLocationPermission());
-        deviceInfo.put("Low power mode enabled", isPowerSaveModeEnabled());
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.PLATFORM_NAME, "Android");
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.DEVICE_NAME, Build.MODEL);
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.DEVICE_TYPE, Build.DEVICE);
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.DEVICE_MANUFACTURER, Build.MANUFACTURER);
+        deviceInfo.put(
+                AssuranceConstants.DeviceInfoKeys.OPERATING_SYSTEM,
+                "Android " + Build.VERSION.RELEASE);
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.CARRIER_NAME, getMobileCarrierName());
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.BATTERY_LEVEL, getBatteryPercentage());
+        deviceInfo.put(AssuranceConstants.DeviceInfoKeys.SCREEN_SIZE, getScreenSize());
+        deviceInfo.put(
+                AssuranceConstants.DeviceInfoKeys.LOCATION_SERVICE_ENABLED, isLocationEnabled());
+        deviceInfo.put(
+                AssuranceConstants.DeviceInfoKeys.LOCATION_AUTHORIZATION_STATUS,
+                getCurrentLocationPermission());
+        deviceInfo.put(
+                AssuranceConstants.DeviceInfoKeys.LOW_POWER_BATTERY_ENABLED,
+                isPowerSaveModeEnabled());
+
         return deviceInfo;
     }
 
@@ -136,7 +144,8 @@ final class AssuranceClientInfo {
 
         if (Build.VERSION.SDK_INT >= 21) {
 
-            final BatteryManager bm = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+            final BatteryManager bm =
+                    (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
             return bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
 
         } else {
