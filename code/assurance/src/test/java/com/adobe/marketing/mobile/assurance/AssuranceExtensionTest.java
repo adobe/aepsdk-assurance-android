@@ -22,7 +22,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
 import android.app.Application;
 import android.content.Context;
@@ -40,20 +39,15 @@ import com.adobe.marketing.mobile.SharedStateStatus;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Uri.class, MobileCore.class})
 public class AssuranceExtensionTest {
     private static final String START_URL_QUERY_KEY_SESSION_ID = "adb_validation_sessionid";
 
@@ -67,7 +61,7 @@ public class AssuranceExtensionTest {
 
     @Mock private AssuranceSession mockSession;
 
-    @Mock private Uri mockURI;
+    @Mock private Uri mockUri;
 
     @Mock SharedPreferences mockSharedPreference;
 
@@ -79,22 +73,28 @@ public class AssuranceExtensionTest {
 
     @Mock AssuranceSessionOrchestrator mockAssuranceSessionOrchestrator;
 
+    private MockedStatic<Uri> mockedStaticUri;
+    private MockedStatic<MobileCore> mockedStaticMobileCore;
+
     AssuranceExtension assuranceExtension;
 
     @Before
     public void setup() {
+        MockitoAnnotations.openMocks(this);
+
         SAMPLE_STATE_DATA = new HashMap<>();
         SAMPLE_STATE_DATA.put("stateKey", "stateValue");
 
         SAMPLE_XDM_STATE_DATA = new HashMap<>();
         SAMPLE_XDM_STATE_DATA.put("xdmStateKey", "xdmStateValue");
 
-        PowerMockito.mockStatic(Uri.class);
-        Mockito.when(Uri.parse(anyString())).thenReturn(mockURI);
-        MobileCore.setApplication(mockApplication);
-        MobileCore.start(null);
+        mockedStaticUri = Mockito.mockStatic(Uri.class);
+        mockedStaticUri.when(() -> Uri.parse(anyString())).thenReturn(mockUri);
 
-        PowerMockito.mockStatic(MobileCore.class);
+        MobileCore.setApplication(mockApplication);
+
+        mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class);
+        mockedStaticMobileCore.when(MobileCore::getApplication).thenReturn(mockApplication);
         Mockito.when(MobileCore.getApplication()).thenReturn(mockApplication);
         Mockito.when(
                         mockApplication.getSharedPreferences(
@@ -103,21 +103,13 @@ public class AssuranceExtensionTest {
                 .thenReturn(mockSharedPreference);
         Mockito.when(mockSharedPreference.edit()).thenReturn(mockSharedPreferenceEditor);
 
-        assuranceExtension = new AssuranceExtension(mockApi);
+        assuranceExtension =
+                new AssuranceExtension(
+                        mockApi,
+                        mockAssuranceStateManager,
+                        mockAssuranceConnectionDataStore,
+                        mockAssuranceSessionOrchestrator);
         assuranceExtension.onRegistered();
-        Whitebox.setInternalState(
-                assuranceExtension, "assuranceStateManager", mockAssuranceStateManager);
-        Whitebox.setInternalState(
-                assuranceExtension,
-                "assuranceConnectionDataStore",
-                mockAssuranceConnectionDataStore);
-        Whitebox.setInternalState(
-                assuranceExtension,
-                "assuranceSessionOrchestrator",
-                mockAssuranceSessionOrchestrator);
-        // This static variable needs to be reset everytime to ensure that the extension is started
-        // from the same state everytime.
-        Whitebox.setInternalState(AssuranceExtension.class, "shouldUnregisterOnTimeout", true);
     }
 
     @Test
@@ -131,9 +123,6 @@ public class AssuranceExtensionTest {
     @Test
     public void test_AssuranceDoesNotShutDown_When_StartSessionAPICalled() throws Exception {
         when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
         when(mockUri.getQueryParameter(START_URL_QUERY_KEY_SESSION_ID))
                 .thenReturn(("6b55294e-32d4-49e8-9279-e3fe12a9d309"));
 
@@ -154,9 +143,6 @@ public class AssuranceExtensionTest {
     public void test_StartSession_InvalidSessionID() throws Exception {
         // setup
         when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
         when(mockUri.getQueryParameter(START_URL_QUERY_KEY_SESSION_ID)).thenReturn((null));
         final String DEEPLINK1 = "griffon://?adb_validation_sessionid=";
         final String DEEPLINK2 = "";
@@ -433,7 +419,7 @@ public class AssuranceExtensionTest {
                 .logLocalUI(AssuranceConstants.UILogColorVisibility.HIGH, "dummy");
     }
 
-    // @Test
+    @Test
     public void test_OnRegistered_WhenSessionIDAvailable() {
         // setup
         when(mockAssuranceStateManager.getSessionId()).thenReturn("SampleSessionId");
@@ -444,7 +430,7 @@ public class AssuranceExtensionTest {
         verify(mockAssuranceStateManager, times(1)).shareAssuranceSharedState("SampleSessionId");
     }
 
-    // @Test
+    @Test
     public void test_OnRegistered_WhenSessionNotAvailable() {
         // setup
         when(mockAssuranceStateManager.getSessionId()).thenReturn(null);
@@ -452,5 +438,11 @@ public class AssuranceExtensionTest {
         assuranceExtension.onRegistered();
         // verify that the shared state is not shared
         verify(mockAssuranceStateManager, times(0)).shareAssuranceSharedState(anyString());
+    }
+
+    @After
+    public void teardown() {
+        mockedStaticMobileCore.close();
+        mockedStaticUri.close();
     }
 }

@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.assurance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -22,42 +23,34 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28)
-@PowerMockIgnore({"javax.xml.*", "org.robolectric.*", "android.*"})
-@PrepareForTest(AssuranceBlob.class)
 public class AssurancePluginScreenshotTest {
 
     private static final String PAYLOAD_BLOBID = "blobId";
     private static final String PAYLOAD_MIMETYPE = "mimeType";
     private static final String PAYLOAD_ERROR = "error";
 
+    private MockedStatic<AssuranceBlob> mockedStaticAssuranceBlob;
     private AssurancePluginScreenshot assurancePluginScreenshot;
     private AssuranceSession mockSession;
     private AssuranceEvent mockAssuranceEvent;
 
-    @Rule public PowerMockRule rule = new PowerMockRule();
-
     @Before
     public void testSetup() {
-        PowerMockito.mockStatic(AssuranceBlob.class);
-
         mockSession = Mockito.mock(AssuranceSession.class);
         mockAssuranceEvent = Mockito.mock(AssuranceEvent.class);
+        mockedStaticAssuranceBlob = Mockito.mockStatic(AssuranceBlob.class);
 
         // create plugin instance to test
         assurancePluginScreenshot = new AssurancePluginScreenshot();
@@ -84,8 +77,7 @@ public class AssurancePluginScreenshotTest {
         assurancePluginScreenshot.onRegistered(mockSession);
 
         // verify
-        assertEquals(
-                mockSession, Whitebox.getInternalState(assurancePluginScreenshot, "parentSession"));
+        assertEquals(mockSession, assurancePluginScreenshot.getParentSession());
     }
 
     @Test
@@ -94,7 +86,7 @@ public class AssurancePluginScreenshotTest {
         assurancePluginScreenshot.onRegistered(mockSession);
 
         // verify
-        assertEquals(null, Whitebox.getInternalState(assurancePluginScreenshot, "listener"));
+        assertNull(assurancePluginScreenshot.getCaptureScreenShotListener());
     }
 
     @Test
@@ -107,27 +99,29 @@ public class AssurancePluginScreenshotTest {
     @Test
     public void test_onTakeScreenShotEventReceived() {
         // prepare
-        Whitebox.setInternalState(assurancePluginScreenshot, "parentSession", mockSession);
+        assurancePluginScreenshot.onRegistered(mockSession);
 
         // test
         assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
         AssurancePluginScreenshot.CaptureScreenShotListener listener =
-                Whitebox.getInternalState(assurancePluginScreenshot, "listener");
+                assurancePluginScreenshot.getCaptureScreenShotListener();
         listener.onCaptureScreenshot(sampleBitMapImage());
 
-        // verify updateConfiguration method call
-        PowerMockito.verifyStatic(AssuranceBlob.class, Mockito.times(1));
-        AssuranceBlob.upload(
-                any(byte[].class),
-                anyString(),
-                any(AssuranceSession.class),
-                any(AssuranceBlob.BlobUploadCallback.class));
+        // verify upload method call
+        mockedStaticAssuranceBlob.verify(
+                () ->
+                        AssuranceBlob.upload(
+                                any(byte[].class),
+                                anyString(),
+                                any(AssuranceSession.class),
+                                any(AssuranceBlob.BlobUploadCallback.class)),
+                times(1));
     }
 
     @Test
     public void test_onSuccessful_ScreenShotUpload() {
         // prepare
-        Whitebox.setInternalState(assurancePluginScreenshot, "parentSession", mockSession);
+        assurancePluginScreenshot.onRegistered(mockSession);
         final ArgumentCaptor<AssuranceBlob.BlobUploadCallback> assuranceBlobCallbackCaptor =
                 ArgumentCaptor.forClass(AssuranceBlob.BlobUploadCallback.class);
         final ArgumentCaptor<AssuranceEvent> assuranceEventCaptor =
@@ -136,16 +130,18 @@ public class AssurancePluginScreenshotTest {
         // test
         assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
         AssurancePluginScreenshot.CaptureScreenShotListener listener =
-                Whitebox.getInternalState(assurancePluginScreenshot, "listener");
+                assurancePluginScreenshot.getCaptureScreenShotListener();
         listener.onCaptureScreenshot(sampleBitMapImage());
 
         // verify upload method call
-        PowerMockito.verifyStatic(AssuranceBlob.class, Mockito.times(1));
-        AssuranceBlob.upload(
-                any(byte[].class),
-                anyString(),
-                any(AssuranceSession.class),
-                assuranceBlobCallbackCaptor.capture());
+        mockedStaticAssuranceBlob.verify(
+                () ->
+                        AssuranceBlob.upload(
+                                any(byte[].class),
+                                anyString(),
+                                any(AssuranceSession.class),
+                                assuranceBlobCallbackCaptor.capture()),
+                times(1));
 
         // test 2 - Call Success callback
         assuranceBlobCallbackCaptor.getValue().onSuccess("sampleBlobID");
@@ -164,7 +160,7 @@ public class AssurancePluginScreenshotTest {
     @Test
     public void test_onFailure_ToUploadScreenShot() {
         // prepare
-        Whitebox.setInternalState(assurancePluginScreenshot, "parentSession", mockSession);
+        assurancePluginScreenshot.onRegistered(mockSession);
         final ArgumentCaptor<AssuranceBlob.BlobUploadCallback> assuranceBlobCallbackCaptor =
                 ArgumentCaptor.forClass(AssuranceBlob.BlobUploadCallback.class);
         final ArgumentCaptor<AssuranceEvent> assuranceEventCaptor =
@@ -173,16 +169,18 @@ public class AssurancePluginScreenshotTest {
         // test
         assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
         AssurancePluginScreenshot.CaptureScreenShotListener listener =
-                Whitebox.getInternalState(assurancePluginScreenshot, "listener");
+                assurancePluginScreenshot.getCaptureScreenShotListener();
         listener.onCaptureScreenshot(sampleBitMapImage());
 
-        // verify updateConfiguration method call
-        PowerMockito.verifyStatic(AssuranceBlob.class, Mockito.times(1));
-        AssuranceBlob.upload(
-                any(byte[].class),
-                anyString(),
-                any(AssuranceSession.class),
-                assuranceBlobCallbackCaptor.capture());
+        // verify upload method call
+        mockedStaticAssuranceBlob.verify(
+                () ->
+                        AssuranceBlob.upload(
+                                any(byte[].class),
+                                anyString(),
+                                any(AssuranceSession.class),
+                                assuranceBlobCallbackCaptor.capture()),
+                times(1));
 
         // test 2 - Call Failure callback
         assuranceBlobCallbackCaptor.getValue().onFailure("give no reason");
@@ -198,6 +196,11 @@ public class AssurancePluginScreenshotTest {
         assertEquals(AssuranceTestConstants.AssuranceEventType.BLOB, queuedEvent.type);
         assertEquals("", queuedEvent.payload.get(PAYLOAD_BLOBID));
         assertEquals("give no reason", queuedEvent.payload.get(PAYLOAD_ERROR));
+    }
+
+    @After
+    public void teardown() {
+        mockedStaticAssuranceBlob.close();
     }
 
     private Bitmap sampleBitMapImage() {

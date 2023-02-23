@@ -17,7 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -44,9 +43,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
 public class OutboundEventQueueWorkerTest {
     @Mock private AssuranceWebViewSocket mockAssuranceWebViewSocket;
     @Mock private ExecutorService mockExecutorService;
@@ -59,7 +56,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         Mockito.doAnswer(
                         new Answer() {
@@ -155,7 +152,7 @@ public class OutboundEventQueueWorkerTest {
     @Test
     public void test_offer_workerNotYetStarted() {
         // Simulate the socket connection being open.
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
         // Simulate the outbound event worker being unblocked.
         outboundEventQueueWorker.unblock();
@@ -174,7 +171,7 @@ public class OutboundEventQueueWorkerTest {
     @Test
     public void test_runnable_eventsSentWhenWorkIsQueued() {
         // Simulate the socket connection being open.
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         final AssuranceEvent event1 = new AssuranceEvent("type", Collections.EMPTY_MAP);
@@ -212,7 +209,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Test
     public void test_runnable_eventsBlockedWhenCannotStartForwarding() {
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         final AssuranceEvent event1 = new AssuranceEvent("type", Collections.EMPTY_MAP);
@@ -247,7 +244,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Test
     public void test_runnable_eventsBlockedWhenSocketNotConnected() {
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         final AssuranceEvent event1 = new AssuranceEvent("type", Collections.EMPTY_MAP);
@@ -256,7 +253,7 @@ public class OutboundEventQueueWorkerTest {
 
         outboundEventQueueWorker.start();
         // Simulate socket disconnection.
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.CLOSED);
         outboundEventQueueWorker.offer(event1);
         outboundEventQueueWorker.offer(event2);
@@ -301,7 +298,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Test
     public void test_sendEvent_payloadOverMaxPayloadSize_20KB() {
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         try {
@@ -341,7 +338,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Test
     public void test_sendEvent_payloadOverMaxPayloadSize_40KB() {
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         try {
@@ -416,7 +413,7 @@ public class OutboundEventQueueWorkerTest {
 
     @Test
     public void test_sendEvent_payloadOverMaxPayloadSize_HTML() {
-        Mockito.when(mockAssuranceWebViewSocket.getState())
+        when(mockAssuranceWebViewSocket.getState())
                 .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
 
         try {
