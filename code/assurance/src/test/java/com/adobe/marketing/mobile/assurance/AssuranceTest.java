@@ -43,8 +43,7 @@ public class AssuranceTest {
     @Test
     public void test_ExtensionVersion() {
         // test
-        TestCase.assertEquals(
-                AssuranceTestConstants.EXTENSION_VERSION, Assurance.extensionVersion());
+        TestCase.assertEquals(Assurance.EXTENSION_VERSION, Assurance.extensionVersion());
     }
 
     @Test

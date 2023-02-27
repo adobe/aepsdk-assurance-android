@@ -25,6 +25,7 @@ import android.os.BatteryManager;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
 import androidx.core.app.ActivityCompat;
+import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.AppContextService;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.Map;
@@ -87,7 +88,8 @@ public class AssuranceClientInfoTest {
         mockPowerManager(false);
 
         final Map<String, Object> data = assuranceClientInfo.getData();
-        assertEquals("2.0.0", data.get(AssuranceConstants.ClientInfoKeys.VERSION));
+        assertEquals(
+                Assurance.EXTENSION_VERSION, data.get(AssuranceConstants.ClientInfoKeys.VERSION));
         assertEquals("connect", data.get(AssuranceConstants.PayloadDataKeys.TYPE));
         assertEquals(appSettings, data.get(AssuranceConstants.ClientInfoKeys.APP_SETTINGS));
 
@@ -125,7 +127,8 @@ public class AssuranceClientInfoTest {
         mockPowerManager(false);
 
         final Map<String, Object> data = assuranceClientInfo.getData();
-        assertEquals("2.0.0", data.get(AssuranceConstants.ClientInfoKeys.VERSION));
+        assertEquals(
+                Assurance.EXTENSION_VERSION, data.get(AssuranceConstants.ClientInfoKeys.VERSION));
         assertEquals("connect", data.get(AssuranceConstants.PayloadDataKeys.TYPE));
         assertEquals(appSettings, data.get(AssuranceConstants.ClientInfoKeys.APP_SETTINGS));
 
@@ -163,7 +166,8 @@ public class AssuranceClientInfoTest {
         mockPowerManager(true);
 
         final Map<String, Object> data = assuranceClientInfo.getData();
-        assertEquals("2.0.0", data.get(AssuranceConstants.ClientInfoKeys.VERSION));
+        assertEquals(
+                Assurance.EXTENSION_VERSION, data.get(AssuranceConstants.ClientInfoKeys.VERSION));
         assertEquals("connect", data.get(AssuranceConstants.PayloadDataKeys.TYPE));
         assertEquals(appSettings, data.get(AssuranceConstants.ClientInfoKeys.APP_SETTINGS));
 
