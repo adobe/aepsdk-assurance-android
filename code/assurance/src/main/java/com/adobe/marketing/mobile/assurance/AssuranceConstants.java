@@ -285,6 +285,12 @@ final class AssuranceConstants {
         }
     }
 
+    enum AssuranceQuickConnectError {
+        UNEXPECTED_ERROR,
+        RETRY_LIMIT_REACHED,
+        REQUEST_FAILED
+    }
+
     enum UILogColorVisibility {
         LOW(0),
         NORMAL(1),
