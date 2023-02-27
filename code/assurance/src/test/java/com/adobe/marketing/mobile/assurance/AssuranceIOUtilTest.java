@@ -21,12 +21,9 @@ import java.io.StringReader;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.kxml2.io.KXmlParser;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.xmlpull.v1.XmlPullParser;
 
-@RunWith(MockitoJUnitRunner.class)
 public class AssuranceIOUtilTest {
 
     @Test
@@ -40,10 +37,10 @@ public class AssuranceIOUtilTest {
         try {
             xmlPullParser.setInput(reader);
             final JSONObject jsonObj = AssuranceIOUtils.convertXMLToJSON(xmlPullParser);
-            Assert.assertTrue(
+            Assert.assertEquals(
                     new JSONObject(readResourceFile("AndroidManifest_Test.json").replace("\n", ""))
-                            .toString()
-                            .equals(jsonObj.toString()));
+                            .toString(),
+                    jsonObj.toString());
         } catch (final Exception e) {
             Assert.fail("Exception while converting XML to JSON.");
         } finally {

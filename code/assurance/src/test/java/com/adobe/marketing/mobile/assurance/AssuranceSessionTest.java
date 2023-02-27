@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static com.adobe.marketing.mobile.assurance.AssuranceTestUtils.setInternalState;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -18,7 +19,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
 import android.app.Activity;
 import android.app.Application;
@@ -26,23 +26,18 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import com.adobe.marketing.mobile.MobileCore;
-import com.adobe.marketing.mobile.services.Log;
 import java.util.Collections;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Uri.class, Uri.Builder.class, MobileCore.class, Log.class, AssuranceEvent.class})
 public class AssuranceSessionTest {
 
     AssuranceSession assuranceSession;
@@ -71,11 +66,20 @@ public class AssuranceSessionTest {
 
     @Mock AssurancePluginManager mockAssurancePluginManager;
 
+    @Mock Uri mockUri;
+
+    private MockedStatic<MobileCore> mockedStaticMobileCore;
+    private MockedStatic<Uri> mockedStaticUri;
+
     @Before
     public void setup() {
-        // mock mobileCore class
-        PowerMockito.mockStatic(MobileCore.class);
-        when(MobileCore.getApplication()).thenReturn(mockApplication);
+        MockitoAnnotations.openMocks(this);
+
+        mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class);
+        mockedStaticMobileCore.when(MobileCore::getApplication).thenReturn(mockApplication);
+
+        mockedStaticUri = Mockito.mockStatic(Uri.class);
+        mockedStaticUri.when(() -> Uri.parse(anyString())).thenReturn(mockUri);
 
         // mock shared preference
         when(mockApplication.getSharedPreferences(anyString(), ArgumentMatchers.anyInt()))
@@ -100,16 +104,15 @@ public class AssuranceSessionTest {
                         Collections.EMPTY_LIST);
 
         // Assign mocks to private fields instantiated inside the constructor
-        Whitebox.setInternalState(
+        setInternalState(
                 assuranceSession,
                 "assuranceSessionPresentationManager",
                 mockAssuranceSessionPresentationManager);
-        Whitebox.setInternalState(
-                assuranceSession, "inboundEventQueueWorker", mockInboundEventQueueWorker);
-        Whitebox.setInternalState(
+        setInternalState(assuranceSession, "inboundEventQueueWorker", mockInboundEventQueueWorker);
+        setInternalState(
                 assuranceSession, "outboundEventQueueWorker", mockOutboundEventQueueWorker);
-        Whitebox.setInternalState(assuranceSession, "socket", mockAssuranceWebViewSocket);
-        Whitebox.setInternalState(assuranceSession, "pluginManager", mockAssurancePluginManager);
+        setInternalState(assuranceSession, "socket", mockAssuranceWebViewSocket);
+        setInternalState(assuranceSession, "pluginManager", mockAssurancePluginManager);
     }
 
     @Test
@@ -142,9 +145,6 @@ public class AssuranceSessionTest {
                 .thenReturn(
                         "wss://connect.griffon.adobe.com/client/v1?"
                             + "sessionId=SampleSessionId&token=1234&orgId=StoredOrg@AdobeOrg&clientId=sampleClientID");
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
         when(mockUri.getQueryParameter("orgId")).thenReturn("StoredOrg@AdobeOrg");
 
         assuranceSession.connect("1234");
@@ -316,7 +316,7 @@ public class AssuranceSessionTest {
     @Test
     public void test_onSocketDisconnected_ABNORMAL() throws Exception {
         final Handler mockHandler = Mockito.mock(Handler.class);
-        Whitebox.setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
         doAnswer(
                         new Answer() {
                             @Override
@@ -337,9 +337,7 @@ public class AssuranceSessionTest {
         final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
         when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
                 .thenReturn(mockConnectionURL);
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
+
         when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
         when(mockUri.getQueryParameter("token")).thenReturn((token));
         when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
@@ -363,7 +361,7 @@ public class AssuranceSessionTest {
     @Test
     public void test_onSocketDisconnected_ABNORMAL_retry() throws Exception {
         final Handler mockHandler = Mockito.mock(Handler.class);
-        Whitebox.setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
         doAnswer(
                         new Answer() {
                             @Override
@@ -384,9 +382,6 @@ public class AssuranceSessionTest {
         final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
         when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
                 .thenReturn(mockConnectionURL);
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
         when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
         when(mockUri.getQueryParameter("token")).thenReturn((token));
         when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
@@ -418,7 +413,7 @@ public class AssuranceSessionTest {
     @Test
     public void test_onSocketDisconnected_ABNORMAL_badStoredURL() throws Exception {
         final Handler mockHandler = Mockito.mock(Handler.class);
-        Whitebox.setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
         doAnswer(
                         new Answer() {
                             @Override
@@ -439,9 +434,6 @@ public class AssuranceSessionTest {
         final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
         when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
                 .thenReturn(mockConnectionURL);
-        PowerMockito.mockStatic(Uri.class);
-        final Uri mockUri = mock(Uri.class);
-        PowerMockito.when(Uri.class, "parse", ArgumentMatchers.anyString()).thenReturn(mockUri);
         when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
         when(mockUri.getQueryParameter("token")).thenReturn((token));
         when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
@@ -464,7 +456,7 @@ public class AssuranceSessionTest {
 
     @Test
     public void test_ActivityDelegates() {
-        final Activity mockActivity = mock(Activity.class);
+        final Activity mockActivity = Mockito.mock(Activity.class);
         assuranceSession.onActivityDestroyed(mockActivity);
         verify(mockAssuranceSessionPresentationManager).onActivityDestroyed(mockActivity);
 
@@ -473,6 +465,12 @@ public class AssuranceSessionTest {
 
         assuranceSession.onActivityStarted(mockActivity);
         verify(mockAssuranceSessionPresentationManager).onActivityStarted(mockActivity);
+    }
+
+    @After
+    public void teardown() {
+        mockedStaticUri.close();
+        mockedStaticMobileCore.close();
     }
 
     private String buildURL(
