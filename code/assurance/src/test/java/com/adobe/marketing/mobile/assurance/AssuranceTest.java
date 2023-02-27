@@ -13,6 +13,8 @@ package com.adobe.marketing.mobile.assurance;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.Event;
@@ -22,29 +24,26 @@ import com.adobe.marketing.mobile.ExtensionError;
 import com.adobe.marketing.mobile.ExtensionErrorCallback;
 import com.adobe.marketing.mobile.MobileCore;
 import junit.framework.TestCase;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MobileCore.class})
 public class AssuranceTest {
+
+    private MockedStatic<MobileCore> mockedStaticMobileCore;
 
     @Before
     public void setup() {
-        PowerMockito.mockStatic(MobileCore.class);
+        mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class);
     }
 
     @Test
     public void test_ExtensionVersion() {
         // test
-        TestCase.assertEquals(
-                AssuranceTestConstants.EXTENSION_VERSION, Assurance.extensionVersion());
+        TestCase.assertEquals(Assurance.EXTENSION_VERSION, Assurance.extensionVersion());
     }
 
     @Test
@@ -58,8 +57,9 @@ public class AssuranceTest {
         Assurance.startSession(validSessionURL);
 
         // verify
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-        MobileCore.dispatchEvent(dispatchedEventCaptor.capture());
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.dispatchEvent(dispatchedEventCaptor.capture()), times(1));
+        // MobileCore.dispatchEvent(dispatchedEventCaptor.capture());
         final Event dispatchedEvent = dispatchedEventCaptor.getValue();
         TestCase.assertEquals(EventType.ASSURANCE, dispatchedEvent.getType());
         TestCase.assertEquals(EventSource.REQUEST_CONTENT, dispatchedEvent.getSource());
@@ -77,8 +77,7 @@ public class AssuranceTest {
         Assurance.startSession("Invalid");
 
         // verify
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-        MobileCore.dispatchEvent(any(Event.class));
+        mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), times(0));
     }
 
     @Test
@@ -87,8 +86,7 @@ public class AssuranceTest {
         Assurance.startSession(null);
 
         // verify
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-        MobileCore.dispatchEvent(any(Event.class));
+        mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), times(0));
     }
 
     @Test
@@ -101,10 +99,19 @@ public class AssuranceTest {
         Assurance.registerExtension();
 
         // verify
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-        MobileCore.registerExtension(any(Class.class), extensionErrorCallbackCaptor.capture());
+        mockedStaticMobileCore.verify(
+                () ->
+                        MobileCore.registerExtension(
+                                eq(AssuranceExtension.class),
+                                extensionErrorCallbackCaptor.capture()),
+                times(1));
 
         // test 2 - ErrorCallback is handled without crashing
         extensionErrorCallbackCaptor.getValue().error(ExtensionError.UNEXPECTED_ERROR);
+    }
+
+    @After
+    public void teardown() {
+        mockedStaticMobileCore.close();
     }
 }

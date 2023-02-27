@@ -11,44 +11,42 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static com.adobe.marketing.mobile.assurance.AssuranceTestUtils.setInternalState;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.net.Uri;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28)
-@PowerMockIgnore({"javax.xml.*", "org.robolectric.*", "android.*"})
 public class AssuranceConnectionStatusUITest {
-
-    private AssuranceConnectionStatusUI connectionStatusUI;
-
-    private Activity mockActivity;
-    private AssuranceFullScreenTakeover mockStatusTakeOver;
     @Mock private AssuranceSessionOrchestrator.ApplicationHandle mockApplicationHandle;
 
     @Mock
     private AssuranceSessionOrchestrator.SessionUIOperationHandler mockSessionUIOperationHandler;
 
+    @Mock private Activity mockActivity;
+
+    private AssuranceConnectionStatusUI connectionStatusUI;
+    @Mock private AssuranceFullScreenTakeover mockStatusTakeOver;
+
+    private MockedStatic<Uri> mockedStaticUri;
+
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        mockActivity = Mockito.mock(Activity.class);
-        mockStatusTakeOver = Mockito.mock(AssuranceFullScreenTakeover.class);
-
+        MockitoAnnotations.openMocks(this);
         when(mockApplicationHandle.getCurrentActivity()).thenReturn(mockActivity);
         connectionStatusUI =
                 new AssuranceConnectionStatusUI(
@@ -156,6 +154,6 @@ public class AssuranceConnectionStatusUITest {
             e.printStackTrace();
         }
 
-        Whitebox.setInternalState(connectionStatusUI, "statusTakeover", mockStatusTakeOver);
+        setInternalState(connectionStatusUI, "statusTakeover", mockStatusTakeOver);
     }
 }

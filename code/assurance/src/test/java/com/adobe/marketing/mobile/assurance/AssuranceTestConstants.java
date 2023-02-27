@@ -12,7 +12,6 @@
 package com.adobe.marketing.mobile.assurance;
 
 public class AssuranceTestConstants {
-    static final String EXTENSION_VERSION = "2.0.0";
     static final String VENDOR_ASSURANCE_MOBILE = "com.adobe.griffon.mobile";
 
     final class GenericEventPayloadKey {

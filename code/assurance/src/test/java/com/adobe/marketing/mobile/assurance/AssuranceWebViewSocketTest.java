@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static com.adobe.marketing.mobile.assurance.AssuranceTestUtils.setInternalState;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -19,27 +20,17 @@ import android.os.Handler;
 import android.util.Base64;
 import android.webkit.WebView;
 import java.util.concurrent.ExecutorService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-// TODO: Remove power mock usages
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Base64.class, Uri.class})
 public class AssuranceWebViewSocketTest {
 
     private static final String CONST_URL =
@@ -60,14 +51,17 @@ public class AssuranceWebViewSocketTest {
 
     @Mock ExecutorService webViewExecutor;
 
+    MockedStatic<Uri> mockedStaticUri;
+
     @Before
     public void setup() {
+        MockitoAnnotations.openMocks(this);
         assuranceWebViewSocket = new AssuranceWebViewSocket(mockAssuranceWebViewSocketHandler);
 
-        PowerMockito.mockStatic(Uri.class);
-        when(Uri.parse(anyString())).thenReturn(mockUri);
-        Whitebox.setInternalState(assuranceWebViewSocket, "webView", mockWebview);
-        Whitebox.setInternalState(assuranceWebViewSocket, "webViewExecutor", webViewExecutor);
+        mockedStaticUri = Mockito.mockStatic(Uri.class);
+        mockedStaticUri.when(() -> Uri.parse(anyString())).thenReturn(mockUri);
+        setInternalState(assuranceWebViewSocket, "webView", mockWebview);
+        setInternalState(assuranceWebViewSocket, "webViewExecutor", webViewExecutor);
     }
 
     @Test
@@ -162,8 +156,9 @@ public class AssuranceWebViewSocketTest {
         String encodedDataString = "encodedDataString";
 
         // Mock Base64
-        PowerMockito.mockStatic(Base64.class);
-        PowerMockito.when(Base64.encodeToString(any(byte[].class), anyInt()))
+        MockedStatic<Base64> mockedStaticBase64 = Mockito.mockStatic(Base64.class);
+        mockedStaticBase64
+                .when(() -> Base64.encodeToString(any(byte[].class), anyInt()))
                 .thenReturn(encodedDataString);
 
         byte[] mockDataBytes = "MockData".getBytes();
@@ -177,8 +172,8 @@ public class AssuranceWebViewSocketTest {
         ArgumentCaptor<Integer> argumentCaptor1 = ArgumentCaptor.forClass(Integer.class);
 
         // verify encodeToString is called
-        PowerMockito.verifyStatic(Base64.class);
-        Base64.encodeToString(argumentCaptor.capture(), argumentCaptor1.capture());
+        mockedStaticBase64.verify(
+                () -> Base64.encodeToString(argumentCaptor.capture(), argumentCaptor1.capture()));
 
         assertEquals(mockDataBytes, argumentCaptor.getValue());
         assertEquals(
@@ -189,6 +184,11 @@ public class AssuranceWebViewSocketTest {
         verify(mockWebview).loadUrl(argumentCaptor2.capture());
         assertEquals(
                 "javascript: sendData('" + encodedDataString + "')", argumentCaptor2.getValue());
+    }
+
+    @After
+    public void tearDown() {
+        mockedStaticUri.close();
     }
 
     private void mockExecutorService() {
@@ -208,7 +208,7 @@ public class AssuranceWebViewSocketTest {
     private void mockMainHandlerAndRunTheRunnable() {
         // Mock run on main thread method
         Handler mainHandlerMock = Mockito.mock(Handler.class);
-        Whitebox.setInternalState(assuranceWebViewSocket, "mainThreadHandler", mainHandlerMock);
+        setInternalState(assuranceWebViewSocket, "mainThreadHandler", mainHandlerMock);
         doAnswer(
                         new Answer() {
                             @Override

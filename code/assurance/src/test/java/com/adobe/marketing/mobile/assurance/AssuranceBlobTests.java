@@ -13,31 +13,27 @@ package com.adobe.marketing.mobile.assurance;
 
 import static junit.framework.TestCase.assertTrue;
 
-import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(DataOutputStream.class)
 public class AssuranceBlobTests {
+    @Mock AssuranceSession mockSession;
+
     private static final String SAMPLE_CONTENT_TYPE = "image/jpeg";
     private static final byte[] SAMPLE_BYTE_ARRAY = "SecretString".getBytes();
     private static final String SAMPLE_SESSION_ID = "sessionId";
-
-    @Mock AssuranceSession mockSession;
-
-    @Mock HttpURLConnection mockConnection;
+    private boolean onSuccessCallbackCalled = false;
+    private String onSuccessBlobId;
+    private boolean onFailureCallbackCalled = false;
 
     @Before
-    public void testSetup() {
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
         Mockito.when(mockSession.getAssuranceEnvironment())
                 .thenReturn(AssuranceConstants.AssuranceEnvironment.PROD);
         Mockito.when(mockSession.getSessionId()).thenReturn(SAMPLE_SESSION_ID);
@@ -67,10 +63,6 @@ public class AssuranceBlobTests {
         // verify
         assertTrue(onFailureCallbackCalled);
     }
-
-    private boolean onSuccessCallbackCalled = false;
-    private String onSuccessBlobId;
-    private boolean onFailureCallbackCalled = false;
 
     private AssuranceBlob.BlobUploadCallback createTestableCallback(final CountDownLatch latch) {
         onSuccessCallbackCalled = false;

@@ -28,19 +28,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MobileCore.class})
 public class AssurancePluginConfigSwitcherTest {
 
     private static final String EVENT_TYPE_CONFIG_UPDATE = "configUpdate";
@@ -55,11 +52,14 @@ public class AssurancePluginConfigSwitcherTest {
 
     @Mock AssuranceSession mockSession;
 
+    private MockedStatic<MobileCore> mockedStaticMobileCore;
+
     @Before
     public void testSetup() {
-        // mock mobileCore class
-        PowerMockito.mockStatic(MobileCore.class);
-        Mockito.when(MobileCore.getApplication()).thenReturn(application);
+
+        MockitoAnnotations.openMocks(this);
+        mockedStaticMobileCore = Mockito.mockStatic(MobileCore.class);
+        mockedStaticMobileCore.when(MobileCore::getApplication).thenReturn(application);
 
         // mock shared preference
         Mockito.when(application.getSharedPreferences(anyString(), ArgumentMatchers.anyInt()))
@@ -88,7 +88,7 @@ public class AssurancePluginConfigSwitcherTest {
     @Test
     public void test_onEventReceived() {
         // setup
-        HashMap configUpdateDetails = new HashMap<String, Object>();
+        HashMap<String, Object> configUpdateDetails = new HashMap<>();
         configUpdateDetails.put("key3", "best rsids");
         configUpdateDetails.put(
                 "key4",
@@ -125,8 +125,9 @@ public class AssurancePluginConfigSwitcherTest {
         assertTrue(savedConfigKeysCaptor.getValue().contains("key4"));
 
         // verify updateConfiguration method call
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-        MobileCore.updateConfiguration(configUpdateDetails);
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(configUpdateDetails), times(1));
+        // MobileCore.updateConfiguration(configUpdateDetails);
 
         // verify that config change is logged in the clientUI
         verify(mockSession, times(1))
@@ -136,9 +137,9 @@ public class AssurancePluginConfigSwitcherTest {
     @Test
     public void test_onEventReceived_WhenSharedPreferenceisNull() {
         // setup
-        HashMap configUpdateDetails = new HashMap<String, Object>();
+        HashMap<String, Object> configUpdateDetails = new HashMap<String, Object>();
         configUpdateDetails.put("key3", "best rsids");
-        HashMap payload = new HashMap<String, Object>();
+        HashMap<String, Object> payload = new HashMap<String, Object>();
         payload.put("type", AssuranceConstants.ControlType.CONFIG_UPDATE);
         payload.put("detail", configUpdateDetails);
 
@@ -152,14 +153,14 @@ public class AssurancePluginConfigSwitcherTest {
         assurancePluginConfigSwitcher.onEventReceived(event);
 
         // verify updateConfiguration method call
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-        MobileCore.updateConfiguration(configUpdateDetails);
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(configUpdateDetails), times(1));
     }
 
     @Test
     public void test_onEventReceived_with_emptyDetails() {
         // setup
-        HashMap payload = new HashMap<String, Object>();
+        HashMap<String, Object> payload = new HashMap<String, Object>();
         payload.put("type", AssuranceConstants.ControlType.CONFIG_UPDATE);
         payload.put("detail", null);
 
@@ -172,8 +173,8 @@ public class AssurancePluginConfigSwitcherTest {
         verify(preferences, times(0)).getStringSet(PREF_KEY_MODIFIED_CONFIG_KEYS, null);
 
         // verify updateConfiguration method is not called
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-        MobileCore.updateConfiguration(any(Map.class));
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(any(Map.class)), times(0));
     }
 
     @Test
@@ -190,8 +191,8 @@ public class AssurancePluginConfigSwitcherTest {
         assurancePluginConfigSwitcher.onSessionTerminated();
 
         // verify updateConfiguration method call
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(1));
-        MobileCore.updateConfiguration(configCaptor.capture());
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(configCaptor.capture()), times(1));
         assertEquals(2, configCaptor.getValue().size());
         assertTrue(configCaptor.getValue().containsKey("key1"));
         assertTrue(configCaptor.getValue().containsKey("key2"));
@@ -212,8 +213,8 @@ public class AssurancePluginConfigSwitcherTest {
         assurancePluginConfigSwitcher.onSessionTerminated();
 
         // verify updateConfiguration method call
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-        MobileCore.updateConfiguration(any(Map.class));
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(any(Map.class)), times(0));
 
         // verify
         verify(preferences, times(1)).getStringSet(PREF_KEY_MODIFIED_CONFIG_KEYS, null);
@@ -231,8 +232,8 @@ public class AssurancePluginConfigSwitcherTest {
         assurancePluginConfigSwitcher.onSessionTerminated();
 
         // verify updateConfiguration method call
-        PowerMockito.verifyStatic(MobileCore.class, Mockito.times(0));
-        MobileCore.updateConfiguration(any(Map.class));
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.updateConfiguration(any(Map.class)), times(0));
     }
 
     @Test
@@ -241,5 +242,10 @@ public class AssurancePluginConfigSwitcherTest {
         assurancePluginConfigSwitcher.onSessionConnected();
         assurancePluginConfigSwitcher.onSessionDisconnected(0);
         assurancePluginConfigSwitcher.onRegistered(null);
+    }
+
+    @After
+    public void teardown() {
+        mockedStaticMobileCore.close();
     }
 }

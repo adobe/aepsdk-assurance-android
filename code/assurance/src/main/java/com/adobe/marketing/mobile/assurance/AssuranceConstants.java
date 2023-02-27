@@ -158,6 +158,21 @@ final class AssuranceConstants {
         private ClientInfoKeys() {}
     }
 
+    static final class DeviceInfoKeys {
+        static final String PLATFORM_NAME = "Canonical platform name";
+        static final String DEVICE_NAME = "Device name";
+        static final String DEVICE_MANUFACTURER = "Device manufacturer";
+        static final String OPERATING_SYSTEM = "Operating system";
+        static final String CARRIER_NAME = "Carrier name";
+        static final String DEVICE_TYPE = "Device type";
+        static final String MODEL = "Model";
+        static final String SCREEN_SIZE = "Screen size";
+        static final String LOCATION_SERVICE_ENABLED = "Location service enabled";
+        static final String LOCATION_AUTHORIZATION_STATUS = "Location authorization status";
+        static final String LOW_POWER_BATTERY_ENABLED = "Low power mode enabled";
+        static final String BATTERY_LEVEL = "Battery level";
+    }
+
     static final class SocketURLKeys {
         static final String SESSION_ID = "sessionId";
         static final String CLIENT_ID = "clientId";
