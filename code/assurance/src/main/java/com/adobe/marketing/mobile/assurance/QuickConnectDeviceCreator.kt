@@ -11,29 +11,49 @@
 
 package com.adobe.marketing.mobile.assurance
 
+import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.AdobeCallback
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.NetworkRequest
-import com.adobe.marketing.mobile.services.Networking
 import com.adobe.marketing.mobile.services.NetworkingConstants
+import com.adobe.marketing.mobile.services.ServiceProvider
 import org.json.JSONObject
 import javax.net.ssl.HttpsURLConnection
 
-internal class DeviceCreationTask(
+/**
+ * Responsible for making a network request to create/register a device.
+ *
+ * @constructor
+ * @param orgId orgId that was used for the the device creation/registration
+ * @param clientId clientId to be used for the the device creation/registration
+ * @param deviceName deviceName to be used for the the device creation/registration
+ * @param callback a callback that will be used to be notify of the response to the network request
+ */
+internal class QuickConnectDeviceCreator(
     private val orgId: String,
     private val clientId: String,
     private val deviceName: String,
-    private val networkService: Networking,
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
 ) : Runnable {
 
     override fun run() {
-        val networkRequest: NetworkRequest = buildRequest()
-        networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
+        val networkRequest: NetworkRequest? = try {
+            buildRequest()
+        } catch (e: Exception) {
+            null
+        }
+
+        if (networkRequest == null) {
+            callback.call(Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_MALFORMED))
+            return
+        }
+
+        ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
             if (response == null) {
                 callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
                 return@connectAsync
@@ -50,7 +70,7 @@ internal class DeviceCreationTask(
                 callback.call(Response.Success(response))
             } else {
                 callback.call(
-                    Response.Failure(AssuranceQuickConnectError.REQUEST_FAILED)
+                    Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED)
                 )
             }
 
@@ -58,9 +78,18 @@ internal class DeviceCreationTask(
         }
     }
 
+    /**
+     * Exists to retrieve the [callback] reference for the sake of tests only. Used instead of the
+     * exposing the getter for callback itself because the annotations are not retained with this way.
+     */
+    @VisibleForTesting
+    fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
+        return callback
+    }
+
     private fun buildRequest(): NetworkRequest {
         val url =
-            "${DeviceRegistrationManager.BASE_DEVICE_API_URL}/${DeviceRegistrationManager.DEVICE_API_PATH_CREATE}"
+            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}"
 
         val headers: Map<String, String> = mapOf(
             NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,
@@ -68,20 +97,21 @@ internal class DeviceCreationTask(
         )
 
         val body: Map<String, String> = mapOf(
-            DeviceRegistrationManager.KEY_ORG_ID to orgId,
-            DeviceRegistrationManager.KEY_DEVICE_NAME to deviceName,
-            DeviceRegistrationManager.KEY_CLIENT_ID to clientId
+            QuickConnect.KEY_ORG_ID to orgId,
+            QuickConnect.KEY_DEVICE_NAME to deviceName,
+            QuickConnect.KEY_CLIENT_ID to clientId
         )
 
         val jsonBody = JSONObject(body)
+
         val bodyBytes: ByteArray = jsonBody.toString().toByteArray()
         return NetworkRequest(
             url,
             HttpMethod.POST,
             bodyBytes,
             headers,
-            DeviceRegistrationManager.CONNECTION_TIMEOUT_MS,
-            DeviceRegistrationManager.READ_TIMEOUT_MS
+            QuickConnect.CONNECTION_TIMEOUT_MS,
+            QuickConnect.READ_TIMEOUT_MS
         )
     }
 }

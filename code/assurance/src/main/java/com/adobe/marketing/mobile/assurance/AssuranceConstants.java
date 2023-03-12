@@ -14,6 +14,7 @@ package com.adobe.marketing.mobile.assurance;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 final class AssuranceConstants {
     static final String VENDOR_ASSURANCE_MOBILE = "com.adobe.griffon.mobile";
@@ -231,6 +232,21 @@ final class AssuranceConstants {
         private IntentExtraKey() {}
     }
 
+    static final class QuickConnect {
+        static final String BASE_DEVICE_API_URL = "https://device.griffon.adobe.com/device";
+        static final String DEVICE_API_PATH_CREATE = "create";
+        static final String DEVICE_API_PATH_STATUS = "status";
+        static final String KEY_SESSION_ID = "sessionUuid";
+        static final String KEY_SESSION_TOKEN = "token";
+        static final String KEY_ORG_ID = "orgId";
+        static final String KEY_DEVICE_NAME = "deviceName";
+        static final String KEY_CLIENT_ID = "clientId";
+        static final int CONNECTION_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
+        static final int READ_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
+        static final long STATUS_CHECK_DELAY_MS = TimeUnit.SECONDS.toMillis(2);
+        static final int MAX_RETRY_COUNT = 300;
+    }
+
     // ========================================================================================
     // Enums
     // ========================================================================================
@@ -286,9 +302,45 @@ final class AssuranceConstants {
     }
 
     enum AssuranceQuickConnectError {
-        UNEXPECTED_ERROR,
-        RETRY_LIMIT_REACHED,
-        REQUEST_FAILED
+        CREATE_DEVICE_REQUEST_MALFORMED(
+                "Malformed Request",
+                "The network request for device creation was malformed.",
+                false),
+        STATUS_CHECK_REQUEST_MALFORMED(
+                "Malformed Request", "The network request for status check  was malformed.", false),
+        RETRY_LIMIT_REACHED(
+                "Retry Limit Reached",
+                "Cannot fetch session details. The maximum allowed retries for fetching the"
+                        + " session details were reached.",
+                true),
+        CREATE_DEVICE_REQUEST_FAILED("Request Failed", "Failed to register device.", true),
+
+        DEVICE_STATUS_REQUEST_FAILED("Request Failed", "Failed to get device status", true),
+
+        UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occured", true);
+
+        private final String message;
+        private final String description;
+        private final boolean isRetryable;
+
+        AssuranceQuickConnectError(
+                final String message, final String description, final boolean isRetryable) {
+            this.message = message;
+            this.description = description;
+            this.isRetryable = isRetryable;
+        }
+
+        String getMessage() {
+            return message;
+        }
+
+        String getDescription() {
+            return description;
+        }
+
+        boolean isRetryable() {
+            return isRetryable;
+        }
     }
 
     enum UILogColorVisibility {

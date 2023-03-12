@@ -14,9 +14,24 @@ package com.adobe.marketing.mobile.assurance;
 
 import androidx.annotation.NonNull;
 
-interface DeviceRegistrationCallback {
+/**
+ * A callback that allows components integrating with {@link QuickConnectManager} to receive a
+ * notification about the status of the QuickConnect connection request.
+ */
+interface QuickConnectCallback {
 
-    void onError(@NonNull String errorMessage);
+    /**
+     * Invoked when an error occurs when during QuickConnect connection workflow.
+     *
+     * @param error
+     */
+    void onError(@NonNull AssuranceConstants.AssuranceQuickConnectError error);
 
+    /**
+     * Invoked with the quick connect session details when the QuickConnect workflow is successful.
+     *
+     * @param sessionUUID the sessionId associated with the quick connect session
+     * @param token the authorizing token for the quick connect session
+     */
     void onSuccess(@NonNull String sessionUUID, @NonNull String token);
 }

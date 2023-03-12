@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,34 +11,54 @@
 
 package com.adobe.marketing.mobile.assurance
 
+import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.AdobeCallback
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
 import com.adobe.marketing.mobile.services.NetworkRequest
-import com.adobe.marketing.mobile.services.Networking
 import com.adobe.marketing.mobile.services.NetworkingConstants
+import com.adobe.marketing.mobile.services.ServiceProvider
 import org.json.JSONObject
 import javax.net.ssl.HttpsURLConnection
 
-internal class DeviceStatusCheckerTask(
+/**
+ * Responsible for making a network request to check the status of the device creation (previously
+ * triggered via [QuickConnectDeviceCreator])
+ *
+ * @constructor
+ * @param orgId orgId that was used for the the device creation/registration
+ * @param clientId clientId that was used for the the device creation/registration
+ * @param callback a callback to be notified of the response to the network request
+ */
+internal class QuickConnectDeviceStatusChecker(
     private val orgId: String,
     private val clientId: String,
-    private val networkService: Networking,
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
 ) : Runnable {
 
     override fun run() {
-        val networkRequest = buildRequest()
+        val networkRequest = try {
+            buildRequest()
+        } catch (e: Exception) {
+            null
+        }
 
-        networkService.connectAsync(networkRequest) { response ->
+        if (networkRequest == null) {
+            callback.call(Response.Failure(AssuranceQuickConnectError.STATUS_CHECK_REQUEST_MALFORMED))
+            return
+        }
+
+        ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
             if (response == null) {
                 callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
+                return@connectAsync
             }
 
             val responseCode = response.responseCode
             if (!(responseCode == HttpsURLConnection.HTTP_CREATED || responseCode == HttpsURLConnection.HTTP_OK)) {
-                callback.call(Response.Failure(AssuranceQuickConnectError.REQUEST_FAILED))
+                callback.call(Response.Failure(AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED))
             } else {
                 callback.call(Response.Success(response))
             }
@@ -47,12 +67,21 @@ internal class DeviceStatusCheckerTask(
         }
     }
 
+    /**
+     * Exists to retrieve the [callback] reference for the sake of tests only. Used instead of the
+     * exposing the getter for callback itself because the annotations are not retained with this way.
+     */
+    @VisibleForTesting
+    internal fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
+        return callback
+    }
+
     private fun buildRequest(): NetworkRequest {
-        val url = "${DeviceRegistrationManager.BASE_DEVICE_API_URL}/${DeviceRegistrationManager.DEVICE_API_PATH_STATUS}"
+        val url = "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}"
 
         val body: Map<String, String> = mapOf(
-            DeviceRegistrationManager.KEY_ORG_ID to orgId,
-            DeviceRegistrationManager.KEY_CLIENT_ID to clientId
+            QuickConnect.KEY_ORG_ID to orgId,
+            QuickConnect.KEY_CLIENT_ID to clientId
         )
 
         val headers: Map<String, String> = mapOf(
@@ -66,8 +95,8 @@ internal class DeviceStatusCheckerTask(
             HttpMethod.POST,
             bodyBytes,
             headers,
-            DeviceRegistrationManager.CONNECTION_TIMEOUT_MS,
-            DeviceRegistrationManager.READ_TIMEOUT_MS
+            QuickConnect.CONNECTION_TIMEOUT_MS,
+            QuickConnect.READ_TIMEOUT_MS
         )
     }
 }
