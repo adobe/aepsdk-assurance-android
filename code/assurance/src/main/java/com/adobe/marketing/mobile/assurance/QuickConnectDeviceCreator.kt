@@ -40,10 +40,15 @@ internal class QuickConnectDeviceCreator(
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
 ) : Runnable {
 
+    companion object {
+        private const val LOG_SOURCE = "QuickConnectDeviceCreator"
+    }
+
     override fun run() {
         val networkRequest: NetworkRequest? = try {
             buildRequest()
         } catch (e: Exception) {
+            Log.trace(Assurance.LOG_TAG, LOG_SOURCE, "Exception attempting to build request. ${e.message}")
             null
         }
 
@@ -106,6 +111,7 @@ internal class QuickConnectDeviceCreator(
                 )
                 callback.call(Response.Success(response))
             } else {
+                Log.trace(Assurance.LOG_TAG, LOG_SOURCE, "Device registration failed with code : $responseCode and message: ${response.responseMessage}.")
                 callback.call(
                     Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED)
                 )

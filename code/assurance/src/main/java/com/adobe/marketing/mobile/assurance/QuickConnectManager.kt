@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 /**
- * Responsible for manging the workflow that registers the device as one capable for making a QuickConnect session.
+ * Responsible for manging the workflow that registers the device as one capable of initiating a QuickConnect session.
  * A typical flow includes device creation, status checks with retries, success / failure notifications.
  */
 internal class QuickConnectManager(
@@ -89,6 +89,7 @@ internal class QuickConnectManager(
         val orgId = assuranceSharedStateManager.getOrgId(false)
         val clientId = assuranceSharedStateManager.clientId
         val deviceName = ServiceProvider.getInstance().deviceInfoService.deviceName
+        Log.trace(LOG_TAG, LOG_SOURCE, "Attempting to register device with deviceName:$deviceName, orgId: $orgId, clientId: $clientId.")
 
         val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName) {
             when (it) {
@@ -136,6 +137,8 @@ internal class QuickConnectManager(
                 val sessionDetails = extractSessionDetails(StreamUtils.readAsString(response.data.inputStream))
                 if (sessionDetails != null) {
                     // quick connect session details are available. Notify about successful the result.
+                    Log.trace(LOG_TAG, LOG_SOURCE, "Received session details.")
+
                     quickConnectCallback.onSuccess(sessionDetails.sessionId, sessionDetails.token)
                     cleanup()
                     return
@@ -150,15 +153,18 @@ internal class QuickConnectManager(
                 }
 
                 if (++retryCount < QuickConnect.MAX_RETRY_COUNT) {
+                    Log.trace(LOG_TAG, LOG_SOURCE, "Will retry device status check.")
                     checkDeviceStatus(orgId, clientId)
                 } else {
                     // Maximum allowed retries for checking the status has been reached.
+                    Log.trace(LOG_TAG, LOG_SOURCE, "Will not retry. Maximum allowed retries for status check have been reached.")
                     quickConnectCallback.onError(AssuranceQuickConnectError.RETRY_LIMIT_REACHED)
                     cleanup()
                 }
             }
 
             is Response.Failure -> {
+                Log.trace(LOG_TAG, LOG_SOURCE, "Device status check request failed.")
                 quickConnectCallback.onError(response.error)
                 cleanup()
             }

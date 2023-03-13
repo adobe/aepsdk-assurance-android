@@ -13,10 +13,12 @@ package com.adobe.marketing.mobile.assurance
 
 import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.AdobeCallback
+import com.adobe.marketing.mobile.Assurance.LOG_TAG
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
+import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.NetworkRequest
 import com.adobe.marketing.mobile.services.NetworkingConstants
 import com.adobe.marketing.mobile.services.ServiceProvider
@@ -37,10 +39,15 @@ internal class QuickConnectDeviceStatusChecker(
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
 ) : Runnable {
 
+    companion object {
+        private const val LOG_SOURCE = "QuickConnectDeviceStatusChecker"
+    }
+
     override fun run() {
         val networkRequest = try {
             buildRequest()
         } catch (e: Exception) {
+            Log.trace(LOG_TAG, LOG_SOURCE, "Exception attempting to build request. ${e.message}")
             null
         }
 
@@ -91,6 +98,7 @@ internal class QuickConnectDeviceStatusChecker(
 
             val responseCode = response.responseCode
             if (!(responseCode == HttpsURLConnection.HTTP_CREATED || responseCode == HttpsURLConnection.HTTP_OK)) {
+                Log.trace(LOG_TAG, LOG_SOURCE, "Device status check failed with code : $responseCode and message: ${response.responseMessage}.")
                 callback.call(Response.Failure(AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED))
             } else {
                 callback.call(Response.Success(response))
