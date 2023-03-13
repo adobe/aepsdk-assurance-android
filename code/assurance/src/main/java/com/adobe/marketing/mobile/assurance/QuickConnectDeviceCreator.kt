@@ -28,7 +28,6 @@ import javax.net.ssl.HttpsURLConnection
 /**
  * Responsible for making a network request to create/register a device.
  *
- * @constructor
  * @param orgId orgId that was used for the the device creation/registration
  * @param clientId clientId to be used for the the device creation/registration
  * @param deviceName deviceName to be used for the the device creation/registration
@@ -53,6 +52,44 @@ internal class QuickConnectDeviceCreator(
             return
         }
 
+        makeRequest(networkRequest)
+    }
+
+    /**
+     * Builds the network request for creating device.
+     */
+    private fun buildRequest(): NetworkRequest {
+        val url =
+            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}"
+
+        val headers: Map<String, String> = mapOf(
+            NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,
+            NetworkingConstants.Headers.CONTENT_TYPE to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION
+        )
+
+        val body: Map<String, String> = mapOf(
+            QuickConnect.KEY_ORG_ID to orgId,
+            QuickConnect.KEY_DEVICE_NAME to deviceName,
+            QuickConnect.KEY_CLIENT_ID to clientId
+        )
+
+        val jsonBody = JSONObject(body)
+
+        val bodyBytes: ByteArray = jsonBody.toString().toByteArray()
+        return NetworkRequest(
+            url,
+            HttpMethod.POST,
+            bodyBytes,
+            headers,
+            QuickConnect.CONNECTION_TIMEOUT_MS,
+            QuickConnect.READ_TIMEOUT_MS
+        )
+    }
+
+    /**
+     * Makes the network request to create device API. Uses [callback] to notify about the response.
+     */
+    private fun makeRequest(networkRequest: NetworkRequest) {
         ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
             if (response == null) {
                 callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
@@ -80,38 +117,10 @@ internal class QuickConnectDeviceCreator(
 
     /**
      * Exists to retrieve the [callback] reference for the sake of tests only. Used instead of the
-     * exposing the getter for callback itself because the annotations are not retained with this way.
+     * exposing the getter for callback in the constructor itself because the annotations are not retained with that way.
      */
     @VisibleForTesting
     fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
         return callback
-    }
-
-    private fun buildRequest(): NetworkRequest {
-        val url =
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}"
-
-        val headers: Map<String, String> = mapOf(
-            NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,
-            NetworkingConstants.Headers.CONTENT_TYPE to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION
-        )
-
-        val body: Map<String, String> = mapOf(
-            QuickConnect.KEY_ORG_ID to orgId,
-            QuickConnect.KEY_DEVICE_NAME to deviceName,
-            QuickConnect.KEY_CLIENT_ID to clientId
-        )
-
-        val jsonBody = JSONObject(body)
-
-        val bodyBytes: ByteArray = jsonBody.toString().toByteArray()
-        return NetworkRequest(
-            url,
-            HttpMethod.POST,
-            bodyBytes,
-            headers,
-            QuickConnect.CONNECTION_TIMEOUT_MS,
-            QuickConnect.READ_TIMEOUT_MS
-        )
     }
 }

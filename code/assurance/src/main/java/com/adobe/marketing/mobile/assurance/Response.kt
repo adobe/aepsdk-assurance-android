@@ -11,6 +11,11 @@
 
 package com.adobe.marketing.mobile.assurance
 
+/**
+ * Represents a result of an action/operation.
+ * Exists primarily to provide the ability to use its subclasses exhaustively in expressions like
+ * if, when, apply etc allowing cleaner and defined response handling.
+ */
 internal sealed class Response<T : Any, V : Any> {
     class Success<T : Any, V : Any>(val data: T) : Response<T, V>()
     class Failure<T : Any, V : Any>(val error: V) : Response<T, V>()

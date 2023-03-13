@@ -27,7 +27,6 @@ import javax.net.ssl.HttpsURLConnection
  * Responsible for making a network request to check the status of the device creation (previously
  * triggered via [QuickConnectDeviceCreator])
  *
- * @constructor
  * @param orgId orgId that was used for the the device creation/registration
  * @param clientId clientId that was used for the the device creation/registration
  * @param callback a callback to be notified of the response to the network request
@@ -50,32 +49,12 @@ internal class QuickConnectDeviceStatusChecker(
             return
         }
 
-        ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
-            if (response == null) {
-                callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
-                return@connectAsync
-            }
-
-            val responseCode = response.responseCode
-            if (!(responseCode == HttpsURLConnection.HTTP_CREATED || responseCode == HttpsURLConnection.HTTP_OK)) {
-                callback.call(Response.Failure(AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED))
-            } else {
-                callback.call(Response.Success(response))
-            }
-
-            response.close()
-        }
+        makeRequest(networkRequest)
     }
 
     /**
-     * Exists to retrieve the [callback] reference for the sake of tests only. Used instead of the
-     * exposing the getter for callback itself because the annotations are not retained with this way.
+     * Builds the network request for checking the status of device creation.
      */
-    @VisibleForTesting
-    internal fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
-        return callback
-    }
-
     private fun buildRequest(): NetworkRequest {
         val url = "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}"
 
@@ -98,5 +77,35 @@ internal class QuickConnectDeviceStatusChecker(
             QuickConnect.CONNECTION_TIMEOUT_MS,
             QuickConnect.READ_TIMEOUT_MS
         )
+    }
+
+    /**
+     * Makes the network request to check the status of device creation. Uses [callback] to notify about the response.
+     */
+    private fun makeRequest(networkRequest: NetworkRequest) {
+        ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
+            if (response == null) {
+                callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
+                return@connectAsync
+            }
+
+            val responseCode = response.responseCode
+            if (!(responseCode == HttpsURLConnection.HTTP_CREATED || responseCode == HttpsURLConnection.HTTP_OK)) {
+                callback.call(Response.Failure(AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED))
+            } else {
+                callback.call(Response.Success(response))
+            }
+
+            response.close()
+        }
+    }
+
+    /**
+     * Exists to retrieve the [callback] reference for the sake of tests only. Used instead of the
+     * exposing the getter for callback in the constructor itself because the annotations are not retained with that way.
+     */
+    @VisibleForTesting
+    internal fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
+        return callback
     }
 }

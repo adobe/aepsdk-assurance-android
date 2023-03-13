@@ -128,26 +128,33 @@ internal class QuickConnectManager(
      *
      * @param orgId the orgId for which quick connect was initiated
      * @param clientId the clientId for which quick connect was initiated
+     * @param response the [Response] from the [checkDeviceStatus] request that is to be handled
      */
     private fun handleStatusCheckResponse(orgId: String, clientId: String, response: Response<HttpConnecting, AssuranceQuickConnectError>) {
         when (response) {
             is Response.Success -> {
                 val sessionDetails = extractSessionDetails(StreamUtils.readAsString(response.data.inputStream))
                 if (sessionDetails != null) {
+                    // quick connect session details are available. Notify about successful the result.
                     quickConnectCallback.onSuccess(sessionDetails.sessionId, sessionDetails.token)
                     cleanup()
+                    return
+                }
+
+                // The request was successful but the session data is not yet present.
+
+                if (!isActive) {
+                    // The workflow is likely cancelled due to user interaction. Do not retry.
+                    Log.trace(LOG_TAG, LOG_SOURCE, "Will not retry. QuickConnect workflow already cancelled.")
+                    return
+                }
+
+                if (++retryCount < QuickConnect.MAX_RETRY_COUNT) {
+                    checkDeviceStatus(orgId, clientId)
                 } else {
-                    if (!isActive) {
-                        Log.trace(LOG_TAG, LOG_SOURCE, "Will not retry. QuickConnect workflow already cancelled.")
-                        return
-                    }
-                    // The request was successful but the data is not yet present, retry
-                    if (++retryCount < QuickConnect.MAX_RETRY_COUNT) {
-                        checkDeviceStatus(orgId, clientId)
-                    } else {
-                        quickConnectCallback.onError(AssuranceQuickConnectError.RETRY_LIMIT_REACHED)
-                        cleanup()
-                    }
+                    // Maximum allowed retries for checking the status has been reached.
+                    quickConnectCallback.onError(AssuranceQuickConnectError.RETRY_LIMIT_REACHED)
+                    cleanup()
                 }
             }
 
@@ -158,6 +165,12 @@ internal class QuickConnectManager(
         }
     }
 
+    /**
+     * Extracts quick connect session details from the provided [jsonString].
+     *
+     * @return valid [QuickConnectSessionDetails] when successfully parsed;
+     *         null if json string is empty, or details are unavailable.
+     */
     private fun extractSessionDetails(jsonString: String?): QuickConnectSessionDetails? {
         if (jsonString.isNullOrEmpty()) return null
 
@@ -175,6 +188,9 @@ internal class QuickConnectManager(
         }
     }
 
+    /**
+     * Terminates any pending tasks and resets the state of this class.
+     */
     private fun cleanup() {
         deviceCreationTaskHandle?.let {
             it.cancel(true)
