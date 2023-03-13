@@ -112,7 +112,7 @@ internal class QuickConnectManager(
             handleStatusCheckResponse(orgId, clientId, response)
         }
 
-        deviceStatusTaskHandle = executorService.schedule(statusCheckerTask, QuickConnect.STATUS_CHECK_DELAY_MS, TimeUnit.SECONDS)
+        deviceStatusTaskHandle = executorService.schedule(statusCheckerTask, QuickConnect.STATUS_CHECK_DELAY_MS, TimeUnit.MILLISECONDS)
     }
 
     /**

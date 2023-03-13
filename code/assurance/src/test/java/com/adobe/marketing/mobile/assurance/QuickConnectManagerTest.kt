@@ -148,7 +148,7 @@ class QuickConnectManagerTest {
         val quickConnectDeviceStatusCheckerCaptor: KArgumentCaptor<QuickConnectDeviceStatusChecker> = argumentCaptor()
         capturedDeviceCreationTask.getCallback().call(Response.Success(response))
 
-        verify(mockExecutorService).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.SECONDS))
+        verify(mockExecutorService).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.MILLISECONDS))
 
         val capturedDeviceStatusCheckerTask = quickConnectDeviceStatusCheckerCaptor.firstValue
         assertNotNull(capturedDeviceStatusCheckerTask)
@@ -214,7 +214,7 @@ class QuickConnectManagerTest {
         capturedDeviceStatusCheckerTask.getCallback().call(Response.Success(simulatedResponse))
 
         val retryQuickConnectDeviceStatusCheckerCaptor: KArgumentCaptor<QuickConnectDeviceStatusChecker> = argumentCaptor()
-        verify(mockExecutorService).schedule(retryQuickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.SECONDS))
+        verify(mockExecutorService).schedule(retryQuickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.MILLISECONDS))
         val capturedRetryDeviceStatusCheckerTask = retryQuickConnectDeviceStatusCheckerCaptor.firstValue
         assertNotNull(capturedRetryDeviceStatusCheckerTask)
     }
@@ -285,7 +285,7 @@ class QuickConnectManagerTest {
         val quickConnectDeviceStatusCheckerCaptor: KArgumentCaptor<QuickConnectDeviceStatusChecker> = argumentCaptor()
         capturedDeviceCreationTask.getCallback().call(Response.Success(response))
 
-        verify(mockExecutorService).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.SECONDS))
+        verify(mockExecutorService).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), eq(QuickConnect.STATUS_CHECK_DELAY_MS), eq(TimeUnit.MILLISECONDS))
 
         val capturedDeviceStatusCheckerTask = quickConnectDeviceStatusCheckerCaptor.firstValue
         assertNotNull(capturedDeviceStatusCheckerTask)
