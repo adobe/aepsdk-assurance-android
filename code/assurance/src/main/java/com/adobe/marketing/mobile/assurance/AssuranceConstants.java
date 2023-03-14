@@ -301,6 +301,9 @@ final class AssuranceConstants {
         }
     }
 
+    /**
+     * UI facing error messages for QuickConnect. Todo: Content needs to be modified before release.
+     */
     enum AssuranceQuickConnectError {
         CREATE_DEVICE_REQUEST_MALFORMED(
                 "Malformed Request",
@@ -310,14 +313,11 @@ final class AssuranceConstants {
                 "Malformed Request", "The network request for status check  was malformed.", false),
         RETRY_LIMIT_REACHED(
                 "Retry Limit Reached",
-                "Cannot fetch session details. The maximum allowed retries for fetching the"
-                        + " session details were reached.",
+                "The maximum allowed retries for fetching the session details were reached.",
                 true),
         CREATE_DEVICE_REQUEST_FAILED("Request Failed", "Failed to register device.", true),
-
         DEVICE_STATUS_REQUEST_FAILED("Request Failed", "Failed to get device status", true),
-
-        UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occured", true);
+        UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occurred", true);
 
         private final String message;
         private final String description;

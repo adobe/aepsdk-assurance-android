@@ -56,7 +56,6 @@ internal class QuickConnectManager(
     /**
      * Represents if there is an active attempt to initiate a QuickConnect session.
      */
-
     @VisibleForTesting
     @Volatile
     internal var isActive = false

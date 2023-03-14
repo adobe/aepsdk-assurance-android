@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -23,12 +23,14 @@ interface QuickConnectCallback {
     /**
      * Invoked when an error occurs when during QuickConnect connection workflow.
      *
-     * @param error
+     * @param error an {@code AssuranceQuickConnectError} that occurred resulting in quick connect
+     *     workflow cancellation
      */
     void onError(@NonNull AssuranceConstants.AssuranceQuickConnectError error);
 
     /**
      * Invoked with the quick connect session details when the QuickConnect workflow is successful.
+     * These details can be used to establish a connection with the session.
      *
      * @param sessionUUID the sessionId associated with the quick connect session
      * @param token the authorizing token for the quick connect session

@@ -45,6 +45,13 @@ class AssuranceTestUtils {
         }
     }
 
+    /**
+     * Compares the provided {@code NetworkRequest} parameters and determines if they represent the
+     * same request.
+     *
+     * @param expectedNetworkRequest the {@code NetworkRequest} to be compared against
+     * @param actualNetworkRequest the {@code NetworkRequest} to be validated
+     */
     static void verifyNetworkRequestParams(
             final NetworkRequest expectedNetworkRequest,
             final NetworkRequest actualNetworkRequest) {
@@ -61,6 +68,15 @@ class AssuranceTestUtils {
         assertEquals(expectedNetworkRequest.getHeaders(), actualNetworkRequest.getHeaders());
     }
 
+    /**
+     * Simulates a {@code HttpConnecting} with the provided parameters. Intended for use with a
+     * Mockito.when() to mock network responses.
+     *
+     * @param responseCode a mock response code
+     * @param responseStream response to be simulated
+     * @param metadata headers to be simulated
+     * @return a mock {@code HttpConnecting} with the provided parameters
+     */
     static HttpConnecting simulateNetworkResponse(
             int responseCode, InputStream responseStream, Map<String, String> metadata) {
         final HttpConnecting mockResponse = Mockito.mock(HttpConnecting.class);
