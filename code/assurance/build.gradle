@@ -15,6 +15,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'com.diffplug.spotless'
+    id 'kotlin-android'
 }
 
 // Apply local gradle tasks
@@ -79,6 +80,11 @@ android {
         targetCompatibility rootProject.ext.targetCompatibility
     }
 
+    kotlinOptions {
+        jvmTarget = rootProject.ext.kotlinJvmTarget
+        languageVersion = rootProject.ext.kotlinLanguageVersion
+        apiVersion = rootProject.ext.kotlinApiVersion
+    }
 }
 
 
@@ -235,11 +241,13 @@ task platformFunctionalTestJacocoReport(type: JacocoReport, dependsOn: "createPh
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinApiVersion"
     implementation "com.adobe.marketing.mobile:core:${rootProject.mavenCoreVersion}"
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.code.gson:gson:2.8.5'
-    testImplementation "org.mockito:mockito-core:4.5.1"
+    testImplementation 'org.mockito:mockito-core:4.5.1'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:3.2.0'
     testImplementation 'org.mockito:mockito-inline:4.5.1'
     testImplementation 'net.sf.kxml:kxml2:2.3.0@jar'
     testImplementation 'org.json:json:20171018'

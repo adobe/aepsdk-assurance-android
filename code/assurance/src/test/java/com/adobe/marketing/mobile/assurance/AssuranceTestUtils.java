@@ -11,9 +11,18 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
+import com.adobe.marketing.mobile.services.HttpConnecting;
+import com.adobe.marketing.mobile.services.NetworkRequest;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.Map;
+import org.mockito.Mockito;
 
 /** Utility class for tests. */
 class AssuranceTestUtils {
@@ -34,5 +43,53 @@ class AssuranceTestUtils {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             fail(String.format("Failed to set %s.%s", classToSet, name));
         }
+    }
+
+    /**
+     * Compares the provided {@code NetworkRequest} parameters and determines if they represent the
+     * same request.
+     *
+     * @param expectedNetworkRequest the {@code NetworkRequest} to be compared against
+     * @param actualNetworkRequest the {@code NetworkRequest} to be validated
+     */
+    static void verifyNetworkRequestParams(
+            final NetworkRequest expectedNetworkRequest,
+            final NetworkRequest actualNetworkRequest) {
+        assertEquals(expectedNetworkRequest.getUrl(), actualNetworkRequest.getUrl());
+        assertEquals(expectedNetworkRequest.getMethod(), actualNetworkRequest.getMethod());
+        assertEquals(
+                new String(expectedNetworkRequest.getBody()),
+                new String(actualNetworkRequest.getBody()));
+        assertEquals(
+                expectedNetworkRequest.getConnectTimeout(),
+                actualNetworkRequest.getConnectTimeout());
+        assertEquals(
+                expectedNetworkRequest.getReadTimeout(), actualNetworkRequest.getReadTimeout());
+        assertEquals(expectedNetworkRequest.getHeaders(), actualNetworkRequest.getHeaders());
+    }
+
+    /**
+     * Simulates a {@code HttpConnecting} with the provided parameters. Intended for use with a
+     * Mockito.when() to mock network responses.
+     *
+     * @param responseCode a mock response code
+     * @param responseStream response to be simulated
+     * @param metadata headers to be simulated
+     * @return a mock {@code HttpConnecting} with the provided parameters
+     */
+    static HttpConnecting simulateNetworkResponse(
+            int responseCode, InputStream responseStream, Map<String, String> metadata) {
+        final HttpConnecting mockResponse = Mockito.mock(HttpConnecting.class);
+        when(mockResponse.getResponseCode()).thenReturn(responseCode);
+        when(mockResponse.getInputStream()).thenReturn(responseStream);
+        doAnswer(
+                        invocation -> {
+                            final String key = invocation.getArgument(0);
+                            return metadata.get(key);
+                        })
+                .when(mockResponse)
+                .getResponsePropertyValue(any());
+
+        return mockResponse;
     }
 }
