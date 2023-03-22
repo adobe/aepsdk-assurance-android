@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance
 
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.assurance.AssuranceTestUtils.simulateNetworkResponse
 import com.adobe.marketing.mobile.services.DeviceInforming
@@ -173,16 +173,16 @@ class QuickConnectManagerTest {
 
         // simulate REQUEST_FAILED response
         val quickConnectDeviceStatusCheckerCaptor: KArgumentCaptor<QuickConnectDeviceStatusChecker> = argumentCaptor()
-        capturedDeviceCreationTask.getCallback().call(Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED))
+        capturedDeviceCreationTask.getCallback().call(Response.Failure(AssuranceConnectionError.CREATE_DEVICE_REQUEST_FAILED))
         verify(mockExecutorService, never()).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), anyLong(), any(TimeUnit::class.java))
 
-        verify(mockQuickConnectCallback).onError(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED)
+        verify(mockQuickConnectCallback).onError(AssuranceConnectionError.CREATE_DEVICE_REQUEST_FAILED)
 
         // simulate UNEXPECTED_ERROR response
-        capturedDeviceCreationTask.getCallback().call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
+        capturedDeviceCreationTask.getCallback().call(Response.Failure(AssuranceConnectionError.UNEXPECTED_ERROR))
         verify(mockExecutorService, never()).schedule(quickConnectDeviceStatusCheckerCaptor.capture(), anyLong(), any(TimeUnit::class.java))
 
-        verify(mockQuickConnectCallback).onError(AssuranceQuickConnectError.UNEXPECTED_ERROR)
+        verify(mockQuickConnectCallback).onError(AssuranceConnectionError.UNEXPECTED_ERROR)
     }
 
     @Test

@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.StringUtils;
@@ -87,8 +88,13 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         /** Callback indicating that the AssuranceSession is connected. */
         void onSessionConnected();
 
-        /** Callback indicating that the AssuranceSession is disconnected. */
-        void onSessionTerminated();
+        /**
+         * Callback indicating that the AssuranceSession is disconnected.
+         *
+         * @param error an optional {@code AssuranceConnectionError} if the session was terminated
+         *     due to an error.
+         */
+        void onSessionTerminated(@Nullable AssuranceConstants.AssuranceConnectionError error);
     }
 
     AssuranceSession(
@@ -356,7 +362,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 clearSessionData();
                 assuranceSessionPresentationManager.onSessionDisconnected(closeCode);
                 pluginManager.onSessionTerminated();
-                notifyTerminationAndRemoveStatusListeners();
+                notifyTerminationAndRemoveStatusListeners(null);
                 break;
 
             case AssuranceConstants.SocketCloseCode.ORG_MISMATCH:
@@ -370,7 +376,8 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 // option and UI will be dismissed anyhow
                 pluginManager.onSessionDisconnected(closeCode);
                 pluginManager.onSessionTerminated();
-                notifyTerminationAndRemoveStatusListeners();
+                notifyTerminationAndRemoveStatusListeners(
+                        AssuranceConstants.SocketCloseCode.toAssuranceConnectionError(closeCode));
                 break;
 
             default:
@@ -568,10 +575,11 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
      * collection of AssuranceSession due to any references to the listener exceeding session
      * lifespan.
      */
-    private void notifyTerminationAndRemoveStatusListeners() {
+    private void notifyTerminationAndRemoveStatusListeners(
+            @Nullable AssuranceConstants.AssuranceConnectionError error) {
         for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
             if (listener != null) {
-                listener.onSessionTerminated();
+                listener.onSessionTerminated(error);
                 unregisterStatusListener(listener);
             }
         }

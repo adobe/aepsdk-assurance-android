@@ -52,7 +52,7 @@ class QuickConnectDeviceStatusCheckerTest {
     private lateinit var mockServiceProvider: ServiceProvider
 
     @Mock
-    private lateinit var mockCallback: AdobeCallback<Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError>>
+    private lateinit var mockCallback: AdobeCallback<Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError>>
 
     private lateinit var mockedStaticServiceProvider: MockedStatic<ServiceProvider>
 
@@ -150,10 +150,10 @@ class QuickConnectDeviceStatusCheckerTest {
         val simulatedResponse = simulateNetworkResponse(HttpURLConnection.HTTP_OK, "ResponseData".byteInputStream(), mapOf())
         capturedNetworkCallback.call(simulatedResponse)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError> = responseCaptor.firstValue
         if (capturedResponse is Response.Success) {
             assertEquals(simulatedResponse.inputStream, capturedResponse.data.inputStream)
             assertEquals(simulatedResponse.responseCode, capturedResponse.data.responseCode)
@@ -208,13 +208,13 @@ class QuickConnectDeviceStatusCheckerTest {
         val simulatedResponse = simulateNetworkResponse(HttpURLConnection.HTTP_NOT_FOUND, null, mapOf())
         capturedNetworkCallback.call(simulatedResponse)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError> = responseCaptor.firstValue
 
         if (capturedResponse is Response.Failure) {
-            assertEquals(AssuranceConstants.AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED, capturedResponse.error)
+            assertEquals(AssuranceConstants.AssuranceConnectionError.DEVICE_STATUS_REQUEST_FAILED, capturedResponse.error)
         } else {
             fail("Error response should have been delivered.")
         }
@@ -265,13 +265,13 @@ class QuickConnectDeviceStatusCheckerTest {
         // simulate null response for the request
         capturedNetworkCallback.call(null)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConstants.AssuranceConnectionError> = responseCaptor.firstValue
 
         if (capturedResponse is Response.Failure) {
-            assertEquals(AssuranceConstants.AssuranceQuickConnectError.UNEXPECTED_ERROR, capturedResponse.error)
+            assertEquals(AssuranceConstants.AssuranceConnectionError.UNEXPECTED_ERROR, capturedResponse.error)
         } else {
             fail("Error response should have been delivered.")
         }

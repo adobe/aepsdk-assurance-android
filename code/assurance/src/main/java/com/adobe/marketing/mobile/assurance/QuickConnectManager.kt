@@ -13,7 +13,7 @@ package com.adobe.marketing.mobile.assurance
 
 import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.Assurance.LOG_TAG
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.Log
@@ -130,7 +130,7 @@ internal class QuickConnectManager(
      * @param clientId the clientId for which quick connect was initiated
      * @param response the [Response] from the [checkDeviceStatus] request that is to be handled
      */
-    private fun handleStatusCheckResponse(orgId: String, clientId: String, response: Response<HttpConnecting, AssuranceQuickConnectError>) {
+    private fun handleStatusCheckResponse(orgId: String, clientId: String, response: Response<HttpConnecting, AssuranceConnectionError>) {
         when (response) {
             is Response.Success -> {
                 val sessionDetails = extractSessionDetails(StreamUtils.readAsString(response.data.inputStream))
@@ -157,7 +157,7 @@ internal class QuickConnectManager(
                 } else {
                     // Maximum allowed retries for checking the status has been reached.
                     Log.trace(LOG_TAG, LOG_SOURCE, "Will not retry. Maximum allowed retries for status check have been reached.")
-                    quickConnectCallback.onError(AssuranceQuickConnectError.RETRY_LIMIT_REACHED)
+                    quickConnectCallback.onError(AssuranceConnectionError.RETRY_LIMIT_REACHED)
                     cleanup()
                 }
             }

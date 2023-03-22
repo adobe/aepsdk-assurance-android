@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile.assurance
 
 import com.adobe.marketing.mobile.AdobeCallback
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.assurance.AssuranceTestUtils.simulateNetworkResponse
 import com.adobe.marketing.mobile.assurance.AssuranceTestUtils.verifyNetworkRequestParams
@@ -55,7 +55,7 @@ class QuickConnectDeviceCreatorTest {
     private lateinit var mockServiceProvider: ServiceProvider
 
     @Mock
-    private lateinit var mockCallback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
+    private lateinit var mockCallback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 
     private lateinit var mockedStaticServiceProvider: MockedStatic<ServiceProvider>
 
@@ -154,10 +154,10 @@ class QuickConnectDeviceCreatorTest {
         val simulatedResponse = simulateNetworkResponse(HttpURLConnection.HTTP_OK, "ResponseData".byteInputStream(), mapOf())
         capturedNetworkCallback.call(simulatedResponse)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConnectionError> = responseCaptor.firstValue
         if (capturedResponse is Response.Success) {
             assertEquals(simulatedResponse.inputStream, capturedResponse.data.inputStream)
             assertEquals(simulatedResponse.responseCode, capturedResponse.data.responseCode)
@@ -213,13 +213,13 @@ class QuickConnectDeviceCreatorTest {
         val simulatedResponse = simulateNetworkResponse(HttpURLConnection.HTTP_NOT_FOUND, null, mapOf())
         capturedNetworkCallback.call(simulatedResponse)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConnectionError> = responseCaptor.firstValue
 
         if (capturedResponse is Response.Failure) {
-            assertEquals(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED, capturedResponse.error)
+            assertEquals(AssuranceConnectionError.CREATE_DEVICE_REQUEST_FAILED, capturedResponse.error)
         } else {
             fail("Error response should have been delivered.")
         }
@@ -271,13 +271,13 @@ class QuickConnectDeviceCreatorTest {
         // simulate null response for the request
         capturedNetworkCallback.call(null)
 
-        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceQuickConnectError>> = argumentCaptor()
+        val responseCaptor: KArgumentCaptor<Response<HttpConnecting, AssuranceConnectionError>> = argumentCaptor()
         verify(mockCallback).call(responseCaptor.capture())
 
-        val capturedResponse: Response<HttpConnecting, AssuranceQuickConnectError> = responseCaptor.firstValue
+        val capturedResponse: Response<HttpConnecting, AssuranceConnectionError> = responseCaptor.firstValue
 
         if (capturedResponse is Response.Failure) {
-            assertEquals(AssuranceQuickConnectError.UNEXPECTED_ERROR, capturedResponse.error)
+            assertEquals(AssuranceConnectionError.UNEXPECTED_ERROR, capturedResponse.error)
         } else {
             fail("Error response should have been delivered.")
         }
