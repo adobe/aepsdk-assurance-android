@@ -93,7 +93,10 @@ internal class QuickConnectManager(
         val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName) {
             when (it) {
                 is Response.Success -> checkDeviceStatus(orgId, clientId)
-                is Response.Failure -> quickConnectCallback.onError(it.error)
+                is Response.Failure -> {
+                    quickConnectCallback.onError(it.error)
+                    cleanup()
+                }
             }
         }
 

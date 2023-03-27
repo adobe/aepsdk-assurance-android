@@ -135,9 +135,8 @@ public final class AssuranceExtension extends Extension {
             Log.warning(
                     Assurance.LOG_TAG,
                     LOG_TAG,
-                    "Unable to start Assurance session. Make sure Assurance.registerExtension()is"
-                        + " called before starting the session. For more details refer to"
-                        + " https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#register-aepassurance-with-mobile-core");
+                    "Unable to start Assurance session. Make sure Assurance Extension "
+                            + "is registered before startSession() is called.");
             return;
         }
 
@@ -180,9 +179,11 @@ public final class AssuranceExtension extends Extension {
                                         .START_URL_QUERY_KEY_ENVIRONMENT));
 
         // Create a new session. Note that new session creation via new deeplink will never have a
-        // PIN and
-        // will go through the PIN flow. So at this time it is OK to pass a null pin.
-        assuranceSessionOrchestrator.createSession(sessionId, environment, null);
+        // PIN and will go through the PIN flow. So at this time it is OK to pass a null pin.
+        // Additionally, UI state of such a pin session can be controlled via a reference to the
+        // UI so a status listener/delegate is not needed.
+        assuranceSessionOrchestrator.createSession(
+                sessionId, environment, null, null, SessionAuthorizingPresentation.Type.PIN);
         Log.trace(
                 Assurance.LOG_TAG,
                 LOG_TAG,
@@ -412,7 +413,7 @@ public final class AssuranceExtension extends Extension {
                 LOG_TAG,
                 "Timeout - Assurance did not receive deeplink to start Assurance session within 5"
                         + " seconds. Shutting down Assurance extension");
-        assuranceSessionOrchestrator.terminateSession();
+        assuranceSessionOrchestrator.terminateSession(true);
     }
 
     /**
