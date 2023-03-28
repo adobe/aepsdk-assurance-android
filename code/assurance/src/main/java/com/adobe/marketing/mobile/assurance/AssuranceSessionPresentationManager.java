@@ -101,35 +101,20 @@ class AssuranceSessionPresentationManager {
 
     /** Shows the UI elements that are required when a session connection has been disconnected. */
     void onSessionDisconnected(final int closeCode) {
-        switch (closeCode) {
-            case AssuranceConstants.SocketCloseCode.NORMAL:
-                cleanupUIElements();
-                break;
+        if (closeCode == AssuranceConstants.SocketCloseCode.NORMAL) {
+            cleanupUIElements();
+            return;
+        }
 
-            case AssuranceConstants.SocketCloseCode.ORG_MISMATCH:
-                displayError(AssuranceConstants.AssuranceSocketError.ORGID_MISMATCH, closeCode);
-                break;
+        final AssuranceConstants.AssuranceConnectionError assuranceConnectionError =
+                AssuranceConstants.SocketCloseCode.toAssuranceConnectionError(closeCode);
 
-            case AssuranceConstants.SocketCloseCode.CLIENT_ERROR:
-                displayError(AssuranceConstants.AssuranceSocketError.CLIENT_ERROR, closeCode);
-                break;
-
-            case AssuranceConstants.SocketCloseCode.CONNECTION_LIMIT:
-                displayError(AssuranceConstants.AssuranceSocketError.CONNECTION_LIMIT, closeCode);
-                break;
-
-            case AssuranceConstants.SocketCloseCode.EVENT_LIMIT:
-                displayError(AssuranceConstants.AssuranceSocketError.EVENT_LIMIT, closeCode);
-                break;
-
-            case AssuranceConstants.SocketCloseCode.SESSION_DELETED:
-                displayError(AssuranceConstants.AssuranceSocketError.SESSION_DELETED, closeCode);
-                break;
-
-            default:
-                displayError(
-                        AssuranceConstants.AssuranceSocketError.GENERIC_ERROR,
-                        AssuranceConstants.SocketCloseCode.ABNORMAL);
+        if (assuranceConnectionError != null) {
+            displayError(assuranceConnectionError, closeCode);
+        } else {
+            displayError(
+                    AssuranceConstants.AssuranceConnectionError.GENERIC_ERROR,
+                    AssuranceConstants.SocketCloseCode.ABNORMAL);
         }
     }
 
@@ -224,7 +209,7 @@ class AssuranceSessionPresentationManager {
     }
 
     private void displayError(
-            final AssuranceConstants.AssuranceSocketError socketError, final int closeCode) {
+            final AssuranceConstants.AssuranceConnectionError socketError, final int closeCode) {
         if (urlProvider != null && urlProvider.isDisplayed()) {
             // If this is an unhandled/abnormal error while the PIN screen is on, set the retry flag
             // to true.
@@ -262,7 +247,7 @@ class AssuranceSessionPresentationManager {
         }
     }
 
-    private void showErrorDisplay(final AssuranceConstants.AssuranceSocketError socketError) {
+    private void showErrorDisplay(final AssuranceConstants.AssuranceConnectionError socketError) {
         final Activity currentActivity = applicationHandle.getCurrentActivity();
 
         if (currentActivity == null) {
@@ -282,7 +267,7 @@ class AssuranceSessionPresentationManager {
                     AssuranceConstants.IntentExtraKey.ERROR_NAME, socketError.getError());
             errorScreen.putExtra(
                     AssuranceConstants.IntentExtraKey.ERROR_DESCRIPTION,
-                    socketError.getErrorDescription());
+                    socketError.getDescription());
             currentActivity.startActivity(errorScreen);
             currentActivity.overridePendingTransition(0, 0);
         } catch (final ActivityNotFoundException ex) {

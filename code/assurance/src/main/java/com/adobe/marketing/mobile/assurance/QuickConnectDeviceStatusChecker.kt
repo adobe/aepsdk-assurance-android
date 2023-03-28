@@ -14,7 +14,7 @@ package com.adobe.marketing.mobile.assurance
 import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.AdobeCallback
 import com.adobe.marketing.mobile.Assurance.LOG_TAG
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
@@ -36,7 +36,7 @@ import javax.net.ssl.HttpsURLConnection
 internal class QuickConnectDeviceStatusChecker(
     private val orgId: String,
     private val clientId: String,
-    private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
+    private val callback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 ) : Runnable {
 
     companion object {
@@ -52,7 +52,7 @@ internal class QuickConnectDeviceStatusChecker(
         }
 
         if (networkRequest == null) {
-            callback.call(Response.Failure(AssuranceQuickConnectError.STATUS_CHECK_REQUEST_MALFORMED))
+            callback.call(Response.Failure(AssuranceConnectionError.STATUS_CHECK_REQUEST_MALFORMED))
             return
         }
 
@@ -92,14 +92,14 @@ internal class QuickConnectDeviceStatusChecker(
     private fun makeRequest(networkRequest: NetworkRequest) {
         ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
             if (response == null) {
-                callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
+                callback.call(Response.Failure(AssuranceConnectionError.UNEXPECTED_ERROR))
                 return@connectAsync
             }
 
             val responseCode = response.responseCode
             if (!(responseCode == HttpsURLConnection.HTTP_CREATED || responseCode == HttpsURLConnection.HTTP_OK)) {
                 Log.trace(LOG_TAG, LOG_SOURCE, "Device status check failed with code : $responseCode and message: ${response.responseMessage}.")
-                callback.call(Response.Failure(AssuranceQuickConnectError.DEVICE_STATUS_REQUEST_FAILED))
+                callback.call(Response.Failure(AssuranceConnectionError.DEVICE_STATUS_REQUEST_FAILED))
             } else {
                 callback.call(Response.Success(response))
             }
@@ -113,7 +113,7 @@ internal class QuickConnectDeviceStatusChecker(
      * exposing the getter for callback in the constructor itself because the annotations are not retained with that way.
      */
     @VisibleForTesting
-    internal fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
+    internal fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>> {
         return callback
     }
 }

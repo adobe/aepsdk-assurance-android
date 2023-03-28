@@ -122,7 +122,8 @@ class AssuranceSessionOrchestrator {
                 }
 
                 @Override
-                public void onSessionTerminated() {
+                public void onSessionTerminated(
+                        final AssuranceConstants.AssuranceConnectionError error) {
                     // In case of a user initiated AssuranceSessionOrchestrator#terminateSession()
                     // will unregister the listener against the session
                     // before disconnecting it. So this callback is never invoked in that flow.

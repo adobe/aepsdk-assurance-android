@@ -190,13 +190,13 @@ class AssurancePinCodeEntryURLProvider
     }
 
     public void onConnectionFailed(
-            final AssuranceConstants.AssuranceSocketError socketError,
+            final AssuranceConstants.AssuranceConnectionError connectionError,
             final boolean shouldShowRetry) {
         pinCodeTakeover.runJavascript(
                 "showError('"
-                        + socketError.getError()
+                        + connectionError.getError()
                         + "', '"
-                        + socketError.getErrorDescription()
+                        + connectionError.getDescription()
                         + "', "
                         + shouldShowRetry
                         + ")");
@@ -205,7 +205,7 @@ class AssurancePinCodeEntryURLProvider
                 LOG_TAG,
                 String.format(
                         "Assurance connection closed. Reason: %s, Description: %s",
-                        socketError.getError(), socketError.getErrorDescription()));
+                        connectionError.getError(), connectionError.getDescription()));
     }
 
     @Override
@@ -237,9 +237,10 @@ class AssurancePinCodeEntryURLProvider
                         LOG_TAG,
                         String.format(
                                 "%s %s",
-                                AssuranceConstants.AssuranceSocketError.NO_ORGID.getError(),
-                                AssuranceConstants.AssuranceSocketError.NO_ORGID.getError()));
-                onConnectionFailed(AssuranceConstants.AssuranceSocketError.NO_ORGID, true);
+                                AssuranceConstants.AssuranceConnectionError.NO_ORG_ID.getError(),
+                                AssuranceConstants.AssuranceConnectionError.NO_ORG_ID
+                                        .getDescription()));
+                onConnectionFailed(AssuranceConstants.AssuranceConnectionError.NO_ORG_ID, true);
                 return true;
             }
 

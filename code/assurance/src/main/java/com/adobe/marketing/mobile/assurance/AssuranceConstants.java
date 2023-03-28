@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.assurance;
 
 
+import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -223,6 +224,35 @@ final class AssuranceConstants {
         static final int SESSION_DELETED = 4903;
 
         private SocketCloseCode() {}
+
+        /**
+         * Converts a socket close code to an {@code AssuranceConnectionError} if such a mapping
+         * exists. Not all socket close codes are error codes and not all AssuranceConnectionErrors
+         * are socket errors. So this utility is needed to bridge socket codes and
+         * AssuranceConnectionError.
+         *
+         * @param closeCode a socket close code for which an AssuranceConnectionError is needed
+         * @return an {@code AssuranceConnectionError}
+         */
+        @Nullable
+        static AssuranceConnectionError toAssuranceConnectionError(final int closeCode) {
+            switch (closeCode) {
+                case ORG_MISMATCH:
+                    return AssuranceConnectionError.ORG_ID_MISMATCH;
+                case CLIENT_ERROR:
+                    return AssuranceConnectionError.CLIENT_ERROR;
+                case CONNECTION_LIMIT:
+                    return AssuranceConnectionError.CONNECTION_LIMIT;
+                case EVENT_LIMIT:
+                    return AssuranceConnectionError.EVENT_LIMIT;
+                case SESSION_DELETED:
+                    return AssuranceConnectionError.SESSION_DELETED;
+                case ABNORMAL:
+                    return AssuranceConnectionError.GENERIC_ERROR;
+                default:
+                    return null;
+            }
+        }
     }
 
     static final class IntentExtraKey {
@@ -251,60 +281,41 @@ final class AssuranceConstants {
     // Enums
     // ========================================================================================
 
-    enum AssuranceSocketError {
+    enum AssuranceConnectionError {
         GENERIC_ERROR(
                 "Connection Error",
                 "The connection may be failing due to a network issue or an incorrect PIN. "
-                        + "Please verify internet connectivity or the PIN and try again."),
-        NO_ORGID(
+                        + "Please verify internet connectivity or the PIN and try again.",
+                true),
+        NO_ORG_ID(
                 "Invalid Configuration",
                 "The Experience Cloud organization identifier is unavailable from the SDK. Ensure"
-                    + " SDK configuration is setup correctly. See documentation for more detail."),
-        ORGID_MISMATCH(
+                    + " SDK configuration is setup correctly. See documentation for more detail.",
+                false),
+        ORG_ID_MISMATCH(
                 "Unauthorized Access",
                 "The Experience Cloud organization identifier does not match with that of the"
                     + " Assurance session. Ensure the right Experience Cloud organization is being"
-                    + " used. See documentation for more detail."),
+                    + " used. See documentation for more detail.",
+                false),
         CONNECTION_LIMIT(
                 "Connection Limit Reached",
                 "You have reached the maximum number of connected devices allowed for a session. "
-                        + "Please disconnect another device and try again."),
+                        + "Please disconnect another device and try again.",
+                false),
         EVENT_LIMIT(
                 "Event Limit Reached",
-                "You have reached the maximum number of events that can be sent per minute."),
+                "You have reached the maximum number of events that can be sent per minute.",
+                false),
         CLIENT_ERROR(
                 "Client Disconnected",
-                "This client has been disconnected due to an unexpected error. Error Code 4400."),
+                "This client has been disconnected due to an unexpected error. Error Code 4400.",
+                false),
         SESSION_DELETED(
                 "Session Deleted",
-                "The session client connected to has been deleted. Error Code 4903.");
+                "The session client connected to has been deleted. Error Code 4903.",
+                false),
 
-        private final String error;
-        private final String errorDescription;
-
-        private AssuranceSocketError(final String error, final String description) {
-            this.error = error;
-            this.errorDescription = description;
-        }
-
-        String getErrorDescription() {
-            return errorDescription;
-        }
-
-        String getError() {
-            return error;
-        }
-
-        @Override
-        public String toString() {
-            return error + ": " + errorDescription;
-        }
-    }
-
-    /**
-     * UI facing error messages for QuickConnect. Todo: Content needs to be modified before release.
-     */
-    enum AssuranceQuickConnectError {
         CREATE_DEVICE_REQUEST_MALFORMED(
                 "Malformed Request",
                 "The network request for device creation was malformed.",
@@ -319,23 +330,23 @@ final class AssuranceConstants {
         DEVICE_STATUS_REQUEST_FAILED("Request Failed", "Failed to get device status", true),
         UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occurred", true);
 
-        private final String message;
+        private final String error;
         private final String description;
         private final boolean isRetryable;
 
-        AssuranceQuickConnectError(
-                final String message, final String description, final boolean isRetryable) {
-            this.message = message;
+        private AssuranceConnectionError(
+                final String error, final String description, final boolean isRetryable) {
+            this.error = error;
             this.description = description;
             this.isRetryable = isRetryable;
         }
 
-        String getMessage() {
-            return message;
-        }
-
         String getDescription() {
             return description;
+        }
+
+        String getError() {
+            return error;
         }
 
         boolean isRetryable() {

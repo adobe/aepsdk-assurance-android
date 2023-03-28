@@ -23,10 +23,10 @@ interface QuickConnectCallback {
     /**
      * Invoked when an error occurs when during QuickConnect connection workflow.
      *
-     * @param error an {@code AssuranceQuickConnectError} that occurred resulting in quick connect
+     * @param error an {@code AssuranceConnectionError} that occurred resulting in quick connect
      *     workflow cancellation
      */
-    void onError(@NonNull AssuranceConstants.AssuranceQuickConnectError error);
+    void onError(@NonNull AssuranceConstants.AssuranceConnectionError error);
 
     /**
      * Invoked with the quick connect session details when the QuickConnect workflow is successful.

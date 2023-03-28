@@ -14,7 +14,7 @@ package com.adobe.marketing.mobile.assurance
 import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.AdobeCallback
 import com.adobe.marketing.mobile.Assurance
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceQuickConnectError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.HttpMethod
@@ -37,7 +37,7 @@ internal class QuickConnectDeviceCreator(
     private val orgId: String,
     private val clientId: String,
     private val deviceName: String,
-    private val callback: AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>>
+    private val callback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 ) : Runnable {
 
     companion object {
@@ -53,7 +53,7 @@ internal class QuickConnectDeviceCreator(
         }
 
         if (networkRequest == null) {
-            callback.call(Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_MALFORMED))
+            callback.call(Response.Failure(AssuranceConnectionError.CREATE_DEVICE_REQUEST_MALFORMED))
             return
         }
 
@@ -97,7 +97,7 @@ internal class QuickConnectDeviceCreator(
     private fun makeRequest(networkRequest: NetworkRequest) {
         ServiceProvider.getInstance().networkService.connectAsync(networkRequest) { response: HttpConnecting? ->
             if (response == null) {
-                callback.call(Response.Failure(AssuranceQuickConnectError.UNEXPECTED_ERROR))
+                callback.call(Response.Failure(AssuranceConnectionError.UNEXPECTED_ERROR))
                 return@connectAsync
             }
 
@@ -113,7 +113,7 @@ internal class QuickConnectDeviceCreator(
             } else {
                 Log.trace(Assurance.LOG_TAG, LOG_SOURCE, "Device registration failed with code : $responseCode and message: ${response.responseMessage}.")
                 callback.call(
-                    Response.Failure(AssuranceQuickConnectError.CREATE_DEVICE_REQUEST_FAILED)
+                    Response.Failure(AssuranceConnectionError.CREATE_DEVICE_REQUEST_FAILED)
                 )
             }
 
@@ -126,7 +126,7 @@ internal class QuickConnectDeviceCreator(
      * exposing the getter for callback in the constructor itself because the annotations are not retained with that way.
      */
     @VisibleForTesting
-    fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceQuickConnectError>> {
+    fun getCallback(): AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>> {
         return callback
     }
 }
