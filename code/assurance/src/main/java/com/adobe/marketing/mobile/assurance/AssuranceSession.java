@@ -59,6 +59,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     private final AssuranceSessionPresentationManager assuranceSessionPresentationManager;
     private final Set<AssuranceSessionStatusListener> sessionStatusListeners;
     private final AssuranceConnectionDataStore connectionDataStore;
+    private final SessionAuthorizingPresentation.Type authorizingPresentationType;
 
     private final InboundEventQueueWorker.InboundQueueEventListener inboundQueueEventListener =
             new InboundEventQueueWorker.InboundQueueEventListener() {
@@ -105,7 +106,9 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             final AssuranceConnectionDataStore connectionDataStore,
             final AssuranceSessionOrchestrator.SessionUIOperationHandler uiOperationHandler,
             final List<AssurancePlugin> plugins,
-            final List<AssuranceEvent> bufferedEvents) {
+            final List<AssuranceEvent> bufferedEvents,
+            final SessionAuthorizingPresentation.Type authorizingPresentationType,
+            final AssuranceSessionStatusListener authorizingPresentationDelegate) {
 
         this.assuranceStateManager = assuranceStateManager;
         this.applicationHandle = applicationHandle;
@@ -113,10 +116,15 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         this.sessionId = sessionId;
         this.sessionStatusListeners = new HashSet<>();
         this.connectionDataStore = connectionDataStore;
+        this.authorizingPresentationType = authorizingPresentationType;
 
         assuranceSessionPresentationManager =
                 new AssuranceSessionPresentationManager(
-                        assuranceStateManager, uiOperationHandler, applicationHandle);
+                        assuranceStateManager,
+                        uiOperationHandler,
+                        applicationHandle,
+                        authorizingPresentationType,
+                        authorizingPresentationDelegate);
 
         pluginManager = new AssurancePluginManager(this);
 
@@ -171,7 +179,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             return;
         }
 
-        // If PIN is available, we want to connect directly without PIN prompt.
+        // If PIN is available, we want to connect directly without authorization prompt.
         Log.debug(Assurance.LOG_TAG, LOG_TAG, "Found stored. Connecting session directly");
         assuranceSessionPresentationManager.onSessionConnecting();
 
@@ -282,6 +290,15 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         return sessionId;
     }
 
+    /**
+     * Retrieves the type of the authorizing presentation that is associated with this session.
+     *
+     * @return the type of the authorizing presentation that is associated with this session.
+     */
+    SessionAuthorizingPresentation.Type getAuthorizingPresentationType() {
+        return authorizingPresentationType;
+    }
+
     @Override
     public void onSocketConnected(final AssuranceWebViewSocket socket) {
         Log.debug(Assurance.LOG_TAG, LOG_TAG, "Websocket connected.");
@@ -389,19 +406,27 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                                 errorReason, closeCode));
                 outboundEventQueueWorker.block();
                 assuranceSessionPresentationManager.onSessionDisconnected(closeCode);
-                long delayBeforeReconnect =
-                        isAttemptingToReconnect ? SOCKET_RECONNECT_TIME_DELAY : 0L;
 
-                // If the disconnect happens because of abnormal close code. And if we are
-                // attempting to reconnect for the first time then,
-                // 1. Make an appropriate UI log.
-                // 2. Change the button graphics to gray out.
-                // 3. Notify plugins on disconnect with abnormal close code.
-                // 4. Attempt to reconnect with appropriate time delay.
+                // If the disconnect happens because of abnormal close code when the
+                // authorizing presentation is not active, and if we are
+                // attempting to reconnect for the first time then :
+                //  1. Make an appropriate UI log.
+                //  2. Change the button graphics to gray out.
+                //  3. Notify plugins on disconnect with abnormal close code.
+                //  4. Attempt to reconnect with appropriate time delay.
+                // Otherwise, notify the plugins about disconnection and await a retry click
+                // from the UI.
                 if (!isAttemptingToReconnect) {
+                    pluginManager.onSessionDisconnected(closeCode);
+
+                    if (assuranceSessionPresentationManager.isAuthorizingPresentationActive()) {
+                        // Do not retry of authorizing presentation is active. Retry should only be
+                        // done from the UI in this case.
+                        return;
+                    }
+
                     isAttemptingToReconnect = true;
                     assuranceSessionPresentationManager.onSessionReconnecting();
-                    pluginManager.onSessionDisconnected(closeCode);
                     Log.warning(
                             Assurance.LOG_TAG,
                             LOG_TAG,
@@ -409,6 +434,8 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 }
 
                 // attempt to reconnect after a certain delay through reconnect handler
+                long delayBeforeReconnect =
+                        isAttemptingToReconnect ? SOCKET_RECONNECT_TIME_DELAY : 0L;
                 socketReconnectHandler.postDelayed(
                         new Runnable() {
                             @Override

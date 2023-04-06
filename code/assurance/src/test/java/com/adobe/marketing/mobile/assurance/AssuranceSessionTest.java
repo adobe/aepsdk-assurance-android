@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +63,8 @@ public class AssuranceSessionTest {
 
     @Mock AssuranceSessionPresentationManager mockAssuranceSessionPresentationManager;
 
+    @Mock AssuranceSession.AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
+
     @Mock AssuranceWebViewSocket mockAssuranceWebViewSocket;
 
     @Mock AssurancePluginManager mockAssurancePluginManager;
@@ -91,28 +94,7 @@ public class AssuranceSessionTest {
         when(mockAssuranceStateManager.getOrgId(true)).thenReturn(mockOrgId);
         when(mockAssuranceStateManager.getClientId()).thenReturn(mockClientId);
 
-        // create the instance of the griffon session
-        assuranceSession =
-                new AssuranceSession(
-                        mockApplicationHandle,
-                        mockAssuranceStateManager,
-                        "SampleSessionID",
-                        AssuranceConstants.AssuranceEnvironment.PROD,
-                        mockAssuranceConnectionDataStore,
-                        mockSessionUIOperationHandler,
-                        Collections.EMPTY_LIST,
-                        Collections.EMPTY_LIST);
-
-        // Assign mocks to private fields instantiated inside the constructor
-        setInternalState(
-                assuranceSession,
-                "assuranceSessionPresentationManager",
-                mockAssuranceSessionPresentationManager);
-        setInternalState(assuranceSession, "inboundEventQueueWorker", mockInboundEventQueueWorker);
-        setInternalState(
-                assuranceSession, "outboundEventQueueWorker", mockOutboundEventQueueWorker);
-        setInternalState(assuranceSession, "socket", mockAssuranceWebViewSocket);
-        setInternalState(assuranceSession, "pluginManager", mockAssurancePluginManager);
+        assuranceSession = createSession(mock(SessionAuthorizingPresentation.Type.class));
     }
 
     @Test
@@ -359,7 +341,9 @@ public class AssuranceSessionTest {
     }
 
     @Test
-    public void test_onSocketDisconnected_ABNORMAL_retry() throws Exception {
+    public void test_onSocketDisconnected_ABNORMAL_PinAuthorizingScreenDisplayed()
+            throws Exception {
+        assuranceSession = createSession(SessionAuthorizingPresentation.Type.PIN);
         final Handler mockHandler = Mockito.mock(Handler.class);
         setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
         doAnswer(
@@ -382,6 +366,110 @@ public class AssuranceSessionTest {
         final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
         when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
                 .thenReturn(mockConnectionURL);
+
+        when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
+        when(mockUri.getQueryParameter("token")).thenReturn((token));
+        when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
+        when(mockUri.getQueryParameter("clientId")).thenReturn((orgId));
+        when(mockAssuranceSessionPresentationManager.isAuthorizingPresentationActive())
+                .thenReturn(true);
+
+        assuranceSession.onSocketDisconnected(
+                mockAssuranceWebViewSocket,
+                "SampleReason",
+                AssuranceConstants.SocketCloseCode.ABNORMAL,
+                false);
+
+        verify(mockOutboundEventQueueWorker).block();
+        verify(mockAssuranceSessionPresentationManager)
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        verify(mockAssurancePluginManager)
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        // Verify that reconnection does not happen automatically when authorization screen is
+        // active
+        verify(mockAssuranceSessionPresentationManager, times(0)).onSessionReconnecting();
+        verify(mockAssuranceWebViewSocket, times(0)).connect(anyString());
+    }
+
+    @Test
+    public void test_onSocketDisconnected_ABNORMAL_QuickConnectAuthorizingUIDisplayed()
+            throws Exception {
+        assuranceSession = createSession(SessionAuthorizingPresentation.Type.QUICK_CONNECT);
+        final Handler mockHandler = Mockito.mock(Handler.class);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        doAnswer(
+                        new Answer() {
+                            @Override
+                            public Object answer(InvocationOnMock invocationOnMock)
+                                    throws Throwable {
+                                Runnable runnable = (Runnable) invocationOnMock.getArgument(0);
+                                runnable.run();
+                                return null;
+                            }
+                        })
+                .when(mockHandler)
+                .postDelayed(any(Runnable.class), anyLong());
+
+        final String sessionID = "sampleSessionId";
+        final String token = "1234";
+        final String orgId = "sampleOrgId";
+        final String clientID = "sampleClientId";
+        final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
+                .thenReturn(mockConnectionURL);
+
+        when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
+        when(mockUri.getQueryParameter("token")).thenReturn((token));
+        when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
+        when(mockUri.getQueryParameter("clientId")).thenReturn((orgId));
+        when(mockAssuranceSessionPresentationManager.isAuthorizingPresentationActive())
+                .thenReturn(true);
+
+        assuranceSession.onSocketDisconnected(
+                mockAssuranceWebViewSocket,
+                "SampleReason",
+                AssuranceConstants.SocketCloseCode.ABNORMAL,
+                false);
+
+        verify(mockOutboundEventQueueWorker).block();
+        verify(mockAssuranceSessionPresentationManager)
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        verify(mockAssurancePluginManager)
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        // Verify that reconnection does not happen automatically when authorization screen is
+        // active
+        verify(mockAssuranceSessionPresentationManager, times(0)).onSessionReconnecting();
+        verify(mockAssuranceWebViewSocket, times(0)).connect(anyString());
+    }
+
+    @Test
+    public void test_onSocketDisconnected_ABNORMAL_PinAuthorizingUINotDisplayed() throws Exception {
+        assuranceSession = createSession(SessionAuthorizingPresentation.Type.PIN);
+
+        final Handler mockHandler = Mockito.mock(Handler.class);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        doAnswer(
+                        new Answer() {
+                            @Override
+                            public Object answer(InvocationOnMock invocationOnMock)
+                                    throws Throwable {
+                                Runnable runnable = (Runnable) invocationOnMock.getArgument(0);
+                                runnable.run();
+                                return null;
+                            }
+                        })
+                .when(mockHandler)
+                .postDelayed(any(Runnable.class), anyLong());
+
+        final String sessionID = "sampleSessionId";
+        final String token = "1234";
+        final String orgId = "sampleOrgId";
+        final String clientID = "sampleClientId";
+        final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
+                .thenReturn(mockConnectionURL);
+        when(mockAssuranceSessionPresentationManager.isAuthorizingPresentationActive())
+                .thenReturn(false);
         when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
         when(mockUri.getQueryParameter("token")).thenReturn((token));
         when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
@@ -398,6 +486,65 @@ public class AssuranceSessionTest {
                 AssuranceConstants.SocketCloseCode.ABNORMAL,
                 true);
 
+        // Verify that reconnection attempt occurs
+        verify(mockOutboundEventQueueWorker, times(2)).block();
+        verify(mockAssuranceSessionPresentationManager, times(2))
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        verify(mockAssuranceWebViewSocket, times(2)).connect(anyString());
+
+        // Plugins should only be notified once
+        verify(mockAssurancePluginManager, times(1))
+                .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
+        // Reconnecting message should only be printed once.
+        verify(mockAssuranceSessionPresentationManager, times(1)).onSessionReconnecting();
+    }
+
+    @Test
+    public void test_onSocketDisconnected_ABNORMAL_QuickConnectAuthorizingUINotDisplayed()
+            throws Exception {
+        assuranceSession = createSession(SessionAuthorizingPresentation.Type.QUICK_CONNECT);
+
+        final Handler mockHandler = Mockito.mock(Handler.class);
+        setInternalState(assuranceSession, "socketReconnectHandler", mockHandler);
+        doAnswer(
+                        new Answer() {
+                            @Override
+                            public Object answer(InvocationOnMock invocationOnMock)
+                                    throws Throwable {
+                                Runnable runnable = (Runnable) invocationOnMock.getArgument(0);
+                                runnable.run();
+                                return null;
+                            }
+                        })
+                .when(mockHandler)
+                .postDelayed(any(Runnable.class), anyLong());
+
+        final String sessionID = "sampleSessionId";
+        final String token = "1234";
+        final String orgId = "sampleOrgId";
+        final String clientID = "sampleClientId";
+        final String mockConnectionURL = buildURL(sessionID, token, orgId, clientID);
+        when(mockAssuranceConnectionDataStore.getStoredConnectionURL())
+                .thenReturn(mockConnectionURL);
+        when(mockAssuranceSessionPresentationManager.isAuthorizingPresentationActive())
+                .thenReturn(false);
+        when(mockUri.getQueryParameter("sessionId")).thenReturn((sessionID));
+        when(mockUri.getQueryParameter("token")).thenReturn((token));
+        when(mockUri.getQueryParameter("orgId")).thenReturn(orgId);
+        when(mockUri.getQueryParameter("clientId")).thenReturn((orgId));
+
+        assuranceSession.onSocketDisconnected(
+                mockAssuranceWebViewSocket,
+                "SampleReason",
+                AssuranceConstants.SocketCloseCode.ABNORMAL,
+                true);
+        assuranceSession.onSocketDisconnected(
+                mockAssuranceWebViewSocket,
+                "SampleReason",
+                AssuranceConstants.SocketCloseCode.ABNORMAL,
+                true);
+
+        // Verify that reconnection attempt occurs
         verify(mockOutboundEventQueueWorker, times(2)).block();
         verify(mockAssuranceSessionPresentationManager, times(2))
                 .onSessionDisconnected(AssuranceConstants.SocketCloseCode.ABNORMAL);
@@ -471,6 +618,38 @@ public class AssuranceSessionTest {
     public void teardown() {
         mockedStaticUri.close();
         mockedStaticMobileCore.close();
+    }
+
+    private AssuranceSession createSession(
+            final SessionAuthorizingPresentation.Type authorizingPresentationType) {
+        final AssuranceSession assuranceSession =
+                new AssuranceSession(
+                        mockApplicationHandle,
+                        mockAssuranceStateManager,
+                        "SampleSessionID",
+                        AssuranceConstants.AssuranceEnvironment.PROD,
+                        mockAssuranceConnectionDataStore,
+                        mockSessionUIOperationHandler,
+                        Collections.EMPTY_LIST,
+                        Collections.EMPTY_LIST,
+                        authorizingPresentationType,
+                        authorizingPresentationType
+                                        == SessionAuthorizingPresentation.Type.QUICK_CONNECT
+                                ? mockAssuranceSessionStatusListener
+                                : null);
+
+        // Assign mocks to private fields instantiated inside the constructor
+        setInternalState(
+                assuranceSession,
+                "assuranceSessionPresentationManager",
+                mockAssuranceSessionPresentationManager);
+        setInternalState(assuranceSession, "inboundEventQueueWorker", mockInboundEventQueueWorker);
+        setInternalState(
+                assuranceSession, "outboundEventQueueWorker", mockOutboundEventQueueWorker);
+        setInternalState(assuranceSession, "socket", mockAssuranceWebViewSocket);
+        setInternalState(assuranceSession, "pluginManager", mockAssurancePluginManager);
+
+        return assuranceSession;
     }
 
     private String buildURL(

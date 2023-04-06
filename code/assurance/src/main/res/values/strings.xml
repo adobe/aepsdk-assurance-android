@@ -11,4 +11,11 @@
 
 <resources>
     <string name="app_name">Assurance</string>
+    <string name="assurance_title">Assurance</string>
+    <string name="quick_connect_description">Confirm connection by visiting your session\'s connection detail screen</string>
+    <string name="quick_connect_button_connect">Connect</string>
+    <string name="quick_connect_button_cancel">Cancel</string>
+    <string name="quick_connect_button_waiting">Waiting..</string>
+    <string name="quick_connect_button_retry">Retry</string>
+
 </resources>

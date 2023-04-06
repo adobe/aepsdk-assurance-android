@@ -15,6 +15,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
@@ -117,7 +118,7 @@ public class AssuranceExtensionTest {
         // wait for 5 seconds
         Thread.sleep(TimeUnit.SECONDS.toMillis(6L));
 
-        verify(mockAssuranceSessionOrchestrator, times(1)).terminateSession();
+        verify(mockAssuranceSessionOrchestrator, times(1)).terminateSession(true);
     }
 
     @Test
@@ -131,12 +132,14 @@ public class AssuranceExtensionTest {
         Thread.sleep(TimeUnit.SECONDS.toMillis(6L));
 
         // verify that the extension is still running
-        verify(mockAssuranceSessionOrchestrator, never()).terminateSession();
+        verify(mockAssuranceSessionOrchestrator, never()).terminateSession(anyBoolean());
         verify(mockAssuranceSessionOrchestrator, times(1))
                 .createSession(
                         "6b55294e-32d4-49e8-9279-e3fe12a9d309",
                         AssuranceConstants.AssuranceEnvironment.PROD,
-                        null);
+                        null,
+                        null,
+                        SessionAuthorizingPresentation.Type.PIN);
     }
 
     @Test
@@ -151,12 +154,14 @@ public class AssuranceExtensionTest {
         assuranceExtension.startSession(DEEPLINK1);
         assuranceExtension.startSession(DEEPLINK2);
 
-        // verify that shared state is not created
+        // verify that session is not created
         verify(mockAssuranceSessionOrchestrator, times(0))
                 .createSession(
                         anyString(),
                         any(AssuranceConstants.AssuranceEnvironment.class),
-                        anyString());
+                        anyString(),
+                        any(AssuranceSession.AssuranceSessionStatusListener.class),
+                        any(SessionAuthorizingPresentation.Type.class));
     }
 
     @Test
@@ -168,12 +173,14 @@ public class AssuranceExtensionTest {
         // test
         assuranceExtension.startSession(DEEPLINK);
 
-        // verify that shared state is not created
+        // verify that session is not created
         verify(mockAssuranceSessionOrchestrator, times(0))
                 .createSession(
                         anyString(),
                         any(AssuranceConstants.AssuranceEnvironment.class),
-                        anyString());
+                        anyString(),
+                        any(AssuranceSession.AssuranceSessionStatusListener.class),
+                        any(SessionAuthorizingPresentation.Type.class));
     }
 
     @Test

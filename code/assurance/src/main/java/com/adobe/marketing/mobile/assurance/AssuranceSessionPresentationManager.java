@@ -27,12 +27,14 @@ class AssuranceSessionPresentationManager {
     private final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle;
     private AssuranceFloatingButton button;
     private AssuranceConnectionStatusUI statusUI;
-    private AssurancePinCodeEntryURLProvider urlProvider;
+    private SessionAuthorizingPresentation authorizingPresentation;
 
     AssuranceSessionPresentationManager(
             final AssuranceStateManager assuranceStateManager,
             final AssuranceSessionOrchestrator.SessionUIOperationHandler uiOperationHandler,
-            final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle) {
+            final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle,
+            final SessionAuthorizingPresentation.Type authorizingPresentationType,
+            final AssuranceSession.AssuranceSessionStatusListener authorizingPresentationDelegate) {
         this.applicationHandle = applicationHandle;
 
         statusUI = new AssuranceConnectionStatusUI(uiOperationHandler, applicationHandle);
@@ -49,9 +51,14 @@ class AssuranceSessionPresentationManager {
                             }
                         });
 
-        urlProvider =
-                new AssurancePinCodeEntryURLProvider(
-                        applicationHandle, uiOperationHandler, assuranceStateManager);
+        if (authorizingPresentationType == SessionAuthorizingPresentation.Type.PIN) {
+            authorizingPresentation =
+                    new AssurancePinCodeEntryProvider(
+                            applicationHandle, uiOperationHandler, assuranceStateManager);
+        } else {
+            authorizingPresentation =
+                    new QuickConnectAuthorizingPresentation(authorizingPresentationDelegate);
+        }
     }
 
     /**
@@ -69,15 +76,15 @@ class AssuranceSessionPresentationManager {
 
     /** Shows the UI elements that are required when a session is initialized. */
     void onSessionInitialized() {
-        if (urlProvider != null) {
-            urlProvider.launchPinDialog();
+        if (authorizingPresentation != null) {
+            authorizingPresentation.showAuthorization();
         }
     }
 
     /** Shows the UI elements that are required when a session connection is in progress. */
     void onSessionConnecting() {
-        if (urlProvider != null) {
-            urlProvider.onConnecting();
+        if (authorizingPresentation != null) {
+            authorizingPresentation.onConnecting();
         }
     }
 
@@ -86,8 +93,8 @@ class AssuranceSessionPresentationManager {
      * connection has been successfully established.
      */
     void onSessionConnected() {
-        if (urlProvider != null) {
-            urlProvider.onConnectionSucceeded();
+        if (authorizingPresentation != null) {
+            authorizingPresentation.onConnectionSucceeded();
         }
 
         if (button != null) {
@@ -182,17 +189,8 @@ class AssuranceSessionPresentationManager {
             button.onActivityResumed(activity);
         }
 
-        if (urlProvider != null) {
-            final Runnable deferredRunnable = urlProvider.deferredActivityRunnable;
-
-            if (deferredRunnable != null) {
-                Log.debug(
-                        Assurance.LOG_TAG,
-                        LOG_TAG,
-                        "Session Activity Hook - Deferred connection dialog found, triggering.");
-                deferredRunnable.run();
-                urlProvider.deferredActivityRunnable = null;
-            }
+        if (authorizingPresentation != null) {
+            authorizingPresentation.reorderToFront();
         }
     }
 
@@ -210,12 +208,12 @@ class AssuranceSessionPresentationManager {
 
     private void displayError(
             final AssuranceConstants.AssuranceConnectionError socketError, final int closeCode) {
-        if (urlProvider != null && urlProvider.isDisplayed()) {
-            // If this is an unhandled/abnormal error while the PIN screen is on, set the retry flag
-            // to true.
-            // Else the "Cancel" button on the PIN screen will allow socket disconnection and
-            // cleaning up of the UI Elements.
-            urlProvider.onConnectionFailed(
+        if (authorizingPresentation != null && authorizingPresentation.isDisplayed()) {
+            // If this is an unhandled/abnormal error while the authorizing screen is on,
+            // set the retry flag to true.
+            // In case of a non retryable error the "Cancel" button on the authorizing screen will
+            // allow socket disconnection and cleaning up of the UI Elements.
+            authorizingPresentation.onConnectionFailed(
                     socketError, closeCode == AssuranceConstants.SocketCloseCode.ABNORMAL);
         } else {
             if (closeCode == AssuranceConstants.SocketCloseCode.ABNORMAL) {
@@ -237,8 +235,8 @@ class AssuranceSessionPresentationManager {
             button = null;
         }
 
-        if (urlProvider != null) {
-            urlProvider = null;
+        if (authorizingPresentation != null) {
+            authorizingPresentation = null;
         }
 
         if (statusUI != null) {
@@ -277,5 +275,12 @@ class AssuranceSessionPresentationManager {
                     "Failed to show fullscreen takeover, could not start activity. Error %s",
                     ex.getLocalizedMessage());
         }
+    }
+
+    boolean isAuthorizingPresentationActive() {
+        if (authorizingPresentation != null) {
+            return authorizingPresentation.isDisplayed();
+        }
+        return false;
     }
 }

@@ -20,21 +20,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-class AssurancePinCodeEntryURLProvider
-        implements AssuranceFullScreenTakeover.FullScreenTakeoverCallbacks {
+class AssurancePinCodeEntryProvider
+        implements AssuranceFullScreenTakeover.FullScreenTakeoverCallbacks,
+                SessionAuthorizingPresentation {
     private static final String LOG_TAG = "AssurancePinCodeEntryURLProvider";
     private static final String MESSAGE_HOST_CANCEL = "cancel";
     private static final String MESSAGE_HOST_CONFIRM = "confirm";
     private static final String HTML_QUERY_KEY_PIN_CODE = "code";
 
     private final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle;
-    Runnable deferredActivityRunnable;
+    private Runnable deferredActivityRunnable;
     private final AssuranceStateManager assuranceStateManager;
     private AssuranceFullScreenTakeover pinCodeTakeover;
     private AssuranceSessionOrchestrator.SessionUIOperationHandler uiOperationHandler;
     private boolean isDisplayed;
 
-    AssurancePinCodeEntryURLProvider(
+    AssurancePinCodeEntryProvider(
             final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle,
             final AssuranceSessionOrchestrator.SessionUIOperationHandler uiOperationHandler,
             final AssuranceStateManager assuranceStateManager) {
@@ -44,17 +45,28 @@ class AssurancePinCodeEntryURLProvider
         this.uiOperationHandler = uiOperationHandler;
     }
 
+    @Override
     public boolean isDisplayed() {
         return isDisplayed;
     }
 
-    void launchPinDialog() {
+    @Override
+    public void reorderToFront() {
+        if (deferredActivityRunnable != null) {
+            Log.debug(Assurance.LOG_TAG, LOG_TAG, "Deferred connection dialog found, triggering.");
+            deferredActivityRunnable.run();
+            deferredActivityRunnable = null;
+        }
+    }
+
+    @Override
+    public void showAuthorization() {
         // if we already have a pincode takeover, we should exit.
         if (pinCodeTakeover != null) {
             return;
         }
 
-        final AssurancePinCodeEntryURLProvider thisRef = this;
+        final AssurancePinCodeEntryProvider thisRef = this;
 
         // Load and launch pin code entry dialog
         new Thread(
@@ -171,12 +183,14 @@ class AssurancePinCodeEntryURLProvider
                 .start();
     }
 
+    @Override
     public void onConnecting() {
         if (pinCodeTakeover != null) {
             pinCodeTakeover.runJavascript("showLoading()");
         }
     }
 
+    @Override
     public void onConnectionSucceeded() {
         if (pinCodeTakeover != null) {
             pinCodeTakeover.remove();
@@ -189,6 +203,7 @@ class AssurancePinCodeEntryURLProvider
         }
     }
 
+    @Override
     public void onConnectionFailed(
             final AssuranceConstants.AssuranceConnectionError connectionError,
             final boolean shouldShowRetry) {
