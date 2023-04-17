@@ -186,7 +186,11 @@ internal class QuickConnectManager(
             val jsonObject = JSONObject(JSONTokener(jsonString))
             val sessionUUID = jsonObject.optString(QuickConnect.KEY_SESSION_ID)
             val token = jsonObject.optString(QuickConnect.KEY_SESSION_TOKEN)
-            if (StringUtils.isNullOrEmpty(sessionUUID) || StringUtils.isNullOrEmpty(token)) {
+            if (StringUtils.isNullOrEmpty(sessionUUID) ||
+                StringUtils.isNullOrEmpty(token) ||
+                "null".equals(sessionUUID, true) ||
+                "null".equals(token, true)
+            ) {
                 null
             } else {
                 QuickConnectSessionDetails(sessionUUID, token)

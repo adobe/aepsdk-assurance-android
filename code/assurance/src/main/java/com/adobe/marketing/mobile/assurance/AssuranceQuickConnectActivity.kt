@@ -157,6 +157,7 @@ class AssuranceQuickConnectActivity : AppCompatActivity() {
     ) {
         cancelButtonView.setOnClickListener {
             quickConnectManager.cancel()
+            AssuranceComponentRegistry.sessionUIOperationHandler?.onCancel()
             finish()
         }
     }
