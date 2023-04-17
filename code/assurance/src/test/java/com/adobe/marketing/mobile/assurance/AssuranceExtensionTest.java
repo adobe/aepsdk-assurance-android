@@ -11,22 +11,29 @@
 
 package com.adobe.marketing.mobile.assurance;
 
+import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventDataKey.IS_QUICK_CONNECT;
+import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventDataKey.START_SESSION_URL;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.Event;
@@ -37,18 +44,27 @@ import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.SharedStateResolution;
 import com.adobe.marketing.mobile.SharedStateResult;
 import com.adobe.marketing.mobile.SharedStateStatus;
+import com.adobe.marketing.mobile.services.AppContextService;
+import com.adobe.marketing.mobile.services.ServiceProvider;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 28)
 public class AssuranceExtensionTest {
     private static final String START_URL_QUERY_KEY_SESSION_ID = "adb_validation_sessionid";
 
@@ -74,8 +90,13 @@ public class AssuranceExtensionTest {
 
     @Mock AssuranceSessionOrchestrator mockAssuranceSessionOrchestrator;
 
+    @Mock ServiceProvider mockServiceProvider;
+
+    @Mock AppContextService mockAppContextService;
+
     private MockedStatic<Uri> mockedStaticUri;
     private MockedStatic<MobileCore> mockedStaticMobileCore;
+    private MockedStatic<ServiceProvider> mockedStaticServiceProvider;
 
     AssuranceExtension assuranceExtension;
 
@@ -103,6 +124,12 @@ public class AssuranceExtensionTest {
                                 Context.MODE_PRIVATE))
                 .thenReturn(mockSharedPreference);
         Mockito.when(mockSharedPreference.edit()).thenReturn(mockSharedPreferenceEditor);
+
+        mockedStaticServiceProvider = Mockito.mockStatic(ServiceProvider.class);
+        mockedStaticServiceProvider
+                .when(ServiceProvider::getInstance)
+                .thenReturn(mockServiceProvider);
+        when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
 
         assuranceExtension =
                 new AssuranceExtension(
@@ -190,6 +217,228 @@ public class AssuranceExtensionTest {
         } catch (Exception e) {
             fail(); // should not throw
         }
+    }
+
+    @Test
+    public void test_startSession_quickConnect_hostAppNotInDebugBuild() {
+        final Context mockAppContext = mock(Context.class);
+        when(mockAppContextService.getApplication()).thenReturn(mockApplication);
+        when(mockApplication.getApplicationContext()).thenReturn(mockAppContext);
+        final ApplicationInfo mockApplicationInfo = Mockito.mock(ApplicationInfo.class);
+        // Set application flag to be non-debuggable
+        mockApplicationInfo.flags =
+                ((mockApplicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) == 0)
+                        ? mockApplicationInfo.flags
+                        : (mockApplicationInfo.flags | ApplicationInfo.FLAG_DEBUGGABLE);
+        when(mockAppContext.getApplicationInfo()).thenReturn(mockApplicationInfo);
+
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        assuranceExtension.startSession();
+
+        verify(mockActivity, times(0)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void test_startSession_quickConnect_hostAppInDebugBuild() {
+        final Context mockAppContext = mock(Context.class);
+        when(mockAppContextService.getApplication()).thenReturn(mockApplication);
+        when(mockApplication.getApplicationContext()).thenReturn(mockAppContext);
+        final ApplicationInfo mockApplicationInfo = Mockito.mock(ApplicationInfo.class);
+        // Set application flag to debuggable
+        mockApplicationInfo.flags =
+                ((mockApplicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                        ? mockApplicationInfo.flags
+                        : (mockApplicationInfo.flags | ApplicationInfo.FLAG_DEBUGGABLE);
+        when(mockAppContext.getApplicationInfo()).thenReturn(mockApplicationInfo);
+
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        assuranceExtension.startSession();
+
+        final ArgumentCaptor<Intent> quickConnectIntentCaptor =
+                ArgumentCaptor.forClass(Intent.class);
+        verify(mockActivity).startActivity(quickConnectIntentCaptor.capture());
+        final Intent capturedIntent = quickConnectIntentCaptor.getValue();
+        assertEquals(
+                AssuranceQuickConnectActivity.class.getName(),
+                capturedIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void test_startSession_quickConnect_activeSessionExists() {
+        final Context mockAppContext = mock(Context.class);
+        when(mockAppContextService.getApplication()).thenReturn(mockApplication);
+        when(mockApplication.getApplicationContext()).thenReturn(mockAppContext);
+        final ApplicationInfo mockApplicationInfo = Mockito.mock(ApplicationInfo.class);
+        // Set application flag to be debuggable
+        mockApplicationInfo.flags =
+                ((mockApplicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                        ? mockApplicationInfo.flags
+                        : (mockApplicationInfo.flags | ApplicationInfo.FLAG_DEBUGGABLE);
+        when(mockAppContext.getApplicationInfo()).thenReturn(mockApplicationInfo);
+
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession())
+                .thenReturn(mock(AssuranceSession.class));
+
+        assuranceExtension.startSession();
+
+        verify(mockActivity, times(0)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void test_startSession_quickConnect_hostApplicationIsNull() {
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+        when(mockAppContextService.getApplication()).thenReturn(null);
+
+        assuranceExtension.startSession();
+
+        verify(mockActivity, times(0)).startActivity(any(Intent.class));
+    }
+
+    @Test
+    public void test_AssuranceDoesNotShutDown_When_QuickConnectStartSessionAPICalled()
+            throws Exception {
+        // simulate no active session
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        assuranceExtension.startSession();
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(6L));
+
+        // verify that the extension is still running
+        verify(mockAssuranceSessionOrchestrator, never()).terminateSession(anyBoolean());
+    }
+
+    @Test
+    public void test_handleAssuranceRequestContent_eventDataContainsDeeplink() {
+        // simulate no active session
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        // simulate deeplink based start
+        final Map<String, Object> startSessionEventData = new HashMap<>();
+        final String sessionId = UUID.randomUUID().toString();
+        startSessionEventData.put(
+                START_SESSION_URL, "aepsdkassurance://?adb_validation_sessionid=" + sessionId);
+        when(mockUri.getQueryParameter(START_URL_QUERY_KEY_SESSION_ID)).thenReturn((sessionId));
+        final Event startSessionEvent =
+                new Event.Builder(
+                                "Assurance Start Session",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(startSessionEventData)
+                        .build();
+
+        // test
+        assuranceExtension.handleAssuranceRequestContent(startSessionEvent);
+
+        // verify that a PIN authorized session is created
+        verify(mockAssuranceSessionOrchestrator)
+                .createSession(
+                        sessionId,
+                        AssuranceConstants.AssuranceEnvironment.PROD,
+                        null,
+                        null,
+                        SessionAuthorizingPresentation.Type.PIN);
+    }
+
+    @Test
+    public void test_handleAssuranceRequestContent_eventDataContainsQuickConnectFlag() {
+        final Context mockAppContext = mock(Context.class);
+        when(mockAppContextService.getApplication()).thenReturn(mockApplication);
+        when(mockApplication.getApplicationContext()).thenReturn(mockAppContext);
+        final ApplicationInfo mockApplicationInfo = Mockito.mock(ApplicationInfo.class);
+
+        // set application flag to debuggable
+        mockApplicationInfo.flags =
+                ((mockApplicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                        ? mockApplicationInfo.flags
+                        : (mockApplicationInfo.flags | ApplicationInfo.FLAG_DEBUGGABLE);
+        when(mockAppContext.getApplicationInfo()).thenReturn(mockApplicationInfo);
+
+        // simulate foreground activity
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        // simulate no active session
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        // simulate quick connect based start
+        final Event startSessionEvent =
+                new Event.Builder(
+                                "Assurance Start Session (Quick Connect)",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(Collections.singletonMap(IS_QUICK_CONNECT, true))
+                        .build();
+
+        // Test
+        assuranceExtension.handleAssuranceRequestContent(startSessionEvent);
+
+        // verify that no PIN based connection is triggered
+        verify(mockAssuranceSessionOrchestrator, never())
+                .createSession(
+                        any(), any(), any(), any(), eq(SessionAuthorizingPresentation.Type.PIN));
+
+        // verify that quick connect flow is launched
+        final ArgumentCaptor<Intent> quickConnectIntentCaptor =
+                ArgumentCaptor.forClass(Intent.class);
+        verify(mockActivity).startActivity(quickConnectIntentCaptor.capture());
+        final Intent capturedIntent = quickConnectIntentCaptor.getValue();
+        assertEquals(
+                AssuranceQuickConnectActivity.class.getName(),
+                capturedIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void test_handleAssuranceRequestContent_eventDataIsInvalid() {
+        final Context mockAppContext = mock(Context.class);
+        when(mockAppContextService.getApplication()).thenReturn(mockApplication);
+        when(mockApplication.getApplicationContext()).thenReturn(mockAppContext);
+        final ApplicationInfo mockApplicationInfo = Mockito.mock(ApplicationInfo.class);
+
+        // set application flag to debuggable
+        mockApplicationInfo.flags =
+                ((mockApplicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                        ? mockApplicationInfo.flags
+                        : (mockApplicationInfo.flags | ApplicationInfo.FLAG_DEBUGGABLE);
+        when(mockAppContext.getApplicationInfo()).thenReturn(mockApplicationInfo);
+
+        // simulate foreground activity
+        final Activity mockActivity = Mockito.mock(Activity.class);
+        when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        // simulate no active session
+        when(mockAssuranceSessionOrchestrator.getActiveSession()).thenReturn(null);
+
+        // simulate start event with invalid event data
+        final Event startSessionEvent =
+                new Event.Builder(
+                                "Assurance Start Session",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(Collections.singletonMap("someRandomKey", "someRandomValue"))
+                        .build();
+
+        // test
+        assuranceExtension.handleAssuranceRequestContent(startSessionEvent);
+
+        // verify that no session is created
+        verify(mockAssuranceSessionOrchestrator, times(0))
+                .createSession(any(), any(), any(), any(), any());
+
+        // verify that no activity is launched
+        verify(mockActivity, times(0)).startActivity(any(Intent.class));
     }
 
     @Test
@@ -451,5 +700,6 @@ public class AssuranceExtensionTest {
     public void teardown() {
         mockedStaticMobileCore.close();
         mockedStaticUri.close();
+        mockedStaticServiceProvider.close();
     }
 }

@@ -41,6 +41,7 @@ final class AssuranceConstants {
 
     static final class SDKEventDataKey {
         static final String START_SESSION_URL = "startSessionURL";
+        static final String IS_QUICK_CONNECT = "quickConnect";
         static final String EXTENSIONS = "extensions";
         static final String STATE_OWNER = "stateowner";
         static final String FRIENDLY_NAME = "friendlyName";

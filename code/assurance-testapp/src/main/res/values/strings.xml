@@ -18,6 +18,7 @@
     <string name="assurance_version">Assurance v%1$s</string>
     <string name="assurance_connection_input_hint">Enter Assurance Connection URL</string>
     <string name="assurance_connection_button_name">Start Session</string>
+    <string name="assurance_quick_connect_button_name">Quick Connect</string>
 
     <string name="event_chunking_section_title">Event Chunking</string>
     <string name="send_small_payload_button_name">Send Small Payload</string>

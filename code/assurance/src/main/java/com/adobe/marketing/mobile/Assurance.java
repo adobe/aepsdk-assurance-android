@@ -15,6 +15,7 @@ package com.adobe.marketing.mobile;
 import androidx.annotation.NonNull;
 import com.adobe.marketing.mobile.assurance.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class Assurance {
 
     private static final String DEEPLINK_SESSION_ID_KEY = "adb_validation_sessionid";
     private static final String START_SESSION_URL = "startSessionURL";
+    private static final String IS_QUICK_CONNECT = "quickConnect";
 
     // ========================================================================================
     // Public APIs
@@ -99,6 +101,25 @@ public class Assurance {
                                 EventType.ASSURANCE,
                                 EventSource.REQUEST_CONTENT)
                         .setEventData(startSessionEventData)
+                        .build();
+        MobileCore.dispatchEvent(startSessionEvent);
+    }
+
+    /**
+     * Starts an Assurance session via quick flow. Invoking this method on a non-debuggable build,
+     * or when a session already exists will result in a no-op.
+     */
+    public static void startSession() {
+        Log.debug(LOG_TAG, LOG_TAG, "QuickConnect api triggered.");
+
+        // Send a quick connect start session event irrespective of the build here.
+        // Validation will be done when the extension handles this event.
+        final Event startSessionEvent =
+                new Event.Builder(
+                                "Assurance Start Session (Quick Connect)",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(Collections.singletonMap(IS_QUICK_CONNECT, true))
                         .build();
         MobileCore.dispatchEvent(startSessionEvent);
     }
