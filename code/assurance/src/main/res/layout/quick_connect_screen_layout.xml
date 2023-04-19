@@ -49,7 +49,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/assuranceQuickConnectDescription"
-        app:srcCompat="@drawable/img_quick_connect" />
+        android:src="@drawable/img_quick_connect" />
 
     <ImageView
         android:id="@+id/adobelogo"
@@ -59,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/img_adobelogo" />
+        android:src="@drawable/img_adobelogo" />
 
     <TextView
         android:id="@+id/errorTitleTextView"

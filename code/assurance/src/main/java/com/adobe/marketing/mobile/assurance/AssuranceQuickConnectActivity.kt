@@ -11,19 +11,21 @@
 
 package com.adobe.marketing.mobile.assurance
 
+import android.app.Activity
+import android.graphics.Color
+import android.graphics.LightingColorFilter
 import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceSession.AssuranceSessionStatusListener
 import com.adobe.marketing.mobile.services.Log
 import java.util.concurrent.Executors
 
-class AssuranceQuickConnectActivity : AppCompatActivity() {
+class AssuranceQuickConnectActivity : Activity() {
 
     private companion object {
         private const val LOG_SOURCE = "AssuranceQuickConnectActivity"
@@ -236,6 +238,10 @@ class AssuranceQuickConnectActivity : AppCompatActivity() {
         fun waiting() {
             state = State.WAITING
             text.text = view.resources.getString(R.string.quick_connect_button_waiting)
+
+            // Using a ColorFilter instead of a tint because it is not supported for Api 19
+            progressBar.indeterminateDrawable.colorFilter =
+                LightingColorFilter(Color.rgb(6, 142, 228), Color.TRANSPARENT)
             progressBar.visibility = View.VISIBLE
             view.setBackgroundResource(R.drawable.shape_custom_button_inactive)
         }
