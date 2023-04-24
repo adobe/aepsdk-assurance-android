@@ -46,6 +46,10 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
 
+        // provides a major advantage by preventing the generation
+        // of individual png icons for each screen size in favor of a single vector
+        vectorDrawables.useSupportLibrary = true
+
         buildConfigField("String","EXTENSION_VERSION","\"${rootProject.moduleVersion}\"")
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 

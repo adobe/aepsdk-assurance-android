@@ -36,7 +36,6 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:theme="@style/AssuranceAppTheme.QuickConnect"
         android:layout_width="20dp"
         android:layout_height="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
