@@ -16,6 +16,9 @@ import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDat
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDataKeys.XDM_STATE_DATA;
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventName.XDM_SHARED_STATE_CHANGE;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
@@ -30,6 +33,7 @@ import com.adobe.marketing.mobile.SharedStateResult;
 import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.GenericEventPayloadKey;
 import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
 import com.adobe.marketing.mobile.util.StringUtils;
@@ -135,9 +139,8 @@ public final class AssuranceExtension extends Extension {
             Log.warning(
                     Assurance.LOG_TAG,
                     LOG_TAG,
-                    "Unable to start Assurance session. Make sure Assurance.registerExtension()is"
-                        + " called before starting the session. For more details refer to"
-                        + " https://aep-sdks.gitbook.io/docs/foundation-extensions/adobe-experience-platform-assurance#register-aepassurance-with-mobile-core");
+                    "Unable to start Assurance session. Make sure Assurance Extension "
+                            + "is registered before startSession() is called.");
             return;
         }
 
@@ -180,14 +183,56 @@ public final class AssuranceExtension extends Extension {
                                         .START_URL_QUERY_KEY_ENVIRONMENT));
 
         // Create a new session. Note that new session creation via new deeplink will never have a
-        // PIN and
-        // will go through the PIN flow. So at this time it is OK to pass a null pin.
-        assuranceSessionOrchestrator.createSession(sessionId, environment, null);
+        // PIN and will go through the PIN flow. So at this time it is OK to pass a null pin.
+        // Additionally, UI state of such a pin session can be controlled via a reference to the
+        // UI so a status listener/delegate is not needed.
+        assuranceSessionOrchestrator.createSession(
+                sessionId, environment, null, null, SessionAuthorizingPresentation.Type.PIN);
         Log.trace(
                 Assurance.LOG_TAG,
                 LOG_TAG,
                 "Received sessionID. Initializing Assurance session. %s",
                 sessionId);
+    }
+
+    /**
+     * Starts an Assurance session via quick connect flow. Invoking this method on a non-debuggable
+     * build, or when a session already exists will result in a no-op.
+     */
+    void startSession() {
+        shouldUnregisterOnTimeout = false;
+
+        final Application hostApplication =
+                ServiceProvider.getInstance().getAppContextService().getApplication();
+
+        if (hostApplication == null || !AssuranceUtil.isDebugBuild(hostApplication)) {
+            Log.warning(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "startSession() API is available only on debug builds.");
+            return;
+        }
+
+        final Activity currentActivity =
+                ServiceProvider.getInstance().getAppContextService().getCurrentActivity();
+        if (currentActivity == null) {
+            Log.debug(Assurance.LOG_TAG, LOG_TAG, "No foreground activity to launch quick flow.");
+            return;
+        }
+
+        if (assuranceSessionOrchestrator.getActiveSession() != null) {
+            Log.debug(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Unable to start Assurance session. Session already exists");
+            return;
+        }
+
+        final Intent quickConnectIntent =
+                new Intent(hostApplication, AssuranceQuickConnectActivity.class);
+        quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        currentActivity.startActivity(quickConnectIntent);
     }
 
     // ========================================================================================
@@ -302,23 +347,33 @@ public final class AssuranceExtension extends Extension {
         assuranceSessionOrchestrator.queueEvent(assuranceEvent);
     }
 
-    void handleAssuranceRequestContent(Event event) {
-        String sessionURL =
-                DataReader.optString(
-                        event.getEventData(),
-                        AssuranceConstants.SDKEventDataKey.START_SESSION_URL,
-                        "");
+    void handleAssuranceRequestContent(final Event event) {
+        final Map<String, Object> eventData = event.getEventData();
 
-        if ("".equals(sessionURL)) {
-            Log.warning(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Unable to process start session event. could find start session URL in the"
-                            + " event");
+        // Check if this is a quick connect session
+        final boolean isQuickConnectEvent =
+                DataReader.optBoolean(
+                        eventData, AssuranceConstants.SDKEventDataKey.IS_QUICK_CONNECT, false);
+        if (isQuickConnectEvent) {
+            startSession();
             return;
         }
 
-        startSession(sessionURL);
+        // Check if this is a deeplink session
+        final String sessionURL =
+                DataReader.optString(
+                        eventData, AssuranceConstants.SDKEventDataKey.START_SESSION_URL, "");
+
+        if (!StringUtils.isNullOrEmpty(sessionURL)) {
+            startSession(sessionURL);
+            return;
+        }
+
+        Log.warning(
+                Assurance.LOG_TAG,
+                LOG_TAG,
+                "Unable to process start session event. Could find start session URL"
+                        + " or quick connect flag in the event");
     }
 
     // ========================================================================================
@@ -412,7 +467,7 @@ public final class AssuranceExtension extends Extension {
                 LOG_TAG,
                 "Timeout - Assurance did not receive deeplink to start Assurance session within 5"
                         + " seconds. Shutting down Assurance extension");
-        assuranceSessionOrchestrator.terminateSession();
+        assuranceSessionOrchestrator.terminateSession(true);
     }
 
     /**

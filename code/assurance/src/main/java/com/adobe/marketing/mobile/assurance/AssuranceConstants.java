@@ -12,8 +12,10 @@
 package com.adobe.marketing.mobile.assurance;
 
 
+import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 final class AssuranceConstants {
     static final String VENDOR_ASSURANCE_MOBILE = "com.adobe.griffon.mobile";
@@ -39,6 +41,7 @@ final class AssuranceConstants {
 
     static final class SDKEventDataKey {
         static final String START_SESSION_URL = "startSessionURL";
+        static final String IS_QUICK_CONNECT = "quickConnect";
         static final String EXTENSIONS = "extensions";
         static final String STATE_OWNER = "stateowner";
         static final String FRIENDLY_NAME = "friendlyName";
@@ -222,6 +225,35 @@ final class AssuranceConstants {
         static final int SESSION_DELETED = 4903;
 
         private SocketCloseCode() {}
+
+        /**
+         * Converts a socket close code to an {@code AssuranceConnectionError} if such a mapping
+         * exists. Not all socket close codes are error codes and not all AssuranceConnectionErrors
+         * are socket errors. So this utility is needed to bridge socket codes and
+         * AssuranceConnectionError.
+         *
+         * @param closeCode a socket close code for which an AssuranceConnectionError is needed
+         * @return an {@code AssuranceConnectionError}
+         */
+        @Nullable
+        static AssuranceConnectionError toAssuranceConnectionError(final int closeCode) {
+            switch (closeCode) {
+                case ORG_MISMATCH:
+                    return AssuranceConnectionError.ORG_ID_MISMATCH;
+                case CLIENT_ERROR:
+                    return AssuranceConnectionError.CLIENT_ERROR;
+                case CONNECTION_LIMIT:
+                    return AssuranceConnectionError.CONNECTION_LIMIT;
+                case EVENT_LIMIT:
+                    return AssuranceConnectionError.EVENT_LIMIT;
+                case SESSION_DELETED:
+                    return AssuranceConnectionError.SESSION_DELETED;
+                case ABNORMAL:
+                    return AssuranceConnectionError.GENERIC_ERROR;
+                default:
+                    return null;
+            }
+        }
     }
 
     static final class IntentExtraKey {
@@ -231,57 +263,95 @@ final class AssuranceConstants {
         private IntentExtraKey() {}
     }
 
+    static final class QuickConnect {
+        static final String BASE_DEVICE_API_URL = "https://device.griffon.adobe.com/device";
+        static final String DEVICE_API_PATH_CREATE = "create";
+        static final String DEVICE_API_PATH_STATUS = "status";
+        static final String KEY_SESSION_ID = "sessionUuid";
+        static final String KEY_SESSION_TOKEN = "token";
+        static final String KEY_ORG_ID = "orgId";
+        static final String KEY_DEVICE_NAME = "deviceName";
+        static final String KEY_CLIENT_ID = "clientId";
+        static final int CONNECTION_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
+        static final int READ_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
+        static final long STATUS_CHECK_DELAY_MS = TimeUnit.SECONDS.toMillis(2);
+        static final int MAX_RETRY_COUNT = 300;
+    }
+
     // ========================================================================================
     // Enums
     // ========================================================================================
 
-    enum AssuranceSocketError {
+    enum AssuranceConnectionError {
         GENERIC_ERROR(
                 "Connection Error",
                 "The connection may be failing due to a network issue or an incorrect PIN. "
-                        + "Please verify internet connectivity or the PIN and try again."),
-        NO_ORGID(
+                        + "Please verify internet connectivity or the PIN and try again.",
+                true),
+        NO_ORG_ID(
                 "Invalid Configuration",
                 "The Experience Cloud organization identifier is unavailable from the SDK. Ensure"
-                    + " SDK configuration is setup correctly. See documentation for more detail."),
-        ORGID_MISMATCH(
+                    + " SDK configuration is setup correctly. See documentation for more detail.",
+                false),
+        ORG_ID_MISMATCH(
                 "Unauthorized Access",
                 "The Experience Cloud organization identifier does not match with that of the"
                     + " Assurance session. Ensure the right Experience Cloud organization is being"
-                    + " used. See documentation for more detail."),
+                    + " used. See documentation for more detail.",
+                false),
         CONNECTION_LIMIT(
                 "Connection Limit Reached",
                 "You have reached the maximum number of connected devices allowed for a session. "
-                        + "Please disconnect another device and try again."),
+                        + "Please disconnect another device and try again.",
+                false),
         EVENT_LIMIT(
                 "Event Limit Reached",
-                "You have reached the maximum number of events that can be sent per minute."),
+                "You have reached the maximum number of events that can be sent per minute.",
+                false),
         CLIENT_ERROR(
                 "Client Disconnected",
-                "This client has been disconnected due to an unexpected error. Error Code 4400."),
+                "This client has been disconnected due to an unexpected error. Error Code 4400.",
+                false),
         SESSION_DELETED(
                 "Session Deleted",
-                "The session client connected to has been deleted. Error Code 4903.");
+                "The session client connected to has been deleted. Error Code 4903.",
+                false),
+
+        CREATE_DEVICE_REQUEST_MALFORMED(
+                "Malformed Request",
+                "The network request for device creation was malformed.",
+                false),
+        STATUS_CHECK_REQUEST_MALFORMED(
+                "Malformed Request", "The network request for status check  was malformed.", false),
+        RETRY_LIMIT_REACHED(
+                "Retry Limit Reached",
+                "The maximum allowed retries for fetching the session details were reached.",
+                true),
+        CREATE_DEVICE_REQUEST_FAILED("Request Failed", "Failed to register device.", true),
+        DEVICE_STATUS_REQUEST_FAILED("Request Failed", "Failed to get device status", true),
+        UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occurred", true);
 
         private final String error;
-        private final String errorDescription;
+        private final String description;
+        private final boolean isRetryable;
 
-        private AssuranceSocketError(final String error, final String description) {
+        private AssuranceConnectionError(
+                final String error, final String description, final boolean isRetryable) {
             this.error = error;
-            this.errorDescription = description;
+            this.description = description;
+            this.isRetryable = isRetryable;
         }
 
-        String getErrorDescription() {
-            return errorDescription;
+        String getDescription() {
+            return description;
         }
 
         String getError() {
             return error;
         }
 
-        @Override
-        public String toString() {
-            return error + ": " + errorDescription;
+        boolean isRetryable() {
+            return isRetryable;
         }
     }
 

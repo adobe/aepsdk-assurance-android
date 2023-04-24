@@ -76,11 +76,52 @@ class AssuranceSessionOrchestrator {
                                 Assurance.LOG_TAG,
                                 LOG_TAG,
                                 "Null/Empty PIN recorded. Cannot connect to session.");
-                        terminateSession();
+                        terminateSession(true);
                         return;
                     }
 
                     session.connect(pin);
+                }
+
+                @Override
+                public void onQuickConnect(
+                        @NonNull String sessionId,
+                        @NonNull String token,
+                        @NonNull AssuranceSession.AssuranceSessionStatusListener listener) {
+
+                    if (session != null) {
+                        // There is an active session,  check the authorizing presentation to
+                        // determine if a new session can be started or not.
+                        if (session.getAuthorizingPresentationType()
+                                == SessionAuthorizingPresentation.Type.PIN) {
+                            // This should never happen in an ideal situation.
+                            Log.warning(
+                                    Assurance.LOG_TAG,
+                                    LOG_TAG,
+                                    "Cannot start Quick Connect session. An active PIN based"
+                                            + " session exists.");
+                            listener.onSessionTerminated(
+                                    AssuranceConstants.AssuranceConnectionError.UNEXPECTED_ERROR);
+                            return;
+                        } else {
+                            // This is a Quick Connect retry scenario. Disconnect existing session
+                            // without clearing the buffered events for this retry scenario and
+                            // connect again.
+                            Log.debug(
+                                    Assurance.LOG_TAG,
+                                    LOG_TAG,
+                                    "Disconnecting active QuickConnect session and recreating.");
+
+                            terminateSession(false);
+                        }
+                    }
+
+                    createSession(
+                            sessionId,
+                            AssuranceConstants.AssuranceEnvironment.PROD,
+                            token,
+                            listener,
+                            SessionAuthorizingPresentation.Type.QUICK_CONNECT);
                 }
 
                 @Override
@@ -89,7 +130,7 @@ class AssuranceSessionOrchestrator {
                             Assurance.LOG_TAG,
                             LOG_TAG,
                             "On Disconnect clicked. Disconnecting session.");
-                    terminateSession();
+                    terminateSession(true);
                 }
 
                 @Override
@@ -98,7 +139,7 @@ class AssuranceSessionOrchestrator {
                             Assurance.LOG_TAG,
                             LOG_TAG,
                             "On Cancel Clicked. Disconnecting session.");
-                    terminateSession();
+                    terminateSession(true);
                 }
             };
 
@@ -122,14 +163,15 @@ class AssuranceSessionOrchestrator {
                 }
 
                 @Override
-                public void onSessionTerminated() {
+                public void onSessionTerminated(
+                        final AssuranceConstants.AssuranceConnectionError error) {
                     // In case of a user initiated AssuranceSessionOrchestrator#terminateSession()
                     // will unregister the listener against the session
                     // before disconnecting it. So this callback is never invoked in that flow.
                     // However, in case of a disconnection initiated by the service, we need to
                     // cleanup references to the
                     // active session to release resources.
-                    terminateSession();
+                    terminateSession(true);
                 }
             };
 
@@ -167,6 +209,8 @@ class AssuranceSessionOrchestrator {
         this.sessionCreator = sessionCreator;
 
         application.registerActivityLifecycleCallbacks(activityLifecycleObserver);
+        AssuranceComponentRegistry.INSTANCE.initialize(
+                assuranceStateManager, sessionUIOperationHandler);
     }
 
     /**
@@ -178,11 +222,16 @@ class AssuranceSessionOrchestrator {
      *     connected to.
      * @param code the PIN code with which the {@code AssuranceSession} should be authenticated
      *     with.
+     * @param statusListener an optional status listener that can be attached to the session
+     * @param authorizingPresentationType the type of the authorization UI to be shown for the
+     *     session
      */
     synchronized void createSession(
-            final String sessionId,
-            final AssuranceConstants.AssuranceEnvironment environment,
-            final String code) {
+            @NonNull final String sessionId,
+            @NonNull final AssuranceConstants.AssuranceEnvironment environment,
+            @Nullable final String code,
+            @Nullable final AssuranceSession.AssuranceSessionStatusListener statusListener,
+            @NonNull final SessionAuthorizingPresentation.Type authorizingPresentationType) {
         if (session != null) {
             Log.error(
                     Assurance.LOG_TAG,
@@ -201,9 +250,11 @@ class AssuranceSessionOrchestrator {
                         plugins,
                         connectionURLStore,
                         applicationHandle,
-                        outboundEventBuffer);
+                        outboundEventBuffer,
+                        statusListener,
+                        authorizingPresentationType);
 
-        // register the session status listener to manage the outboundEventBuffer.
+        // register the session status listener for orchestrator to manage the outboundEventBuffer.
         session.registerStatusListener(sessionStatusListener);
 
         // Immediately share the extension state.
@@ -213,15 +264,20 @@ class AssuranceSessionOrchestrator {
         session.connect(code);
     }
 
-    /** Dissolve the active session (if one exists) and its associated states. */
-    synchronized void terminateSession() {
+    /**
+     * Dissolve the active session (if one exists) and its associated states.
+     *
+     * @param purgeBuffer flag indicating whether or not to clear buffered events.
+     */
+    synchronized void terminateSession(final boolean purgeBuffer) {
         Log.debug(
                 Assurance.LOG_TAG,
                 LOG_TAG,
-                "Terminating active session. Clearing the queued"
-                        + "events and purging Assurance shared state");
+                "Terminating active session purging Assurance shared state");
 
-        if (outboundEventBuffer != null) {
+        if (purgeBuffer && outboundEventBuffer != null) {
+            Log.debug(Assurance.LOG_TAG, LOG_TAG, "Clearing the queued events.");
+
             outboundEventBuffer.clear();
             outboundEventBuffer = null;
         }
@@ -240,7 +296,7 @@ class AssuranceSessionOrchestrator {
      * disconnected by the user via a valid connection url.
      *
      * @return true if there exists a valid connection url that can be reconnected to, false if a
-     *     valist connection url does not exist.
+     *     valid connection url does not exist.
      */
     boolean reconnectToStoredSession() {
         final String connectionURL = connectionURLStore.getStoredConnectionURL();
@@ -277,7 +333,7 @@ class AssuranceSessionOrchestrator {
                 "Initializing Assurance session. %s using stored connection details:%s ",
                 sessionId,
                 connectionURL);
-        createSession(sessionId, environment, pin);
+        createSession(sessionId, environment, pin, null, SessionAuthorizingPresentation.Type.PIN);
         return true;
     }
 
@@ -332,6 +388,19 @@ class AssuranceSessionOrchestrator {
     interface SessionUIOperationHandler {
         /** Invoked when an UI operation corresponding to session connection attempt is made. */
         void onConnect(final String pin);
+
+        /**
+         * Invoked when a UI/gesture corresponding to QuickConnect is made.
+         *
+         * @param sessionId the session id of the Assurance quick connect session
+         * @param token token/pin to authorize the session
+         * @param listener an {@code AssuranceSessionStatusListener} to identify the status of the
+         *     session created by quick connect
+         */
+        void onQuickConnect(
+                @NonNull final String sessionId,
+                @NonNull final String token,
+                @NonNull final AssuranceSession.AssuranceSessionStatusListener listener);
 
         /** Invoked when an UI operation corresponding to session disconnect is made. */
         void onDisconnect();
@@ -507,7 +576,10 @@ class AssuranceSessionOrchestrator {
                 final List<AssurancePlugin> plugins,
                 final AssuranceConnectionDataStore connectionURLStore,
                 final ApplicationHandle applicationHandle,
-                final List<AssuranceEvent> outboundEventBuffer) {
+                final List<AssuranceEvent> outboundEventBuffer,
+                final AssuranceSession.AssuranceSessionStatusListener
+                        authorizingPresentationListener,
+                final SessionAuthorizingPresentation.Type authorizingPresentationType) {
             return new AssuranceSession(
                     applicationHandle,
                     assuranceStateManager,
@@ -516,7 +588,9 @@ class AssuranceSessionOrchestrator {
                     connectionURLStore,
                     sessionUIOperationHandler,
                     plugins,
-                    outboundEventBuffer);
+                    outboundEventBuffer,
+                    authorizingPresentationType,
+                    authorizingPresentationListener);
         }
     }
 }
