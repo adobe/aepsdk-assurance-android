@@ -15,7 +15,9 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+import android.app.Activity;
 import android.net.Uri;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -219,5 +221,21 @@ public class AssuranceUtilTest {
                         + "orgId=972C898555E9F7BC7F000101%40AdobeOrg&"
                         + "clientId=C8385D85-9CE3-409E-92C2-565E7E59D69C";
         assertTrue(AssuranceUtil.isSafe(connectionURLProd));
+    }
+
+    @Test
+    public void test_isAssuranceActivity() {
+        final Activity assuranceQuickConnectActivity = mock(AssuranceQuickConnectActivity.class);
+        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceQuickConnectActivity));
+
+        final Activity assuranceErrorDisplayActivity = mock(AssuranceErrorDisplayActivity.class);
+        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceErrorDisplayActivity));
+
+        final Activity assuranceFullScreenTakeoverActivity =
+                mock(AssuranceFullScreenTakeoverActivity.class);
+        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceFullScreenTakeoverActivity));
+
+        final Activity nonAssuranceActivity = mock(Activity.class);
+        assertFalse(AssuranceUtil.isAssuranceActivity(nonAssuranceActivity));
     }
 }

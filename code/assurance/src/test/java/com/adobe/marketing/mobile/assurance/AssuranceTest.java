@@ -11,7 +11,8 @@
 
 package com.adobe.marketing.mobile.assurance;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -23,6 +24,7 @@ import com.adobe.marketing.mobile.EventType;
 import com.adobe.marketing.mobile.ExtensionError;
 import com.adobe.marketing.mobile.ExtensionErrorCallback;
 import com.adobe.marketing.mobile.MobileCore;
+import com.adobe.marketing.mobile.util.DataReader;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -108,6 +110,29 @@ public class AssuranceTest {
 
         // test 2 - ErrorCallback is handled without crashing
         extensionErrorCallbackCaptor.getValue().error(ExtensionError.UNEXPECTED_ERROR);
+    }
+
+    @Test
+    public void test_startSession_quickConnect() {
+        // prepare
+        final ArgumentCaptor<Event> dispatchedEventCaptor = ArgumentCaptor.forClass(Event.class);
+
+        // test
+        Assurance.startSession();
+
+        // verify
+        mockedStaticMobileCore.verify(
+                () -> MobileCore.dispatchEvent(dispatchedEventCaptor.capture()), times(1));
+
+        final Event dispatchedEvent = dispatchedEventCaptor.getValue();
+        assertEquals(EventType.ASSURANCE, dispatchedEvent.getType());
+        assertEquals(EventSource.REQUEST_CONTENT, dispatchedEvent.getSource());
+        assertEquals("Assurance Start Session (Quick Connect)", dispatchedEvent.getName());
+        assertTrue(
+                DataReader.optBoolean(
+                        dispatchedEvent.getEventData(),
+                        AssuranceConstants.SDKEventDataKey.IS_QUICK_CONNECT,
+                        false));
     }
 
     @After

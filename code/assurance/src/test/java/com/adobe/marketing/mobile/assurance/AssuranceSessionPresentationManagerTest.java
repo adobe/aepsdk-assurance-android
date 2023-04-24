@@ -39,12 +39,17 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
 
     @Mock private AssuranceConnectionStatusUI mockConnectionStatusUI;
 
-    @Mock private AssurancePinCodeEntryURLProvider mockPinCodeEntryURLProvider;
+    @Mock private SessionAuthorizingPresentation mockSessionAuthorizingPresentation;
 
     @Mock private AssuranceStateManager mockAssuranceStateManager;
 
     @Mock
     private AssuranceSessionOrchestrator.SessionUIOperationHandler mockSessionUIOperationHandler;
+
+    @Mock
+    private AssuranceSession.AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
+
+    @Mock private SessionAuthorizingPresentation.Type mockSessionAuthorizingPresentationType;
 
     @Before
     public void setUp() throws Exception {
@@ -54,12 +59,16 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
                 new AssuranceSessionPresentationManager(
                         mockAssuranceStateManager,
                         mockSessionUIOperationHandler,
-                        mockApplicationHandle);
+                        mockApplicationHandle,
+                        mockSessionAuthorizingPresentationType,
+                        mockAssuranceSessionStatusListener);
         setInternalState(
                 assuranceSessionPresentationManager, "button", mockAssuranceFloatingButton);
         setInternalState(assuranceSessionPresentationManager, "statusUI", mockConnectionStatusUI);
         setInternalState(
-                assuranceSessionPresentationManager, "urlProvider", mockPinCodeEntryURLProvider);
+                assuranceSessionPresentationManager,
+                "authorizingPresentation",
+                mockSessionAuthorizingPresentation);
     }
 
     @Test
@@ -77,20 +86,20 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
     public void testOnSessionInitialized_LaunchesPinDiaLog() {
         assuranceSessionPresentationManager.onSessionInitialized();
 
-        verify(mockPinCodeEntryURLProvider).launchPinDialog();
+        verify(mockSessionAuthorizingPresentation).showAuthorization();
     }
 
     @Test
     public void testOnSessionConnecting_NotifiesPINProvider() {
         assuranceSessionPresentationManager.onSessionConnecting();
-        verify(mockPinCodeEntryURLProvider).onConnecting();
+        verify(mockSessionAuthorizingPresentation).onConnecting();
     }
 
     @Test
     public void testOnSessionConnected_NotifiesPINDialog_ShowsFloatingButton_LogsUI() {
         assuranceSessionPresentationManager.onSessionConnected();
 
-        verify(mockPinCodeEntryURLProvider).onConnectionSucceeded();
+        verify(mockSessionAuthorizingPresentation).onConnectionSucceeded();
         verify(mockAssuranceFloatingButton)
                 .setCurrentGraphic(AssuranceFloatingButtonView.Graphic.CONNECTED);
         verify(mockAssuranceFloatingButton).display();
@@ -182,7 +191,7 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
     public void testOnSessionDisconnected_ABNORMAL() {
         final Activity mockActivity = mock(Activity.class);
         when(mockApplicationHandle.getCurrentActivity()).thenReturn(mockActivity);
-        when(mockPinCodeEntryURLProvider.isDisplayed()).thenReturn(false);
+        when(mockSessionAuthorizingPresentation.isDisplayed()).thenReturn(false);
 
         assuranceSessionPresentationManager.onSessionDisconnected(
                 AssuranceConstants.SocketCloseCode.ABNORMAL);
@@ -242,14 +251,10 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
     public void testOnActivityResumed() {
         final Activity mockActivity = mock(Activity.class);
         when(mockApplicationHandle.getCurrentActivity()).thenReturn(mockActivity);
-        final Runnable mockDeferredRunnable = mock(Runnable.class);
-        mockPinCodeEntryURLProvider.deferredActivityRunnable = mockDeferredRunnable;
 
         assuranceSessionPresentationManager.onActivityResumed(mockActivity);
 
         verify(mockAssuranceFloatingButton).onActivityResumed(mockActivity);
-        verify(mockDeferredRunnable).run();
-        assertNull(mockPinCodeEntryURLProvider.deferredActivityRunnable);
     }
 
     @Test

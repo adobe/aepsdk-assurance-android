@@ -1,5 +1,5 @@
-<!--
-  ~ Copyright 2022 Adobe. All rights reserved.
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2023 Adobe. All rights reserved.
   ~ This file is licensed to you under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License. You may obtain a copy
   ~ of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,13 +9,11 @@
   ~ governing permissions and limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">Assurance</string>
-    <string name="assurance_title">Assurance</string>
-    <string name="quick_connect_description">Confirm connection by visiting your session\'s connection detail screen</string>
-    <string name="quick_connect_button_connect">Connect</string>
-    <string name="quick_connect_button_cancel">Cancel</string>
-    <string name="quick_connect_button_waiting">Waiting..</string>
-    <string name="quick_connect_button_retry">Retry</string>
-
-</resources>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle"
+    >
+    <corners android:radius="220dp" />
+    <padding android:left="10dp" android:right="10dp" android:top="10dp" android:bottom="10dp"/>
+    <solid android:color="#068CE4"/>
+</shape>

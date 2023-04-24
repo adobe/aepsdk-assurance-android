@@ -80,7 +80,7 @@ class AssuranceFloatingButton implements AssuranceSessionLifecycleListener {
     private void display(final float x, final float y, final Activity activity) {
         // Make sure we don't overlay a assurance ui view with the floating button... hilarity will
         // ensue.
-        if (activity instanceof AssuranceFullScreenTakeoverActivity) {
+        if (AssuranceUtil.isAssuranceActivity(activity)) {
             Log.trace(
                     Assurance.LOG_TAG,
                     LOG_TAG,
@@ -241,6 +241,7 @@ class AssuranceFloatingButton implements AssuranceSessionLifecycleListener {
                             floatingButton.setOnPositionChangedListener(null);
                             floatingButton.setOnClickListener(null);
                             floatingButton.setVisibility(GONE);
+                            rootViewGroup.removeView(floatingButton);
                         } else {
                             Log.debug(
                                     Assurance.LOG_TAG,
@@ -338,9 +339,7 @@ class AssuranceFloatingButton implements AssuranceSessionLifecycleListener {
         } else {
             // Show the button (create new if does not exist for this activity)
             if (managedButtonViews.get(activityClassName) == null
-                    && !AssuranceFullScreenTakeoverActivity.class
-                            .getSimpleName()
-                            .equalsIgnoreCase(activity.getClass().getSimpleName())) {
+                    && !AssuranceUtil.isAssuranceActivity(activity)) {
                 // We do not have an existing button showing, create one
                 Log.trace(Assurance.LOG_TAG, LOG_TAG, "Creating floating button for " + activity);
                 final AssuranceFloatingButtonView newButton =

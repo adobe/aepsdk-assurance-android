@@ -119,6 +119,13 @@ private fun AssuranceConnectionInput() {
         ) {
             Text(text = stringResource(id = R.string.assurance_connection_button_name))
         }
+
+        Button(
+            onClick = { Assurance.startSession() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(id = R.string.assurance_quick_connect_button_name))
+        }
     }
 }
 

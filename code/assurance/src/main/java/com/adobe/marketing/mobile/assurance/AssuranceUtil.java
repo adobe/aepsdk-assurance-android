@@ -12,6 +12,9 @@
 package com.adobe.marketing.mobile.assurance;
 
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.pm.ApplicationInfo;
 import android.net.ParseException;
 import android.net.Uri;
 import androidx.annotation.NonNull;
@@ -191,6 +194,30 @@ final class AssuranceUtil {
         }
 
         return true;
+    }
+
+    /**
+     * Check if the host application integrated with Assurance is a debug build.
+     *
+     * @param application the application to be validated
+     * @return true if the application is debuggable; false otherwise
+     */
+    static boolean isDebugBuild(@NonNull final Application application) {
+        return ((application.getApplicationContext().getApplicationInfo().flags
+                        & ApplicationInfo.FLAG_DEBUGGABLE)
+                != 0);
+    }
+
+    /**
+     * Check if an activity belongs to Assurance.
+     *
+     * @param activity the activity to check
+     * @return true if an activity is an Assurance activity; false otherwise
+     */
+    static boolean isAssuranceActivity(@NonNull final Activity activity) {
+        return (activity instanceof AssuranceFullScreenTakeoverActivity
+                || activity instanceof AssuranceQuickConnectActivity
+                || activity instanceof AssuranceErrorDisplayActivity);
     }
 
     /**
