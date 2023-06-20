@@ -336,6 +336,11 @@ public final class AssuranceExtension extends Extension {
                 event.getUniqueIdentifier());
         payload.put(GenericEventPayloadKey.ACP_EXTENSION_EVENT_DATA, event.getEventData());
 
+        final String parentId = event.getParentID();
+        if (!StringUtils.isNullOrEmpty(parentId)) {
+            payload.put(GenericEventPayloadKey.ACP_EXTENSION_EVENT_PARENT_IDENTIFIER, parentId);
+        }
+
         // if the event is a shared state change event process differently
         if (EventSource.SHARED_STATE.equalsIgnoreCase(event.getSource())) {
             processSharedStateEvent(event, payload);
