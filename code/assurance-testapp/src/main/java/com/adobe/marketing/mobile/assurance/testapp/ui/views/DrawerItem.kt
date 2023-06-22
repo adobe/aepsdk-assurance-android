@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.testapp.ui.navigation.NavRoutes
@@ -41,6 +42,7 @@ internal fun DrawerItem(item: NavRoutes, selected: Boolean, onItemClick: (NavRou
             .height(45.dp)
             .background(color = background)
             .padding(start = 10.dp)
+            .testTag(item.testTag)
     ) {
 
         Spacer(modifier = Modifier.width(8.dp))
