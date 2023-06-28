@@ -25,4 +25,19 @@ object AssuranceTestAppConstants {
     const val TEST_EVENT_NAME = "TestEvent"
     const val TEST_EVENT_SOURCE = "TestSource"
     const val TEST_EVENT_TYPE = "TestType"
+
+    // Test Tags
+    const val TEST_TAG_TEST_APP_MENU_BUTTON = "testAppMenuButton"
+    const val TEST_TAG_ASSURANCE_SCREEN = "assuranceScreen"
+    const val TEST_TAG_APP_ID_INPUT = "appIdInput"
+    const val TEST_TAG_CONFIGURE_WITH_APP_ID_BUTTON = "configWithAppIdButton"
+    const val TEST_TAG_SESSION_URL_INPUT = "sessionUrlInput"
+    const val TEST_TAG_START_SESSION_BUTTON = "startSessionButton"
+    const val TEST_TAG_QUICK_CONNECT_BUTTON = "quickConnectButton"
+    const val TEST_TAG_CORE_SCREEN = "coreScreen"
+    const val TEST_TAG_EVENTS_SECTION = "eventSection"
+    const val TEST_TAG_TRACK_ACTION_BUTTON = "trackActionButton"
+    const val TEST_TAG_TRACK_STATE_BUTTON = "trackStateButton"
+    const val TEST_TAG_DISPATCH_EVENT_BUTTON = "dispatchEventButton"
+
 }

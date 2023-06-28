@@ -22,16 +22,11 @@ import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TA
 
 class AssuranceTestApp : Application() {
 
-    companion object {
-        private const val APP_ID = "YOUR_APP_ID"
-    }
-
     override fun onCreate() {
         super.onCreate()
 
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
-        MobileCore.configureWithAppID(APP_ID)
 
         MobileCore.registerExtensions(
             listOf(
