@@ -1,6 +1,11 @@
 name: Update Assurance Test App APK
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to be used when updating AssuranceTestApp'
+        required: true
 
 jobs:
   update-testapp:
@@ -11,7 +16,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3.1.0
       with:
-        ref: dev
+        ref: ${{ github.event.inputs.branch }}
 
     - name: Generate AssuranceTestApp APK
       run: make build-app
@@ -21,4 +26,4 @@ jobs:
       with:
         commit-message: Update Assurance Test App APK
         title: Update AssuranceTestApp APK
-        base: dev
+        base: ${{ github.event.inputs.branch }}
