@@ -77,6 +77,15 @@ final class AssuranceUtil {
         return AssuranceEnvironment.get(queryValue);
     }
 
+    static AssuranceEnvironment getEnvironmentFromSocketUri(final Uri uri) {
+        final Matcher matcher = CONNECTION_ROUTE_REGEX.matcher(uri.getHost());
+
+        if (!matcher.find()) return null;
+
+        final String environment = matcher.group(3);
+        return AssuranceEnvironment.get(environment);
+    }
+
     /**
      * Use this method parse and obtain a valid sessionID from the deeplink URL
      *

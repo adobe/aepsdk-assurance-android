@@ -13,12 +13,16 @@ package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
 import android.util.Log
+import com.adobe.marketing.mobile.Analytics
 import com.adobe.marketing.mobile.Assurance
+import com.adobe.marketing.mobile.Edge
 import com.adobe.marketing.mobile.Lifecycle
 import com.adobe.marketing.mobile.LoggingMode
+import com.adobe.marketing.mobile.Messaging
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.Signal
 import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants.TAG
+import com.adobe.marketing.mobile.edge.identity.Identity
 
 class AssuranceTestApp : Application() {
 
@@ -31,15 +35,19 @@ class AssuranceTestApp : Application() {
 
         MobileCore.setApplication(this)
         MobileCore.setLogLevel(LoggingMode.VERBOSE)
-        MobileCore.configureWithAppID(APP_ID)
 
         MobileCore.registerExtensions(
             listOf(
                 Assurance.EXTENSION,
                 Lifecycle.EXTENSION,
-                Signal.EXTENSION
+                Signal.EXTENSION,
+                Analytics.EXTENSION,
+                Messaging.EXTENSION,
+                Edge.EXTENSION,
+                Identity.EXTENSION
             )
         ) {
+            MobileCore.lifecycleStart(null)
             Log.d(TAG, "AEP Mobile SDK initialization complete.");
         }
     }

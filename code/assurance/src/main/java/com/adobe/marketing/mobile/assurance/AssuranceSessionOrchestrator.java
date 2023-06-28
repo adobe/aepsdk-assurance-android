@@ -310,22 +310,23 @@ class AssuranceSessionOrchestrator {
         }
 
         final Uri uri = Uri.parse(connectionURL);
-        final String sessionId = uri.getQueryParameter("sessionId");
+        final String sessionId = uri.getQueryParameter(AssuranceConstants.SocketURLKeys.SESSION_ID);
 
         if (StringUtils.isNullOrEmpty(sessionId)) {
             return false;
         }
 
-        final AssuranceConstants.AssuranceEnvironment environment =
-                AssuranceUtil.getEnvironmentFromQueryValue(
-                        uri.getQueryParameter(
-                                AssuranceConstants.DeeplinkURLKeys
-                                        .START_URL_QUERY_KEY_ENVIRONMENT));
-        final String pin = uri.getQueryParameter(AssuranceConstants.DataStoreKeys.TOKEN);
+        final String pin = uri.getQueryParameter(AssuranceConstants.SocketURLKeys.TOKEN);
 
         if (StringUtils.isNullOrEmpty(pin)) {
             return false;
         }
+        final AssuranceConstants.AssuranceEnvironment environmentFromUrl =
+                AssuranceUtil.getEnvironmentFromSocketUri(uri);
+        final AssuranceConstants.AssuranceEnvironment environment =
+                environmentFromUrl == null
+                        ? AssuranceConstants.AssuranceEnvironment.PROD
+                        : environmentFromUrl;
 
         Log.trace(
                 Assurance.LOG_TAG,
