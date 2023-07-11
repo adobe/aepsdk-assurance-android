@@ -37,7 +37,6 @@ class AssuranceTestApp : Application() {
                 Assurance.EXTENSION,
                 Lifecycle.EXTENSION,
                 Signal.EXTENSION,
-                Analytics.EXTENSION,
                 Messaging.EXTENSION,
                 Edge.EXTENSION,
                 Identity.EXTENSION

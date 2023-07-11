@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.assurance
 
 import com.adobe.marketing.mobile.util.SerialWorkDispatcher
 import org.junit.After
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -128,7 +129,8 @@ class InboundEventQueueWorkerTest {
     fun `InboundEventQueueWorker's WorkHandlerImpl does not process null control types`() {
         // setup
         val mockEventStitcher: EventStitcher = Mockito.mock(EventStitcher::class.java)
-        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl = InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
+        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl =
+            InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
         val mockAssuranceEvent: AssuranceEvent = Mockito.mock(AssuranceEvent::class.java)
         `when`(mockAssuranceEvent.controlType).thenReturn(null)
 
@@ -140,10 +142,11 @@ class InboundEventQueueWorkerTest {
     }
 
     @Test
-    fun `InboundEventQueueWorker's WorkHandlerImpl notifies event stitcher`() {
+    fun `InboundEventQueueWorker's WorkHandlerImpl notifies event stitcher on event`() {
         // setup
         val mockEventStitcher: EventStitcher = Mockito.mock(EventStitcher::class.java)
-        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl = InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
+        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl =
+            InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
         val mockAssuranceEvent: AssuranceEvent = Mockito.mock(AssuranceEvent::class.java)
         `when`(mockAssuranceEvent.controlType).thenReturn(AssuranceConstants.ControlType.FAKE_EVENT)
 
@@ -152,6 +155,24 @@ class InboundEventQueueWorkerTest {
 
         // verify
         verify(mockEventStitcher).onEvent(mockAssuranceEvent)
+    }
+
+    @Test
+    fun `InboundEventQueueWorker's WorkHandlerImpl does not crash on bad stitching`() {
+        // setup
+        val mockEventStitcher: EventStitcher = Mockito.mock(EventStitcher::class.java)
+        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl =
+            InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
+        val mockAssuranceEvent: AssuranceEvent = Mockito.mock(AssuranceEvent::class.java)
+        `when`(mockAssuranceEvent.controlType).thenReturn(AssuranceConstants.ControlType.FAKE_EVENT)
+        `when`(mockEventStitcher.onEvent(mockAssuranceEvent)).thenThrow(RuntimeException("Exception while stitching event"))
+
+        // test
+        try {
+            workHandlerImpl.doWork(mockAssuranceEvent)
+        } catch (e: Exception) {
+            fail("Exception should not have been thrown")
+        }
     }
 
     @After

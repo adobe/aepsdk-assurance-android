@@ -73,7 +73,6 @@ dependencies {
     implementation 'com.adobe.marketing.mobile:core:2.2.3'
     implementation 'com.adobe.marketing.mobile:signal:2.0.1'
     implementation 'com.adobe.marketing.mobile:lifecycle:2.0.3'
-    implementation 'com.adobe.marketing.mobile:analytics:2.0.2'
     implementation 'com.adobe.marketing.mobile:messaging:2.1.4'
     implementation 'com.adobe.marketing.mobile:edge:2.1.0'
     implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'

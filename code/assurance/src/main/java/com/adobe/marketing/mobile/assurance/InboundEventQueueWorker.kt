@@ -34,14 +34,9 @@ internal class InboundEventQueueWorker {
     private val workDispatcher: SerialWorkDispatcher<AssuranceEvent>
 
     internal constructor(listener: InboundQueueEventListener) : this(
-        WorkHandlerImpl(EventStitcher(listener::onInboundEvent))
-    )
-
-    @VisibleForTesting
-    internal constructor(workHandler: SerialWorkDispatcher.WorkHandler<AssuranceEvent>) : this(
         SerialWorkDispatcher(
             LOG_TAG,
-            workHandler
+            WorkHandlerImpl(EventStitcher(listener::onInboundEvent))
         )
     )
 

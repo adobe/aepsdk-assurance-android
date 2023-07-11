@@ -77,6 +77,12 @@ final class AssuranceUtil {
         return AssuranceEnvironment.get(queryValue);
     }
 
+    /**
+     * Method to return the Assurance environment (if available) from socket uri.
+     *
+     * @param uri the Assurance socket connection uri
+     * @return the Assurance environment if available, null otherwise
+     */
     static AssuranceEnvironment getEnvironmentFromSocketUri(final Uri uri) {
         final Matcher matcher = CONNECTION_ROUTE_REGEX.matcher(uri.getHost());
 

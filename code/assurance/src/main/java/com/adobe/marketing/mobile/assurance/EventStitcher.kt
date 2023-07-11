@@ -25,8 +25,15 @@ internal class EventStitcher {
         const val LOG_TAG = "EventStitcher"
     }
 
-    // Queue of events that are yet to be stitched i.e waiting for the final chunk
+    /**
+     * Queue of events that are yet to be stitched i.e waiting for the final chunk. Stored as a
+     * map with chunkId as the key and list of events as the value.
+     */
     private val queue: MutableMap<String, MutableList<AssuranceEvent>>
+
+    /**
+     * A callback to notify the caller with the processed event (stitched or not stitched).
+     */
     private val notifier: AdobeCallback<AssuranceEvent>
 
     constructor(notifier: AdobeCallback<AssuranceEvent>) : this(mutableMapOf(), notifier)
@@ -97,6 +104,8 @@ internal class EventStitcher {
         // sort the events by sequence number
         chunkedEvents.sortBy { it.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int }
 
+        // The eventType for the intended event should be the same for all chunked events with the same chunkId
+        // use the initial event type as the eventType for the stitched event
         val eventType = chunkedEvents[0].eventType
 
         // The payload for the intended event is a concatenation of all the chunk data of chunked events

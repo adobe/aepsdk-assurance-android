@@ -143,30 +143,21 @@ private fun EventSection() {
                 Text(text = stringResource(id = R.string.track_state_button))
             }
 
-//            Button(
-//                onClick = {
-//                    MobileCore.dispatchEvent(
-//                        Event.Builder(
-//                            AssuranceTestAppConstants.TEST_EVENT_NAME,
-//                            AssuranceTestAppConstants.TEST_EVENT_TYPE,
-//                            AssuranceTestAppConstants.TEST_EVENT_SOURCE
-//                        )
-//                            .setEventData(mapOf("sampleKey" to "sampleValue"))
-//                            .build()
-//                    )
-//                },
-//                modifier = Modifier.padding(8.dp)
-//            ) {
-//                Text(text = stringResource(id = R.string.dispatch_event_button))
-//            }
-
             Button(
                 onClick = {
-                    MobileCore.trackAction("50off", null)
+                    MobileCore.dispatchEvent(
+                        Event.Builder(
+                            AssuranceTestAppConstants.TEST_EVENT_NAME,
+                            AssuranceTestAppConstants.TEST_EVENT_TYPE,
+                            AssuranceTestAppConstants.TEST_EVENT_SOURCE
+                        )
+                            .setEventData(mapOf("sampleKey" to "sampleValue"))
+                            .build()
+                    )
                 },
                 modifier = Modifier.padding(8.dp).testTag(AssuranceTestAppConstants.TEST_TAG_DISPATCH_EVENT_BUTTON)
             ) {
-                Text(text = "IAM Trigger")
+                Text(text = stringResource(id = R.string.dispatch_event_button))
             }
         }
     }
