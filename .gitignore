@@ -27,6 +27,9 @@ jacoco.exec
 *.aar
 *.aab
 
+# Do not ignore the APK from artifacts folder
+!artifacts/*.apk
+
 # Dex files for ART/Dalvik VM
 *.dex
 

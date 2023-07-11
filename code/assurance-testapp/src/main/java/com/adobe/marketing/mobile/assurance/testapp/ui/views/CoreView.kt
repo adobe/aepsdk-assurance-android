@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -34,7 +35,7 @@ import com.adobe.marketing.mobile.assurance.testapp.R
 
 @Composable
 internal fun CoreScreen() {
-    Column {
+    Column(modifier = Modifier.testTag(AssuranceTestAppConstants.TEST_TAG_CORE_SCREEN)) {
 
         Row() {
             PrivacySection()
@@ -96,7 +97,7 @@ private fun PrivacySection() {
 
 @Composable
 private fun EventSection() {
-    Column() {
+    Column(modifier = Modifier.testTag(AssuranceTestAppConstants.TEST_TAG_EVENTS_SECTION)) {
         Row(
             Modifier
                 .align(Alignment.CenterHorizontally)
@@ -106,7 +107,8 @@ private fun EventSection() {
                 text = stringResource(id = R.string.event_section_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                textDecoration = TextDecoration.Underline
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.padding(8.dp).testTag(AssuranceTestAppConstants.TEST_TAG_TRACK_ACTION_BUTTON)
             )
         }
 
@@ -124,7 +126,7 @@ private fun EventSection() {
                         mapOf("sampleKey" to "sampleValue")
                     )
                 },
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp).testTag(AssuranceTestAppConstants.TEST_TAG_TRACK_ACTION_BUTTON)
             ) {
                 Text(text = stringResource(id = R.string.track_action_button))
             }
@@ -136,7 +138,7 @@ private fun EventSection() {
                         mapOf("sampleKey" to "sampleValue")
                     )
                 },
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp).testTag(AssuranceTestAppConstants.TEST_TAG_TRACK_STATE_BUTTON)
             ) {
                 Text(text = stringResource(id = R.string.track_state_button))
             }
@@ -162,7 +164,7 @@ private fun EventSection() {
                 onClick = {
                     MobileCore.trackAction("50off", null)
                 },
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp).testTag(AssuranceTestAppConstants.TEST_TAG_DISPATCH_EVENT_BUTTON)
             ) {
                 Text(text = "IAM Trigger")
             }

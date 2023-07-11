@@ -16,6 +16,8 @@
     <string name="app_top_bar_description">Open Navigation Drawer</string>
 
     <string name="assurance_version">Assurance v%1$s</string>
+    <string name="assurance_appId_input_hint">Enter App Id</string>
+    <string name="assurance_appId_button_name">Configure With AppId</string>
     <string name="assurance_connection_input_hint">Enter Assurance Connection URL</string>
     <string name="assurance_connection_button_name">Start Session</string>
     <string name="assurance_quick_connect_button_name">Quick Connect</string>

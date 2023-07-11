@@ -26,10 +26,6 @@ import com.adobe.marketing.mobile.edge.identity.Identity
 
 class AssuranceTestApp : Application() {
 
-    companion object {
-        private const val APP_ID = "YOUR_APP_ID"
-    }
-
     override fun onCreate() {
         super.onCreate()
 
