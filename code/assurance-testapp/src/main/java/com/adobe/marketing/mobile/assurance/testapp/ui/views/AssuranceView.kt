@@ -30,12 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.Assurance
+import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants
 import com.adobe.marketing.mobile.assurance.testapp.R
 import com.adobe.marketing.mobile.assurance.testapp.ui.viewmodel.AssuranceTestAppViewModel
@@ -47,7 +49,7 @@ internal fun AssuranceScreen(
     scope: CoroutineScope,
     assuranceTestAppViewModel: AssuranceTestAppViewModel
 ) {
-    Box() {
+    Box(modifier = Modifier.testTag(AssuranceTestAppConstants.TEST_TAG_ASSURANCE_SCREEN)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,6 +64,15 @@ internal fun AssuranceScreen(
             ) {
                 AssuranceVersionLabel(version = Assurance.extensionVersion())
             }
+
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                AppIdConfiguration()
+            }
+
             Row(
                 modifier = Modifier
                     .padding(vertical = 16.dp, horizontal = 8.dp)
@@ -110,21 +121,56 @@ private fun AssuranceConnectionInput() {
             value = assuranceSessionUrl,
             onValueChange = { assuranceSessionUrl = it },
             placeholder = { Text(text = stringResource(id = R.string.assurance_connection_input_hint)) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssuranceTestAppConstants.TEST_TAG_SESSION_URL_INPUT)
         )
 
         Button(
             onClick = { Assurance.startSession(assuranceSessionUrl) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssuranceTestAppConstants.TEST_TAG_START_SESSION_BUTTON)
         ) {
             Text(text = stringResource(id = R.string.assurance_connection_button_name))
         }
 
         Button(
             onClick = { Assurance.startSession() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssuranceTestAppConstants.TEST_TAG_QUICK_CONNECT_BUTTON)
         ) {
             Text(text = stringResource(id = R.string.assurance_quick_connect_button_name))
+        }
+    }
+}
+
+@Composable
+private fun AppIdConfiguration() {
+    var appId by remember {
+        mutableStateOf("")
+    }
+    Column {
+        TextField(
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text
+            ),
+            value = appId,
+            onValueChange = { appId = it },
+            placeholder = { Text(text = stringResource(id = R.string.assurance_appId_input_hint)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssuranceTestAppConstants.TEST_TAG_APP_ID_INPUT)
+        )
+
+        Button(
+            onClick = { MobileCore.configureWithAppID(appId) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssuranceTestAppConstants.TEST_TAG_CONFIGURE_WITH_APP_ID_BUTTON)
+        ) {
+            Text(text = stringResource(id = R.string.assurance_appId_button_name))
         }
     }
 }

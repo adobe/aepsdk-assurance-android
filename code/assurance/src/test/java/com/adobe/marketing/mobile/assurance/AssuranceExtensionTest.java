@@ -48,6 +48,7 @@ import com.adobe.marketing.mobile.services.AppContextService;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -660,6 +661,60 @@ public class AssuranceExtensionTest {
 
         // verify if assurance event is queued to the session
         verify(mockAssuranceSessionOrchestrator, times(0)).queueEvent(any(AssuranceEvent.class));
+    }
+
+    @Test
+    public void testProcessWildCardEvent_whenEventHasParentId() {
+        final Event parentEvent =
+                new Event.Builder("Parent Event", EventType.ANALYTICS, EventSource.REQUEST_CONTENT)
+                        .build();
+
+        final HashMap<String, Object> childEventData = new HashMap<>();
+        childEventData.put("One", 1);
+        childEventData.put("bool", true);
+        final Event childEvent =
+                new Event.Builder(
+                                "Test Event with parent",
+                                EventType.ANALYTICS,
+                                EventSource.REQUEST_CONTENT)
+                        .inResponseToEvent(parentEvent)
+                        .setEventData(childEventData)
+                        .chainToParentEvent(parentEvent)
+                        .build();
+
+        // test
+        assuranceExtension.handleWildcardEvent(childEvent);
+
+        // verify
+        final ArgumentCaptor<AssuranceEvent> assuranceEventCaptor =
+                ArgumentCaptor.forClass(AssuranceEvent.class);
+        verify(mockAssuranceSessionOrchestrator, times(1))
+                .queueEvent(assuranceEventCaptor.capture());
+        final AssuranceEvent capturedEvent = assuranceEventCaptor.getValue();
+        final Map<String, Object> capturedPayload = capturedEvent.getPayload();
+
+        assertEquals(
+                childEvent.getName(),
+                capturedPayload.get(
+                        AssuranceConstants.GenericEventPayloadKey.ACP_EXTENSION_EVENT_NAME));
+        assertEquals(
+                childEvent.getType().toLowerCase(Locale.ROOT),
+                capturedPayload.get(
+                        AssuranceConstants.GenericEventPayloadKey.ACP_EXTENSION_EVENT_TYPE));
+        assertEquals(
+                childEvent.getSource().toLowerCase(Locale.ROOT),
+                capturedPayload.get(
+                        AssuranceConstants.GenericEventPayloadKey.ACP_EXTENSION_EVENT_SOURCE));
+        assertEquals(
+                childEvent.getUniqueIdentifier(),
+                capturedPayload.get(
+                        AssuranceConstants.GenericEventPayloadKey
+                                .ACP_EXTENSION_EVENT_UNIQUE_IDENTIFIER));
+        assertEquals(
+                parentEvent.getUniqueIdentifier(),
+                capturedPayload.get(
+                        AssuranceConstants.GenericEventPayloadKey
+                                .ACP_EXTENSION_EVENT_PARENT_IDENTIFIER));
     }
 
     @Test

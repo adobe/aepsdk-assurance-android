@@ -11,7 +11,9 @@
 
 package com.adobe.marketing.mobile.assurance.testapp.ui.navigation
 
-internal sealed class NavRoutes(val route: String, val title: String) {
-    object AssuranceRoute : NavRoutes("Assurance", "Assurance")
-    object CoreRoute : NavRoutes("Core", "Core")
+import com.adobe.marketing.mobile.assurance.testapp.AssuranceTestAppConstants
+
+internal sealed class NavRoutes(val route: String, val title: String, val testTag: String) {
+    object AssuranceRoute : NavRoutes("Assurance", "Assurance", AssuranceTestAppConstants.TEST_TAG_ASSURANCE_SCREEN)
+    object CoreRoute : NavRoutes("Core", "Core", AssuranceTestAppConstants.TEST_TAG_CORE_SCREEN)
 }

@@ -34,6 +34,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.rememberNavController
@@ -114,6 +115,7 @@ private fun AssuranceTestAppTopBar(onNavIconClick: () -> Unit) {
         },
         navigationIcon = {
             IconButton(
+                modifier = Modifier.testTag(AssuranceTestAppConstants.TEST_TAG_TEST_APP_MENU_BUTTON),
                 onClick = {
                     onNavIconClick()
                 }

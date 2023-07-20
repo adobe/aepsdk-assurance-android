@@ -34,7 +34,8 @@ final class AssuranceConstants {
         static final String ACP_EXTENSION_EVENT_DATA = "ACPExtensionEventData";
         static final String ACP_EXTENSION_EVENT_UNIQUE_IDENTIFIER =
                 "ACPExtensionEventUniqueIdentifier";
-        static final String ACP_EXTENSION_EVENT_NUMBER = "ACPExtensionEventNumber";
+        static final String ACP_EXTENSION_EVENT_PARENT_IDENTIFIER =
+                "ACPExtensionEventParentIdentifier";
 
         private GenericEventPayloadKey() {}
     }
