@@ -16,7 +16,6 @@ import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDat
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDataKeys.XDM_STATE_DATA;
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventName.XDM_SHARED_STATE_CHANGE;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
@@ -213,13 +212,6 @@ public final class AssuranceExtension extends Extension {
             return;
         }
 
-        final Activity currentActivity =
-                ServiceProvider.getInstance().getAppContextService().getCurrentActivity();
-        if (currentActivity == null) {
-            Log.debug(Assurance.LOG_TAG, LOG_TAG, "No foreground activity to launch quick flow.");
-            return;
-        }
-
         if (assuranceSessionOrchestrator.getActiveSession() != null) {
             Log.debug(
                     Assurance.LOG_TAG,
@@ -232,7 +224,16 @@ public final class AssuranceExtension extends Extension {
                 new Intent(hostApplication, AssuranceQuickConnectActivity.class);
         quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        currentActivity.startActivity(quickConnectIntent);
+        // start session may be called from a non-activity context (from an application class),
+        // when the ServiceProvider.getInstance().getAppContextService().getCurrentActivity() is
+        // null.
+        // So we need to add FLAG_ACTIVITY_NEW_TASK to start the activity in from the host
+        // application context.
+        // This is OK because the activity is independent of the activity stack of the host
+        // application and
+        // will finish itself after starting the session or if the user cancels and
+        quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        hostApplication.startActivity(quickConnectIntent);
     }
 
     // ========================================================================================
