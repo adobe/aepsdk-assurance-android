@@ -239,7 +239,7 @@ public class AssuranceExtensionTest {
 
         assuranceExtension.startSession();
 
-        verify(mockActivity, times(0)).startActivity(any(Intent.class));
+        verify(mockApplication, times(0)).startActivity(any(Intent.class));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class AssuranceExtensionTest {
 
         final ArgumentCaptor<Intent> quickConnectIntentCaptor =
                 ArgumentCaptor.forClass(Intent.class);
-        verify(mockActivity).startActivity(quickConnectIntentCaptor.capture());
+        verify(mockApplication).startActivity(quickConnectIntentCaptor.capture());
         final Intent capturedIntent = quickConnectIntentCaptor.getValue();
         assertEquals(
                 AssuranceQuickConnectActivity.class.getName(),
@@ -393,7 +393,7 @@ public class AssuranceExtensionTest {
         // verify that quick connect flow is launched
         final ArgumentCaptor<Intent> quickConnectIntentCaptor =
                 ArgumentCaptor.forClass(Intent.class);
-        verify(mockActivity).startActivity(quickConnectIntentCaptor.capture());
+        verify(mockApplication).startActivity(quickConnectIntentCaptor.capture());
         final Intent capturedIntent = quickConnectIntentCaptor.getValue();
         assertEquals(
                 AssuranceQuickConnectActivity.class.getName(),
