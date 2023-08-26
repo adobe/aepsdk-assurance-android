@@ -65,22 +65,26 @@ public class AssuranceClientInfoTest {
     private MockedStatic<ServiceProvider> mockedStaticServiceProvider;
     private MockedStatic<ActivityCompat> mockedStaticActivityCompat;
 
+    private JSONObject appSettings;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        assuranceClientInfo = new AssuranceClientInfo();
+
         mockedStaticActivityCompat = Mockito.mockStatic(ActivityCompat.class);
         mockedStaticAssuranceIOUtils = Mockito.mockStatic(AssuranceIOUtils.class);
         mockedStaticServiceProvider = Mockito.mockStatic(ServiceProvider.class);
-    }
 
-    @Test
-    public void testGetData_happy() throws JSONException {
-        final JSONObject appSettings = mockManifestData();
+        appSettings = mockManifestData();
         mockedStaticAssuranceIOUtils
                 .when(() -> AssuranceIOUtils.parseXMLResourceFileToJson(any()))
                 .thenReturn(appSettings);
 
+        assuranceClientInfo = new AssuranceClientInfo();
+    }
+
+    @Test
+    public void testGetData_happy() throws JSONException {
         mockAppContextService();
         mockTelephonyManager("MyNetworkCarrier");
         mockBatteryLevel(95);
@@ -115,11 +119,6 @@ public class AssuranceClientInfoTest {
 
     @Test
     public void testGetData_locationAuthorizationDenied() throws JSONException {
-        final JSONObject appSettings = mockManifestData();
-        mockedStaticAssuranceIOUtils
-                .when(() -> AssuranceIOUtils.parseXMLResourceFileToJson(any()))
-                .thenReturn(appSettings);
-
         mockAppContextService();
         mockTelephonyManager("MyNetworkCarrier");
         mockBatteryLevel(95);
@@ -154,11 +153,6 @@ public class AssuranceClientInfoTest {
 
     @Test
     public void testGetData_lowPowerModeEnabled() throws JSONException {
-        final JSONObject appSettings = mockManifestData();
-        mockedStaticAssuranceIOUtils
-                .when(() -> AssuranceIOUtils.parseXMLResourceFileToJson(any()))
-                .thenReturn(appSettings);
-
         mockAppContextService();
         mockTelephonyManager("MyNetworkCarrier");
         mockBatteryLevel(95);
