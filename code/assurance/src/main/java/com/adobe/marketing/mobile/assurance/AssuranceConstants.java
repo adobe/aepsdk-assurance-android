@@ -265,7 +265,8 @@ final class AssuranceConstants {
     }
 
     static final class QuickConnect {
-        static final String BASE_DEVICE_API_URL = "https://device.griffon.adobe.com/device";
+        static final String BASE_DEVICE_API_URL_FORMAT =
+                "https://device%s.griffon.adobe.com/device";
         static final String DEVICE_API_PATH_CREATE = "create";
         static final String DEVICE_API_PATH_STATUS = "status";
         static final String KEY_SESSION_ID = "sessionUuid";

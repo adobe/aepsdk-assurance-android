@@ -58,6 +58,7 @@ class QuickConnectDeviceCreatorTest {
     private lateinit var mockCallback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 
     private lateinit var mockedStaticServiceProvider: MockedStatic<ServiceProvider>
+    private var environment: String = ""
 
     @Before
     fun setUp() {
@@ -70,7 +71,7 @@ class QuickConnectDeviceCreatorTest {
     @Test
     fun `Verify DeviceCreationTask makes network request`() {
         // setup
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, mockCallback)
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, environment, mockCallback)
 
         // test
         quickConnectDeviceCreator.run()
@@ -92,7 +93,7 @@ class QuickConnectDeviceCreatorTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_CREATE}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -112,7 +113,7 @@ class QuickConnectDeviceCreatorTest {
     @Test
     fun `Verify DeviceCreationTask invoked callback with Success response when request successful`() {
         // setup
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, mockCallback)
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, environment, mockCallback)
 
         // test
         quickConnectDeviceCreator.run()
@@ -134,7 +135,7 @@ class QuickConnectDeviceCreatorTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_CREATE}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -171,7 +172,7 @@ class QuickConnectDeviceCreatorTest {
     @Test
     fun `Verify DeviceCreationTask invoked callback with CREATE_DEVICE_REQUEST_FAILED response when request fails`() {
         // setup
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, mockCallback)
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, environment, mockCallback)
 
         // test
         quickConnectDeviceCreator.run()
@@ -193,7 +194,7 @@ class QuickConnectDeviceCreatorTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_CREATE}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -230,7 +231,7 @@ class QuickConnectDeviceCreatorTest {
     @Test
     fun `Verify DeviceCreationTask invoked callback with UNEXPECTED_ERROR response when request fails`() {
         // setup
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, mockCallback)
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, environment, mockCallback)
 
         // test
         quickConnectDeviceCreator.run()
@@ -252,7 +253,7 @@ class QuickConnectDeviceCreatorTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}",
+            "${String.format(QuickConnect.BASE_DEVICE_API_URL_FORMAT, "")}/${QuickConnect.DEVICE_API_PATH_CREATE}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -283,8 +284,53 @@ class QuickConnectDeviceCreatorTest {
         }
     }
 
+    @Test
+    fun `Test that QuickConnectDeviceCreator honours environment`() {
+        // setup
+        environment = "stage"
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(TEST_ORG_ID, TEST_CLIENT_ID, TEST_DEVICE_NAME, environment, mockCallback)
+
+        // test
+        quickConnectDeviceCreator.run()
+
+        // Verify
+        val networkRequestCaptor: KArgumentCaptor<NetworkRequest> = argumentCaptor()
+        val networkCallbackCaptor: KArgumentCaptor<NetworkCallback> = argumentCaptor()
+        verify(mockNetworkService).connectAsync(networkRequestCaptor.capture(), networkCallbackCaptor.capture())
+
+        val capturedNetworkRequest = networkRequestCaptor.firstValue
+        assertNotNull(capturedNetworkRequest)
+
+        val expectedBody = JSONObject(
+            mapOf(
+                QuickConnect.KEY_ORG_ID to TEST_ORG_ID,
+                QuickConnect.KEY_DEVICE_NAME to TEST_DEVICE_NAME,
+                QuickConnect.KEY_CLIENT_ID to TEST_CLIENT_ID
+            )
+        ).toString().toByteArray()
+
+        val expectedNetworkRequest = NetworkRequest(
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_CREATE}",
+            HttpMethod.POST,
+            expectedBody,
+            mapOf(
+                NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,
+                NetworkingConstants.Headers.CONTENT_TYPE to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION
+            ),
+            QuickConnect.CONNECTION_TIMEOUT_MS,
+            QuickConnect.READ_TIMEOUT_MS
+        )
+
+        verifyNetworkRequestParams(expectedNetworkRequest, capturedNetworkRequest)
+    }
+
     @After
     fun teardown() {
         mockedStaticServiceProvider.close()
+    }
+
+    private fun getBaseUrl(environment: String): String {
+        val prefixedEnv = if (environment.isNotEmpty()) "-$environment" else ""
+        return String.format(QuickConnect.BASE_DEVICE_API_URL_FORMAT, prefixedEnv)
     }
 }

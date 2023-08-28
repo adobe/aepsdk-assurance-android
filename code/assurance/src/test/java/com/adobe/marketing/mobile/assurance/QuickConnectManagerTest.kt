@@ -14,12 +14,15 @@ package com.adobe.marketing.mobile.assurance
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
 import com.adobe.marketing.mobile.assurance.AssuranceTestUtils.simulateNetworkResponse
+import com.adobe.marketing.mobile.services.DataStoring
 import com.adobe.marketing.mobile.services.DeviceInforming
 import com.adobe.marketing.mobile.services.HttpConnecting
+import com.adobe.marketing.mobile.services.NamedCollection
 import com.adobe.marketing.mobile.services.Networking
 import com.adobe.marketing.mobile.services.ServiceProvider
 import org.json.JSONObject
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -67,6 +70,12 @@ class QuickConnectManagerTest {
     private lateinit var mockDeviceInfoService: DeviceInforming
 
     @Mock
+    private lateinit var mockDataStoreService: DataStoring
+
+    @Mock
+    private lateinit var mockAssuranceNamedCollection: NamedCollection
+
+    @Mock
     private lateinit var mockExecutorService: ScheduledExecutorService
 
     @Mock
@@ -87,6 +96,8 @@ class QuickConnectManagerTest {
 
         `when`(mockServiceProvider.deviceInfoService).thenReturn(mockDeviceInfoService)
         `when`(mockServiceProvider.networkService).thenReturn(mockNetworkService)
+        `when`(mockServiceProvider.dataStoreService).thenReturn(mockDataStoreService)
+        `when`(mockDataStoreService.getNamedCollection(eq(AssuranceConstants.DataStoreKeys.DATASTORE_NAME))).thenReturn(mockAssuranceNamedCollection)
 
         quickConnectManager = QuickConnectManager(
             mockAssuranceStateManager,
@@ -298,6 +309,46 @@ class QuickConnectManagerTest {
         assertNull(quickConnectManager.deviceCreationTaskHandle)
         assertNull(quickConnectManager.deviceStatusTaskHandle)
         assertFalse(quickConnectManager.isActive)
+    }
+
+    @Test
+    fun `Test that QuickConnectManager loads the right environment`() {
+        //
+        `when`(mockAssuranceNamedCollection.getString(eq(AssuranceConstants.DataStoreKeys.ENVIRONMENT), eq(""))).thenReturn("qa")
+        val qaQuickConnectManager = QuickConnectManager(
+            mockAssuranceStateManager,
+            mockExecutorService,
+            mockQuickConnectCallback,
+            mockDataStoreService
+        )
+        assertEquals("qa", qaQuickConnectManager.quickConnectEnvironment)
+
+        `when`(mockAssuranceNamedCollection.getString(eq(AssuranceConstants.DataStoreKeys.ENVIRONMENT), eq(""))).thenReturn("")
+        val prodQuickConnectManager = QuickConnectManager(
+            mockAssuranceStateManager,
+            mockExecutorService,
+            mockQuickConnectCallback,
+            mockDataStoreService
+        )
+        assertEquals("", prodQuickConnectManager.quickConnectEnvironment)
+
+        `when`(mockAssuranceNamedCollection.getString(eq(AssuranceConstants.DataStoreKeys.ENVIRONMENT), eq(""))).thenReturn("dev")
+        val devQuickConnectManager = QuickConnectManager(
+            mockAssuranceStateManager,
+            mockExecutorService,
+            mockQuickConnectCallback,
+            mockDataStoreService
+        )
+        assertEquals("dev", devQuickConnectManager.quickConnectEnvironment)
+
+        `when`(mockAssuranceNamedCollection.getString(eq(AssuranceConstants.DataStoreKeys.ENVIRONMENT), eq(""))).thenReturn("someRandomEnv")
+        val unknownEnvQuickConnectManager = QuickConnectManager(
+            mockAssuranceStateManager,
+            mockExecutorService,
+            mockQuickConnectCallback,
+            mockDataStoreService
+        )
+        assertEquals("", unknownEnvQuickConnectManager.quickConnectEnvironment)
     }
 
     @After

@@ -56,6 +56,8 @@ class QuickConnectDeviceStatusCheckerTest {
 
     private lateinit var mockedStaticServiceProvider: MockedStatic<ServiceProvider>
 
+    private var environment: String = ""
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
@@ -68,7 +70,7 @@ class QuickConnectDeviceStatusCheckerTest {
     @Test
     fun `Verify DeviceStatusCheckerTask makes network request`() {
         // setup
-        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, mockCallback)
+        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, environment, mockCallback)
 
         // test
         quickConnectDeviceStatusChecker.run()
@@ -89,7 +91,7 @@ class QuickConnectDeviceStatusCheckerTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_STATUS}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -109,7 +111,7 @@ class QuickConnectDeviceStatusCheckerTest {
     @Test
     fun `Verify DeviceStatusCheckerTask invoked callback with Success response when request successful`() {
         // setup
-        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, mockCallback)
+        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, environment, mockCallback)
 
         // test
         quickConnectDeviceStatusChecker.run()
@@ -130,7 +132,7 @@ class QuickConnectDeviceStatusCheckerTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_STATUS}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -167,7 +169,7 @@ class QuickConnectDeviceStatusCheckerTest {
     @Test
     fun `Verify DeviceStatusCheckerTask invokes callback with DEVICE_STATUS_REQUEST_FAILED response when request fails`() {
         // setup
-        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, mockCallback)
+        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, environment, mockCallback)
 
         // test
         quickConnectDeviceStatusChecker.run()
@@ -188,7 +190,7 @@ class QuickConnectDeviceStatusCheckerTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_STATUS}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -225,7 +227,7 @@ class QuickConnectDeviceStatusCheckerTest {
     @Test
     fun `Verify DeviceStatusCheckerTask invokes callback with UNEXPECTED_ERROR response when request fails`() {
         // setup
-        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, mockCallback)
+        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, environment, mockCallback)
 
         // test
         quickConnectDeviceStatusChecker.run()
@@ -246,7 +248,7 @@ class QuickConnectDeviceStatusCheckerTest {
         ).toString().toByteArray()
 
         val expectedNetworkRequest = NetworkRequest(
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}",
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_STATUS}",
             HttpMethod.POST,
             expectedBody,
             mapOf(
@@ -277,8 +279,52 @@ class QuickConnectDeviceStatusCheckerTest {
         }
     }
 
+    @Test
+    fun `Test that the QuickConnectDeviceStatusChecker honors the environment`() {
+        // setup
+        environment = "qa"
+        val quickConnectDeviceStatusChecker = QuickConnectDeviceStatusChecker(TEST_ORG_ID, TEST_CLIENT_ID, environment, mockCallback)
+
+        // test
+        quickConnectDeviceStatusChecker.run()
+
+        // Verify
+        val networkRequestCaptor: KArgumentCaptor<NetworkRequest> = argumentCaptor()
+        val networkCallbackCaptor: KArgumentCaptor<NetworkCallback> = argumentCaptor()
+        verify(mockNetworkService).connectAsync(networkRequestCaptor.capture(), networkCallbackCaptor.capture())
+
+        val capturedNetworkRequest = networkRequestCaptor.firstValue
+        assertNotNull(capturedNetworkRequest)
+
+        val expectedBody = JSONObject(
+            mapOf(
+                QuickConnect.KEY_ORG_ID to TEST_ORG_ID,
+                QuickConnect.KEY_CLIENT_ID to TEST_CLIENT_ID
+            )
+        ).toString().toByteArray()
+
+        val expectedNetworkRequest = NetworkRequest(
+            "${getBaseUrl(environment)}/${QuickConnect.DEVICE_API_PATH_STATUS}",
+            HttpMethod.POST,
+            expectedBody,
+            mapOf(
+                NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,
+                NetworkingConstants.Headers.CONTENT_TYPE to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION
+            ),
+            QuickConnect.CONNECTION_TIMEOUT_MS,
+            QuickConnect.READ_TIMEOUT_MS
+        )
+
+        verifyNetworkRequestParams(expectedNetworkRequest, capturedNetworkRequest)
+    }
+
     @After
     fun teardown() {
         mockedStaticServiceProvider.close()
+    }
+
+    private fun getBaseUrl(environment: String): String {
+        val prefixedEnv = if (environment.isNotEmpty()) "-$environment" else ""
+        return String.format(QuickConnect.BASE_DEVICE_API_URL_FORMAT, prefixedEnv)
     }
 }

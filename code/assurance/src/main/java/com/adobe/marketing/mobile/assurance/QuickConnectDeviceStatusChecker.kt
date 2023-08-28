@@ -31,11 +31,13 @@ import javax.net.ssl.HttpsURLConnection
  *
  * @param orgId orgId that was used for the the device creation/registration
  * @param clientId clientId that was used for the the device creation/registration
+ * @param environment environment that was used for the the device creation/registration
  * @param callback a callback to be notified of the response to the network request
  */
 internal class QuickConnectDeviceStatusChecker(
     private val orgId: String,
     private val clientId: String,
+    private val environment: String = "",
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 ) : Runnable {
 
@@ -63,7 +65,8 @@ internal class QuickConnectDeviceStatusChecker(
      * Builds the network request for checking the status of device creation.
      */
     private fun buildRequest(): NetworkRequest {
-        val url = "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_STATUS}"
+        val prefixedEnv = if (environment.isNotEmpty()) "-$environment" else ""
+        val url = "${String.format(QuickConnect.BASE_DEVICE_API_URL_FORMAT, prefixedEnv)}/${QuickConnect.DEVICE_API_PATH_STATUS}"
 
         val body: Map<String, String> = mapOf(
             QuickConnect.KEY_ORG_ID to orgId,

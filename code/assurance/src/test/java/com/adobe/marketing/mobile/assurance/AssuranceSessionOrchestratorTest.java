@@ -22,8 +22,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Application;
+import com.adobe.marketing.mobile.services.DataStoring;
+import com.adobe.marketing.mobile.services.NamedCollection;
+import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.Collections;
 import java.util.List;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
@@ -48,9 +53,14 @@ public class AssuranceSessionOrchestratorTest {
     @Mock private AssuranceConnectionDataStore mockAssuranceConnectionDataStore;
     @Mock private AssuranceSessionOrchestrator.AssuranceSessionCreator mockAssuranceSessionCreator;
     @Mock private AssuranceSession mockAssuranceSession;
+    @Mock private ServiceProvider mockServiceProvider;
+    @Mock private DataStoring mockDataStoreService;
+    @Mock private NamedCollection mockNamedCollection;
 
     @Mock
     private AssuranceSession.AssuranceSessionStatusListener mockAuthorizingPresentationListener;
+
+    private MockedStatic<ServiceProvider> mockedStaticServiceProvider;
 
     private AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver
             hostAppActivityLifecycleObserver;
@@ -60,6 +70,14 @@ public class AssuranceSessionOrchestratorTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+
+        mockedStaticServiceProvider = Mockito.mockStatic(ServiceProvider.class);
+        mockedStaticServiceProvider
+                .when(ServiceProvider::getInstance)
+                .thenReturn(mockServiceProvider);
+
+        when(mockServiceProvider.getDataStoreService()).thenReturn(mockDataStoreService);
+        when(mockDataStoreService.getNamedCollection(anyString())).thenReturn(mockNamedCollection);
 
         assuranceSessionOrchestrator =
                 new AssuranceSessionOrchestrator(
@@ -483,5 +501,10 @@ public class AssuranceSessionOrchestratorTest {
                 .registerStatusListener(
                         assuranceSessionOrchestrator.getAssuranceSessionStatusListener());
         verify(mockAssuranceStateManager).shareAssuranceSharedState("SessionID");
+    }
+
+    @After
+    public void tearDown() {
+        mockedStaticServiceProvider.close();
     }
 }
