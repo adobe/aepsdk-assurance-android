@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.services.NamedCollection;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.StringUtils;
 import java.lang.ref.WeakReference;
@@ -116,9 +117,20 @@ class AssuranceSessionOrchestrator {
                         }
                     }
 
+                    final NamedCollection assurancePreferenceStore =
+                            ServiceProvider.getInstance()
+                                    .getDataStoreService()
+                                    .getNamedCollection(
+                                            AssuranceConstants.DataStoreKeys.DATASTORE_NAME);
+                    final String environment =
+                            assurancePreferenceStore == null
+                                    ? null
+                                    : assurancePreferenceStore.getString(
+                                            AssuranceConstants.DataStoreKeys.ENVIRONMENT, "");
+
                     createSession(
                             sessionId,
-                            AssuranceConstants.AssuranceEnvironment.PROD,
+                            AssuranceConstants.AssuranceEnvironment.get(environment),
                             token,
                             listener,
                             SessionAuthorizingPresentation.Type.QUICK_CONNECT);

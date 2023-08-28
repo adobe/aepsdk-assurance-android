@@ -14,7 +14,9 @@ package com.adobe.marketing.mobile.assurance
 import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.Assurance.LOG_TAG
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceEnvironment
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.QuickConnect
+import com.adobe.marketing.mobile.services.DataStoring
 import com.adobe.marketing.mobile.services.HttpConnecting
 import com.adobe.marketing.mobile.services.Log
 import com.adobe.marketing.mobile.services.ServiceProvider
@@ -35,11 +37,21 @@ import java.util.concurrent.TimeUnit
 internal class QuickConnectManager(
     private val assuranceSharedStateManager: AssuranceStateManager,
     private val executorService: ScheduledExecutorService,
-    private val quickConnectCallback: QuickConnectCallback
+    private val quickConnectCallback: QuickConnectCallback,
+    private val dataStoreService: DataStoring = ServiceProvider.getInstance().dataStoreService
 ) {
 
     companion object {
         private const val LOG_SOURCE = "QuickConnectManager"
+    }
+
+    @VisibleForTesting
+    internal val quickConnectEnvironment: String
+
+    init {
+        val envString = dataStoreService.getNamedCollection(AssuranceConstants.DataStoreKeys.DATASTORE_NAME).getString(AssuranceConstants.DataStoreKeys.ENVIRONMENT, "")
+        val assuranceEnvironment = AssuranceEnvironment.get(envString)
+        quickConnectEnvironment = if (assuranceEnvironment == AssuranceEnvironment.PROD) "" else assuranceEnvironment.stringValue()
     }
 
     /**
@@ -90,7 +102,7 @@ internal class QuickConnectManager(
         val deviceName = ServiceProvider.getInstance().deviceInfoService.deviceName
         Log.trace(LOG_TAG, LOG_SOURCE, "Attempting to register device with deviceName:$deviceName, orgId: $orgId, clientId: $clientId.")
 
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName) {
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName, quickConnectEnvironment) {
             when (it) {
                 is Response.Success -> checkDeviceStatus(orgId, clientId)
                 is Response.Failure -> {
@@ -111,7 +123,7 @@ internal class QuickConnectManager(
      */
     @VisibleForTesting
     internal fun checkDeviceStatus(orgId: String, clientId: String) {
-        val statusCheckerTask = QuickConnectDeviceStatusChecker(orgId, clientId) { response ->
+        val statusCheckerTask = QuickConnectDeviceStatusChecker(orgId, clientId, quickConnectEnvironment) { response ->
             handleStatusCheckResponse(orgId, clientId, response)
         }
 
