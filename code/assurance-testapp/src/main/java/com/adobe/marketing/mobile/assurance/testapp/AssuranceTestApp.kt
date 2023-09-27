@@ -13,7 +13,6 @@ package com.adobe.marketing.mobile.assurance.testapp
 
 import android.app.Application
 import android.util.Log
-import com.adobe.marketing.mobile.Analytics
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Edge
 import com.adobe.marketing.mobile.Lifecycle

@@ -27,7 +27,14 @@ internal class InboundEventQueueWorker {
         private const val LOG_TAG = "InboundEventQueueWorker"
     }
 
+    /**
+     * Interface for listening to incoming [AssuranceEvent]'s from the socket.
+     */
     internal interface InboundQueueEventListener {
+        /**
+         * Called when an [AssuranceEvent] is received from the socket.
+         * @param event the [AssuranceEvent] received from the socket.
+         */
         fun onInboundEvent(event: AssuranceEvent)
     }
 
@@ -45,6 +52,11 @@ internal class InboundEventQueueWorker {
         this.workDispatcher = workDispatcher
     }
 
+    /**
+     * Starts the [SerialWorkDispatcher] that the [InboundEventQueueWorker] maintains
+     * to process the inbound events.
+     * If the dispatcher is already started, this method does nothing.
+     */
     fun start() {
         val dispatcherState = workDispatcher.getState()
         if (dispatcherState != SerialWorkDispatcher.State.NOT_STARTED) {
@@ -59,6 +71,11 @@ internal class InboundEventQueueWorker {
         workDispatcher.start()
     }
 
+    /**
+     * Queues the [AssuranceEvent] to be processed by the [SerialWorkDispatcher] that the
+     * [InboundEventQueueWorker] maintains.
+     * If the dispatcher is shutdown, this method does nothing.
+     */
     fun offer(event: AssuranceEvent): Boolean {
         if (workDispatcher.getState() == SerialWorkDispatcher.State.SHUTDOWN) {
             Log.trace(
@@ -72,6 +89,9 @@ internal class InboundEventQueueWorker {
         return workDispatcher.offer(event)
     }
 
+    /**
+     * Stops the [SerialWorkDispatcher] that the [InboundEventQueueWorker] maintains.
+     */
     fun stop() {
         workDispatcher.shutdown()
     }

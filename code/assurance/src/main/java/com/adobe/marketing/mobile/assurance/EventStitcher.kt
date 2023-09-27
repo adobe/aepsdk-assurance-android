@@ -63,6 +63,7 @@ internal class EventStitcher {
         val chunkedEventsForId: MutableList<AssuranceEvent> = queue[chunkId] ?: mutableListOf()
         chunkedEventsForId.add(event)
 
+        // if all chunks are received, stitch the events and notify the caller
         if (chunkedEventsForId.size == totalChunks) {
             val result: Response<AssuranceEvent, Exception> = stitch(chunkedEventsForId)
             when (result) {
