@@ -31,12 +31,22 @@ import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.json.JSONObject;
 
 final class AssuranceClientInfo {
 
     private static final String VALUE_UNKNOWN = "Unknown";
     private static final String MANIFEST_FILE_NAME = "AndroidManifest.xml";
     private static final String EVENT_TYPE_CONNECT = "connect";
+
+    private final JSONObject manifestData;
+
+    AssuranceClientInfo() {
+        // parse the manifest file and store it in a JSONObject for later use as this does not
+        // change
+        // during the lifetime of the application
+        manifestData = AssuranceIOUtils.parseXMLResourceFileToJson(MANIFEST_FILE_NAME);
+    }
 
     /**
      * Returns the payload for assurance ClientInfo event. ClientInfo event includes
@@ -57,9 +67,7 @@ final class AssuranceClientInfo {
         eventPayload.put(AssuranceConstants.ClientInfoKeys.VERSION, Assurance.extensionVersion());
         eventPayload.put(AssuranceConstants.ClientInfoKeys.DEVICE_INFO, getDeviceInfo());
         eventPayload.put(AssuranceConstants.PayloadDataKeys.TYPE, EVENT_TYPE_CONNECT);
-        eventPayload.put(
-                AssuranceConstants.ClientInfoKeys.APP_SETTINGS,
-                AssuranceIOUtils.parseXMLResourceFileToJson(MANIFEST_FILE_NAME));
+        eventPayload.put(AssuranceConstants.ClientInfoKeys.APP_SETTINGS, manifestData);
         return eventPayload;
     }
 
