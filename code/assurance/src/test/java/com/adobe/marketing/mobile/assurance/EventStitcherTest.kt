@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.assurance
 
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -53,12 +54,20 @@ class EventStitcherTest {
     }
 
     @Test
-    fun `onEvent drops chunked event when event does not have appropriate metadata details`() {
+    fun `onEvent returns unstiched event when event does not have appropriate metadata details`() {
         val metadata = mutableMapOf<String, Any>(
             AssuranceConstants.AssuranceEventKeys.CHUNK_ID to "myChunkId"
             // no CHUNK_TOTAL or CHUNK_SEQUENCE_NUMBER
         )
-        val chunkedEvent = AssuranceEvent(
+        val chunkedEvent1 = AssuranceEvent(
+            AssuranceConstants.VENDOR_ASSURANCE_MOBILE,
+            AssuranceConstants.AssuranceEventType.CONTROL,
+            metadata,
+            mutableMapOf(),
+            System.currentTimeMillis()
+        )
+
+        val chunkedEvent2 = AssuranceEvent(
             AssuranceConstants.VENDOR_ASSURANCE_MOBILE,
             AssuranceConstants.AssuranceEventType.CONTROL,
             metadata,
@@ -67,10 +76,14 @@ class EventStitcherTest {
         )
 
         // test
-        eventStitcher.onEvent(chunkedEvent)
+        eventStitcher.onEvent(chunkedEvent1)
+        eventStitcher.onEvent(chunkedEvent2)
 
         // verify
-        assert(stitchedEvents.isEmpty())
+        assert(stitchedEvents.isNotEmpty())
+        // Both events are returned unstiched
+        assert(stitchedEvents[0] == chunkedEvent1)
+        assert(stitchedEvents[1] == chunkedEvent2)
     }
 
     @Test
@@ -188,6 +201,36 @@ class EventStitcherTest {
         } catch (e: Exception) {
             fail()
         }
+    }
+
+    @Test
+    fun `isChunked returns false when Assurance event does not have chunkId`() {
+        val event = AssuranceEvent(
+            AssuranceConstants.VENDOR_ASSURANCE_MOBILE,
+            AssuranceConstants.AssuranceEventType.CONTROL,
+            mapOf(
+                AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER to 0,
+                AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL to 2
+            ),
+            mapOf(),
+            System.currentTimeMillis()
+        )
+        assertFalse(eventStitcher.isChunked(event))
+    }
+
+    @Test
+    fun `isChunked returns false when Assurance event does not have chunkSequenceNumber`() {
+        val event = AssuranceEvent(
+            AssuranceConstants.VENDOR_ASSURANCE_MOBILE,
+            AssuranceConstants.AssuranceEventType.CONTROL,
+            mapOf(
+                AssuranceConstants.AssuranceEventKeys.CHUNK_ID to "myChunkId",
+                AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL to 2
+            ),
+            mapOf(),
+            System.currentTimeMillis()
+        )
+        assertFalse(eventStitcher.isChunked(event))
     }
 
     @Test
@@ -368,5 +411,7 @@ class EventStitcherTest {
 
     @After
     fun tearDown() {
+        stitchedEvents.clear()
+        queue.clear()
     }
 }

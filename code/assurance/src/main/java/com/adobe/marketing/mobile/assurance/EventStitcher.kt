@@ -57,7 +57,6 @@ internal class EventStitcher {
         }
 
         val chunkId: String = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String? ?: return
-        val chunkSequenceNumber = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int? ?: return
         val totalChunks: Int = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL] as Int? ?: return
 
         // check if there are prior chunks associated with this chunkId in the queue, if not create a new queue
@@ -80,16 +79,18 @@ internal class EventStitcher {
     }
 
     /**
-     * Checks whether the event is chunked.
+     * Checks whether the event is chunked. An event is chunked if it has chunkId and chunkSequenceNumber in its metadata.
      * @param event the event to check
      * @return true if the event is chunked, false otherwise
      */
     @JvmName("isChunked")
     internal fun isChunked(event: AssuranceEvent): Boolean {
-        event.metadata?.let {
-            val chunkId = it[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String?
-            return chunkId != null
-        } ?: return false
+        if (event.metadata == null) return false
+
+        // An event is chunked if it has chunkId and chunkSequenceNumber in its metadata
+        val chunkId = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String?
+        val chunkSequenceNumber = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int?
+        return chunkId != null && chunkSequenceNumber != null
     }
 
     /**
