@@ -57,6 +57,7 @@ internal class EventStitcher {
         }
 
         val chunkId: String = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String? ?: return
+        val chunkSequenceNumber = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int? ?: return
         val totalChunks: Int = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL] as Int? ?: return
 
         // check if there are prior chunks associated with this chunkId in the queue, if not create a new queue

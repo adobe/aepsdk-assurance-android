@@ -84,9 +84,16 @@ final class AssuranceUtil {
      * @return the Assurance environment if available, null otherwise
      */
     static AssuranceEnvironment getEnvironmentFromSocketUri(final Uri uri) {
+        if (uri == null || uri.getHost() == null) {
+            return AssuranceEnvironment.PROD;
+        }
+
         final Matcher matcher = CONNECTION_ROUTE_REGEX.matcher(uri.getHost());
 
-        if (!matcher.find()) return null;
+        if (!matcher.find()) return AssuranceEnvironment.PROD;
+
+        // Group 3 is the environment in CONNECTION_ROUTE_REGEX
+        if (matcher.groupCount() < 3) return AssuranceEnvironment.PROD;
 
         final String environment = matcher.group(3);
         return AssuranceEnvironment.get(environment);
