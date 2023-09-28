@@ -44,10 +44,19 @@ public class AssuranceUtilTests {
         Assert.assertEquals(
                 AssuranceConstants.AssuranceEnvironment.PROD,
                 AssuranceUtil.getEnvironmentFromSocketUri(prodSocketUri));
+    }
+
+    @Test
+    public void testGetEnvironmentFromSocketUri_InvalidURI() {
 
         final Uri invalidSocketUri = Uri.parse("wss://invalidconnect.griffon.adobe.com/client/v1");
         Assert.assertEquals(
                 AssuranceConstants.AssuranceEnvironment.PROD,
                 AssuranceUtil.getEnvironmentFromSocketUri(invalidSocketUri));
+
+        final Uri invalidFormatUri = Uri.parse("not:://a_valid_uri");
+        Assert.assertEquals(
+                AssuranceConstants.AssuranceEnvironment.PROD,
+                AssuranceUtil.getEnvironmentFromSocketUri(invalidFormatUri));
     }
 }

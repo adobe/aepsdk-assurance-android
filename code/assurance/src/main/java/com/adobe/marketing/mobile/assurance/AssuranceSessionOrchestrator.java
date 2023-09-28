@@ -321,12 +321,9 @@ class AssuranceSessionOrchestrator {
         if (StringUtils.isNullOrEmpty(pin)) {
             return false;
         }
-        final AssuranceConstants.AssuranceEnvironment environmentFromUrl =
-                AssuranceUtil.getEnvironmentFromSocketUri(uri);
+
         final AssuranceConstants.AssuranceEnvironment environment =
-                environmentFromUrl == null
-                        ? AssuranceConstants.AssuranceEnvironment.PROD
-                        : environmentFromUrl;
+                AssuranceUtil.getEnvironmentFromSocketUri(uri);
 
         Log.trace(
                 Assurance.LOG_TAG,

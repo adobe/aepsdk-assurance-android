@@ -81,8 +81,9 @@ final class AssuranceUtil {
      * Method to return the Assurance environment (if available) from socket uri.
      *
      * @param uri the Assurance socket connection uri
-     * @return the Assurance environment if available, null otherwise
+     * @return the Assurance environment if available, {@code AssuranceEnvironment.PROD} otherwise
      */
+    @NonNull
     static AssuranceEnvironment getEnvironmentFromSocketUri(final Uri uri) {
         if (uri == null || uri.getHost() == null) {
             return AssuranceEnvironment.PROD;
