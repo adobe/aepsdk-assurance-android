@@ -23,6 +23,21 @@ internal class EventStitcher {
 
     companion object {
         const val LOG_TAG = "EventStitcher"
+
+        /**
+         * Checks whether the event is chunked. An event is chunked if it has chunkId and chunkSequenceNumber in its metadata.
+         * @param event the event to check
+         * @return true if the event is chunked, false otherwise
+         */
+        @JvmName("isChunked")
+        internal fun isChunked(event: AssuranceEvent): Boolean {
+            if (event.metadata == null) return false
+
+            // An event is chunked if it has chunkId and chunkSequenceNumber in its metadata
+            val chunkId = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String?
+            val chunkSequenceNumber = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int?
+            return chunkId != null && chunkSequenceNumber != null
+        }
     }
 
     /**
@@ -76,21 +91,6 @@ internal class EventStitcher {
             // else add the event to the queue for stitching once all pieces are received
             queue[chunkId] = chunkedEventsForId
         }
-    }
-
-    /**
-     * Checks whether the event is chunked. An event is chunked if it has chunkId and chunkSequenceNumber in its metadata.
-     * @param event the event to check
-     * @return true if the event is chunked, false otherwise
-     */
-    @JvmName("isChunked")
-    internal fun isChunked(event: AssuranceEvent): Boolean {
-        if (event.metadata == null) return false
-
-        // An event is chunked if it has chunkId and chunkSequenceNumber in its metadata
-        val chunkId = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_ID] as String?
-        val chunkSequenceNumber = event.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int?
-        return chunkId != null && chunkSequenceNumber != null
     }
 
     /**

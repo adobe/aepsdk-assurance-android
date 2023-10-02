@@ -102,7 +102,7 @@ internal class InboundEventQueueWorker {
     ) : SerialWorkDispatcher.WorkHandler<AssuranceEvent> {
 
         override fun doWork(item: AssuranceEvent): Boolean {
-            if (item.controlType == null) {
+            if (!EventStitcher.isChunked(item) && item.controlType == null) {
                 Log.warning(
                     Assurance.LOG_TAG,
                     LOG_TAG,

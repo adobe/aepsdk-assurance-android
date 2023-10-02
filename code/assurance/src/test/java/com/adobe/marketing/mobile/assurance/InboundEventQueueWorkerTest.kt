@@ -175,6 +175,36 @@ class InboundEventQueueWorkerTest {
         }
     }
 
+    @Test
+    fun `InboundEventQueueWorker's WorkHandlerImpl does not check for control on chunked events`() {
+        // setup
+        val mockEventStitcher: EventStitcher = Mockito.mock(EventStitcher::class.java)
+        val workHandlerImpl: InboundEventQueueWorker.WorkHandlerImpl =
+            InboundEventQueueWorker.WorkHandlerImpl(mockEventStitcher)
+        val mockAssuranceEvent = AssuranceEvent(
+            AssuranceConstants.VENDOR_ASSURANCE_MOBILE,
+            AssuranceConstants.AssuranceEventType.CONTROL,
+            mapOf(
+                AssuranceConstants.AssuranceEventKeys.CHUNK_ID to "chunkId",
+                AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER to 2,
+                AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL to 3
+            ),
+            mapOf(
+                AssuranceConstants.AssuranceEventKeys.CHUNK_DATA to " \"bool\": true } }"
+            ),
+            System.currentTimeMillis()
+        )
+
+        // test
+        try {
+            workHandlerImpl.doWork(mockAssuranceEvent)
+            // Verify that the event was sent for stitching
+            verify(mockEventStitcher).onEvent(mockAssuranceEvent)
+        } catch (e: Exception) {
+            fail("Exception should not have been thrown")
+        }
+    }
+
     @After
     fun tearDown() {
     }

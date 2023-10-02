@@ -215,7 +215,7 @@ class EventStitcherTest {
             mapOf(),
             System.currentTimeMillis()
         )
-        assertFalse(eventStitcher.isChunked(event))
+        assertFalse(EventStitcher.isChunked(event))
     }
 
     @Test
@@ -230,7 +230,7 @@ class EventStitcherTest {
             mapOf(),
             System.currentTimeMillis()
         )
-        assertFalse(eventStitcher.isChunked(event))
+        assertFalse(EventStitcher.isChunked(event))
     }
 
     @Test
