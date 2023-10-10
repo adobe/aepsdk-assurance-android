@@ -89,6 +89,13 @@ android {
         languageVersion = rootProject.ext.kotlinLanguageVersion
         apiVersion = rootProject.ext.kotlinApiVersion
     }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.5'
+    }
 }
 
 
@@ -247,8 +254,20 @@ task platformFunctionalTestJacocoReport(type: JacocoReport, dependsOn: "createPh
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinApiVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "com.adobe.marketing.mobile:core:${rootProject.mavenCoreVersion}"
+
+    // Jetpack Compose runtime
+    implementation "androidx.compose.runtime:runtime:${composeVersion}"
+    // Jetpack compose animation (for animated visibility)
+    implementation("androidx.compose.animation:animation:1.1.0")
+    // Material UI 1.x
+    implementation "androidx.compose.material:material:${composeVersion}"
+    // Jetpack + Activity integration
+    implementation 'androidx.activity:activity-compose:1.5.0'
+    // Jetpack Compose tooling
+    debugImplementation "androidx.compose.ui:ui-tooling:${composeVersion}"
+
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.code.gson:gson:2.8.5'
