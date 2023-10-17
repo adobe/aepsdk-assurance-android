@@ -12,14 +12,11 @@
 package com.adobe.marketing.mobile.assurance;
 
 
-import java.util.ArrayList;
+import com.adobe.marketing.mobile.util.JSONUtils;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -137,7 +134,7 @@ final class AssuranceEvent {
                 eventMap.optJSONObject(AssuranceConstants.AssuranceEventKeys.METADATA);
 
         if (metadataObj != null) {
-            this.metadata = objToMap(metadataObj);
+            this.metadata = JSONUtils.toMap(metadataObj);
         } else {
             this.metadata = null;
         }
@@ -146,7 +143,7 @@ final class AssuranceEvent {
                 eventMap.optJSONObject(AssuranceConstants.AssuranceEventKeys.PAYLOAD);
 
         if (payloadObj != null) {
-            this.payload = objToMap(payloadObj);
+            this.payload = JSONUtils.toMap(payloadObj);
         } else {
             this.payload = null;
         }
@@ -283,60 +280,11 @@ final class AssuranceEvent {
     }
 
     /**
-     * Converts a JSONObject into a {@code Map<String, Object>}
+     * Returns the event type of this event.
      *
-     * <p>If JSONArray values are encountered in the input object, {@code arrayToList} will be
-     * invoked to convert those objects prior to adding them to the output list.
-     *
-     * @param jsonObj JSONObject to be converted
-     * @return A Map containing the contents of the JSONObject converted into Java types
-     * @throws JSONException If errors parsing the JSON values are encountered
+     * @return event type of this event.
      */
-    private Map<String, Object> objToMap(final JSONObject jsonObj) throws JSONException {
-        final Map<String, Object> map = new HashMap<>();
-        final Iterator<String> keys = jsonObj.keys();
-
-        while (keys.hasNext()) {
-            final String key = keys.next();
-            final Object value = jsonObj.get(key);
-
-            if (value instanceof JSONArray) {
-                map.put(key, arrayToList((JSONArray) value));
-            } else if (value instanceof JSONObject) {
-                map.put(key, objToMap((JSONObject) value));
-            } else {
-                map.put(key, value);
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * Converts a JSONArray into an ordered List.
-     *
-     * <p>If JSONObjects are encountered in the input array, {@code objToMap} will be invoked to
-     * convert those objects prior to adding them to the output list.
-     *
-     * @param jsonArr JSONArray to be converted
-     * @return A List object containing the contents of the JSONArray
-     * @throws JSONException If errors parsing JSON values are encountered
-     */
-    private List<Object> arrayToList(final JSONArray jsonArr) throws JSONException {
-        final List<Object> list = new ArrayList<>();
-
-        for (int i = 0; i < jsonArr.length(); i++) {
-            final Object value = jsonArr.get(i);
-
-            if (value instanceof JSONObject) {
-                list.add(objToMap((JSONObject) value));
-            } else if (value instanceof JSONArray) {
-                list.add(arrayToList((JSONArray) value));
-            } else {
-                list.add(value);
-            }
-        }
-
-        return list;
+    String getEventType() {
+        return this.type;
     }
 }
