@@ -36,6 +36,7 @@ ext {
     kotlinJvmTarget = "1.8"
     kotlinApiVersion = "1.5"
     kotlinLanguageVersion = "1.5"
+    kotlinComposeCompilerExtensionVersion = "1.0.5"
 
     // dependencies
     junitVersion = "4.12"

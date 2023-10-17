@@ -51,7 +51,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.5'
+        kotlinCompilerExtensionVersion kotlinComposeCompilerExtensionVersion
     }
 }
 
@@ -69,13 +69,26 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
 
     implementation project(':assurance')
-    implementation 'com.adobe.marketing.mobile:core:2.2.3'
-    implementation 'com.adobe.marketing.mobile:signal:2.0.1'
-    implementation 'com.adobe.marketing.mobile:lifecycle:2.0.3'
-    implementation 'com.adobe.marketing.mobile:messaging:2.1.4'
-    implementation 'com.adobe.marketing.mobile:edge:2.1.0'
-    implementation 'com.adobe.marketing.mobile:edgeidentity:2.0.0'
 
+    // TODO: Uncomment when Core is available on maven central
+    implementation("com.github.adobe.aepsdk-core-android:core:feature~uiservice-SNAPSHOT") {}
+    //implementation 'com.adobe.marketing.mobile:core:2.2.3'
+
+    implementation("com.adobe.marketing.mobile:signal:2.0.1") {
+        transitive = false
+    }
+    implementation ('com.adobe.marketing.mobile:lifecycle:2.0.3') {
+     transitive = false
+    }
+    implementation('com.adobe.marketing.mobile:messaging:2.1.4') {
+        transitive = false
+    }
+    implementation ('com.adobe.marketing.mobile:edge:2.1.0') {
+        transitive = false
+    }
+    implementation('com.adobe.marketing.mobile:edgeidentity:2.0.0') {
+        transitive = false
+    }
 
     //noinspection GradleCompatible
     testImplementation 'junit:junit:4.12'

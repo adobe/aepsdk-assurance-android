@@ -86,7 +86,7 @@ internal class QuickConnectManager(
         isActive = true
 
         val orgId = assuranceSharedStateManager.getOrgId(false)
-        val clientId = assuranceSharedStateManager.clientId
+        val clientId = assuranceSharedStateManager.getClientId()
         val deviceName = ServiceProvider.getInstance().deviceInfoService.deviceName
         Log.trace(LOG_TAG, LOG_SOURCE, "Attempting to register device with deviceName:$deviceName, orgId: $orgId, clientId: $clientId.")
 

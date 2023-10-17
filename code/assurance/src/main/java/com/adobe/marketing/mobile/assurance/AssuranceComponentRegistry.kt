@@ -12,7 +12,6 @@
 package com.adobe.marketing.mobile.assurance
 
 import com.adobe.marketing.mobile.Assurance
-import com.adobe.marketing.mobile.assurance.AssuranceSessionOrchestrator.SessionUIOperationHandler
 import com.adobe.marketing.mobile.services.Log
 
 /**
@@ -28,6 +27,9 @@ internal object AssuranceComponentRegistry {
 
     internal var sessionUIOperationHandler: SessionUIOperationHandler? = null
         private set
+
+    @JvmField
+    internal val appState: AssuranceAppState = AssuranceAppState()
 
     @JvmName("initialize")
     @Synchronized

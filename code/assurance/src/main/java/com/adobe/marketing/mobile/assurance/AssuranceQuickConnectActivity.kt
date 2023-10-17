@@ -21,7 +21,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
-import com.adobe.marketing.mobile.assurance.AssuranceSession.AssuranceSessionStatusListener
 import com.adobe.marketing.mobile.services.Log
 import java.util.concurrent.Executors
 
@@ -40,6 +39,13 @@ class AssuranceQuickConnectActivity : Activity() {
         override fun onSessionConnected() {
             Log.trace(Assurance.LOG_TAG, LOG_SOURCE, "Session Connected. Finishing activity.")
             finish()
+        }
+
+        override fun onSessionDisconnected(error: AssuranceConnectionError?) {
+            Log.trace(Assurance.LOG_TAG, LOG_SOURCE, "Session disconnected.")
+            error?.let {
+                showError(error)
+            }
         }
 
         override fun onSessionTerminated(error: AssuranceConnectionError?) {
@@ -80,7 +86,7 @@ class AssuranceQuickConnectActivity : Activity() {
             }
 
             override fun onSuccess(sessionUUID: String, token: String) {
-                sessionUIOperationHandler.onQuickConnect(sessionUUID, token, sessionStatusListener)
+                sessionUIOperationHandler.onConnect(sessionUUID, token, AssuranceConstants.AssuranceEnvironment.PROD, sessionStatusListener, SessionAuthorizingPresentationType.QUICK_CONNECT)
             }
         }
 

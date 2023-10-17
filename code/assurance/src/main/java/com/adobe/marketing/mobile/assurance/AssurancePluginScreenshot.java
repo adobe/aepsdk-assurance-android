@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.UILogColorVisibility;
 import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +91,8 @@ class AssurancePluginScreenshot implements AssurancePlugin {
         }
 
         // create bitmap screen capture
-        final Activity currentActivity = parentSession.getCurrentActivity();
+        final Activity currentActivity =
+                ServiceProvider.getInstance().getAppContextService().getCurrentActivity();
 
         if (currentActivity != null) {
             currentActivity.runOnUiThread(

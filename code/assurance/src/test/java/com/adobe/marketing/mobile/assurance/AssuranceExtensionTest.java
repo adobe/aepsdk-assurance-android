@@ -188,7 +188,7 @@ public class AssuranceExtensionTest {
                         anyString(),
                         any(AssuranceConstants.AssuranceEnvironment.class),
                         anyString(),
-                        any(AssuranceSession.AssuranceSessionStatusListener.class),
+                        any(AssuranceSessionStatusListener.class),
                         any(SessionAuthorizingPresentation.Type.class));
     }
 
@@ -207,7 +207,7 @@ public class AssuranceExtensionTest {
                         anyString(),
                         any(AssuranceConstants.AssuranceEnvironment.class),
                         anyString(),
-                        any(AssuranceSession.AssuranceSessionStatusListener.class),
+                        any(AssuranceSessionStatusListener.class),
                         any(SessionAuthorizingPresentation.Type.class));
     }
 
@@ -341,7 +341,7 @@ public class AssuranceExtensionTest {
         // test
         assuranceExtension.handleAssuranceRequestContent(startSessionEvent);
 
-        // verify that a PIN authorized session is created
+        // verify that a Pin authorized session is created
         verify(mockAssuranceSessionOrchestrator)
                 .createSession(
                         sessionId,
@@ -385,7 +385,7 @@ public class AssuranceExtensionTest {
         // Test
         assuranceExtension.handleAssuranceRequestContent(startSessionEvent);
 
-        // verify that no PIN based connection is triggered
+        // verify that no Pin based connection is triggered
         verify(mockAssuranceSessionOrchestrator, never())
                 .createSession(
                         any(), any(), any(), any(), eq(SessionAuthorizingPresentation.Type.PIN));
