@@ -107,9 +107,11 @@ internal class EventStitcher {
         // sort the events by sequence number
         chunkedEvents.sortBy { it.metadata[AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER] as Int }
 
-        // The eventType for the intended event should be the same for all chunked events with the same chunkId
+        // The eventType, vendor for the intended event should be the same for all chunked events with the same chunkId
         // use the initial event type as the eventType for the stitched event
         val eventType = chunkedEvents[0].eventType
+        val eventVendor = chunkedEvents[0].vendor
+        val eventTimeStamp = chunkedEvents[0].timestamp ?: System.currentTimeMillis()
 
         // The payload for the intended event is a concatenation of all the chunk data of chunked events
         val payload: StringBuilder = StringBuilder()
@@ -125,7 +127,7 @@ internal class EventStitcher {
         return try {
             val payloadJson = JSONObject(payload.toString())
             val payloadMap = JSONUtils.toMap(payloadJson)
-            Response.Success(AssuranceEvent(eventType, payloadMap))
+            Response.Success(AssuranceEvent(eventVendor, eventType, null, payloadMap, eventTimeStamp))
         } catch (e: JSONException) {
             Response.Failure(e)
         }
