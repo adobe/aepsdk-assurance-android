@@ -78,6 +78,29 @@ final class AssuranceUtil {
     }
 
     /**
+     * Method to return the Assurance environment (if available) from socket uri.
+     *
+     * @param uri the Assurance socket connection uri
+     * @return the Assurance environment if available, {@code AssuranceEnvironment.PROD} otherwise
+     */
+    @NonNull
+    static AssuranceEnvironment getEnvironmentFromSocketUri(final Uri uri) {
+        if (uri == null || uri.getHost() == null) {
+            return AssuranceEnvironment.PROD;
+        }
+
+        final Matcher matcher = CONNECTION_ROUTE_REGEX.matcher(uri.getHost());
+
+        if (!matcher.find()) return AssuranceEnvironment.PROD;
+
+        // Group 3 is the environment in CONNECTION_ROUTE_REGEX
+        if (matcher.groupCount() < 3) return AssuranceEnvironment.PROD;
+
+        final String environment = matcher.group(3);
+        return AssuranceEnvironment.get(environment);
+    }
+
+    /**
      * Use this method parse and obtain a valid sessionID from the deeplink URL
      *
      * <p>This method returns null in following occasions: 1.If the provided Uri is null 2.If the

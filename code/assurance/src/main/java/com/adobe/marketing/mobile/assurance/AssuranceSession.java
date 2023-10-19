@@ -138,9 +138,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         outboundEventQueueWorker =
                 new OutboundEventQueueWorker(
                         Executors.newSingleThreadExecutor(), socket, new AssuranceClientInfo());
-        inboundEventQueueWorker =
-                new InboundEventQueueWorker(
-                        Executors.newSingleThreadExecutor(), inboundQueueEventListener);
+        inboundEventQueueWorker = new InboundEventQueueWorker(inboundQueueEventListener);
 
         // Enqueue stored events.
         if (bufferedEvents != null) {
