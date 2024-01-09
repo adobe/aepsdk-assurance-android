@@ -52,7 +52,7 @@ internal class AssuranceSharedStateManager(dataStoreService: DataStoring) {
      */
     private fun loadFromPersistence(): AssuranceSharedState {
         if (assuranceDataStore == null) {
-            return AssuranceSharedState("", "")
+            return AssuranceSharedState(clientId = "", sessionId = "")
         }
 
         val persistedClientId =

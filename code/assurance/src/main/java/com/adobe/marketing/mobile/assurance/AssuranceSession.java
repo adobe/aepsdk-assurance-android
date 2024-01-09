@@ -88,7 +88,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             final String pin,
             final AssuranceConstants.AssuranceEnvironment assuranceEnvironment,
             final AssuranceConnectionDataStore connectionDataStore,
-            final SessionUIOperationHandler uiOperationHandler,
             final List<AssurancePlugin> plugins,
             final List<AssuranceEvent> bufferedEvents,
             final SessionAuthorizingPresentationType authorizingPresentationType,
