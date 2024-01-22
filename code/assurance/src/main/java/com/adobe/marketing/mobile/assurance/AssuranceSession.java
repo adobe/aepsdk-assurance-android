@@ -48,6 +48,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     private final AssuranceStateManager assuranceStateManager;
     private final AssuranceConstants.AssuranceEnvironment assuranceEnvironment;
     private final String sessionId;
+    private final String pin;
     private final OutboundEventQueueWorker outboundEventQueueWorker;
     private final InboundEventQueueWorker inboundEventQueueWorker;
     private final AssuranceWebViewSocket socket;
@@ -55,11 +56,10 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             new HandlerThread("com.adobe.assurance.mobile.socketreconnectworker");
     private final Handler socketReconnectHandler;
     private final AssurancePluginManager pluginManager;
-    private final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle;
     private final AssuranceSessionPresentationManager assuranceSessionPresentationManager;
     private final Set<AssuranceSessionStatusListener> sessionStatusListeners;
     private final AssuranceConnectionDataStore connectionDataStore;
-    private final SessionAuthorizingPresentation.Type authorizingPresentationType;
+    private final SessionAuthorizingPresentationType authorizingPresentationType;
 
     private final InboundEventQueueWorker.InboundQueueEventListener inboundQueueEventListener =
             new InboundEventQueueWorker.InboundQueueEventListener() {
@@ -80,51 +80,32 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
 
     private boolean isAttemptingToReconnect = false;
     private boolean didClearBootEvents = false;
-
-    /**
-     * A notification mechanism for components that have the need to be aware of creation and
-     * destruction of an {@code AssuranceSession}.
-     */
-    interface AssuranceSessionStatusListener {
-        /** Callback indicating that the AssuranceSession is connected. */
-        void onSessionConnected();
-
-        /**
-         * Callback indicating that the AssuranceSession is disconnected.
-         *
-         * @param error an optional {@code AssuranceConnectionError} if the session was terminated
-         *     due to an error.
-         */
-        void onSessionTerminated(@Nullable AssuranceConstants.AssuranceConnectionError error);
-    }
+    final AssuranceSessionStatusListener authorizingPresentationDelegate;
 
     AssuranceSession(
-            final AssuranceSessionOrchestrator.ApplicationHandle applicationHandle,
             final AssuranceStateManager assuranceStateManager,
             final String sessionId,
+            final String pin,
             final AssuranceConstants.AssuranceEnvironment assuranceEnvironment,
             final AssuranceConnectionDataStore connectionDataStore,
-            final AssuranceSessionOrchestrator.SessionUIOperationHandler uiOperationHandler,
             final List<AssurancePlugin> plugins,
             final List<AssuranceEvent> bufferedEvents,
-            final SessionAuthorizingPresentation.Type authorizingPresentationType,
+            final SessionAuthorizingPresentationType authorizingPresentationType,
             final AssuranceSessionStatusListener authorizingPresentationDelegate) {
 
         this.assuranceStateManager = assuranceStateManager;
-        this.applicationHandle = applicationHandle;
         this.assuranceEnvironment = assuranceEnvironment;
         this.sessionId = sessionId;
+        this.pin = pin;
         this.sessionStatusListeners = new HashSet<>();
         this.connectionDataStore = connectionDataStore;
         this.authorizingPresentationType = authorizingPresentationType;
 
         assuranceSessionPresentationManager =
-                new AssuranceSessionPresentationManager(
-                        assuranceStateManager,
-                        uiOperationHandler,
-                        applicationHandle,
-                        authorizingPresentationType,
-                        authorizingPresentationDelegate);
+                new AssuranceSessionPresentationManager(authorizingPresentationType);
+
+        this.authorizingPresentationDelegate = authorizingPresentationDelegate;
+        registerStatusListener(authorizingPresentationDelegate);
 
         pluginManager = new AssurancePluginManager(this);
 
@@ -159,28 +140,8 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         }
     }
 
-    /**
-     * Makes a socket connection with the provided pin. If the pin is empty, it triggers the
-     * presentation to launch a screen to retrieve the pin.
-     *
-     * @param pin token required for making a socket connection.
-     */
-    void connect(final String pin) {
-        // Verify if a pin is already available.
-        if (StringUtils.isNullOrEmpty(pin)) {
-            // If PIN in absent, show the PIN prompt.
-            Log.debug(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "No stored code. Launching PIN screen by initializing session.");
-            initializeSession();
-            return;
-        }
-
-        // If PIN is available, we want to connect directly without authorization prompt.
-        Log.debug(Assurance.LOG_TAG, LOG_TAG, "Found stored. Connecting session directly");
-        assuranceSessionPresentationManager.onSessionConnecting();
-
+    /** Makes a socket connection with the provided pin. */
+    void connect() {
         final String envString = AssuranceUtil.getURLFormatForEnvironment(assuranceEnvironment);
         String orgId = assuranceStateManager.getOrgId(true);
 
@@ -261,10 +222,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         assuranceSessionPresentationManager.logLocalUI(visibility, message);
     }
 
-    Activity getCurrentActivity() {
-        return applicationHandle.getCurrentActivity();
-    }
-
     /**
      * Getter for the assuranceEnvironment variable.
      *
@@ -293,7 +250,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
      *
      * @return the type of the authorizing presentation that is associated with this session.
      */
-    SessionAuthorizingPresentation.Type getAuthorizingPresentationType() {
+    SessionAuthorizingPresentationType getAuthorizingPresentationType() {
         return authorizingPresentationType;
     }
 
@@ -329,18 +286,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     public void onSocketDataReceived(final AssuranceWebViewSocket socket, final String message) {
         try {
             AssuranceEvent event = new AssuranceEvent(message);
-
-            // only nonnull events should be queued to the inbound worker thread
-            if (event == null) {
-                Log.warning(
-                        Assurance.LOG_TAG,
-                        LOG_TAG,
-                        String.format(
-                                "Unidentified event obtained from Assurance server. Ignoring the"
-                                        + " event with json -%s",
-                                message));
-                return;
-            }
 
             if (!inboundEventQueueWorker.offer(event)) {
                 Log.warning(
@@ -391,8 +336,9 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 // option and UI will be dismissed anyhow
                 pluginManager.onSessionDisconnected(closeCode);
                 pluginManager.onSessionTerminated();
-                notifyTerminationAndRemoveStatusListeners(
-                        AssuranceConstants.SocketCloseCode.toAssuranceConnectionError(closeCode));
+                final AssuranceConstants.AssuranceConnectionError error =
+                        AssuranceConstants.SocketCloseCode.toAssuranceConnectionError(closeCode);
+                notifyTerminationAndRemoveStatusListeners(error);
                 break;
 
             default:
@@ -402,9 +348,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                         String.format(
                                 "Abnornmal closure of websocket. Reason - %s and closeCode - %s",
                                 errorReason, closeCode));
-                outboundEventQueueWorker.block();
-                assuranceSessionPresentationManager.onSessionDisconnected(closeCode);
-
                 // If the disconnect happens because of abnormal close code when the
                 // authorizing presentation is not active, and if we are
                 // attempting to reconnect for the first time then :
@@ -415,11 +358,16 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 // Otherwise, notify the plugins about disconnection and await a retry click
                 // from the UI.
                 if (!isAttemptingToReconnect) {
+                    outboundEventQueueWorker.block();
                     pluginManager.onSessionDisconnected(closeCode);
+                    notifySessionDisconnection(
+                            AssuranceConstants.SocketCloseCode.toAssuranceConnectionError(
+                                    closeCode));
 
                     if (assuranceSessionPresentationManager.isAuthorizingPresentationActive()) {
-                        // Do not retry of authorizing presentation is active. Retry should only be
-                        // done from the UI in this case.
+                        // If the authorizing presentation is active, then we don't need to attempt
+                        // to reconnect automatically. We stay in the current phase and will wait
+                        // for the user to click the retry button.
                         return;
                     }
 
@@ -434,14 +382,8 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
                 // attempt to reconnect after a certain delay through reconnect handler
                 long delayBeforeReconnect =
                         isAttemptingToReconnect ? SOCKET_RECONNECT_TIME_DELAY : 0L;
-                socketReconnectHandler.postDelayed(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                attemptReconnect();
-                            }
-                        },
-                        delayBeforeReconnect);
+                // TODO: replace handler thread usages with a single thread executor
+                socketReconnectHandler.postDelayed(this::connect, delayBeforeReconnect);
         }
     }
 
@@ -461,17 +403,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             final AssuranceWebViewSocket.SocketReadyState state) {
         assuranceSessionPresentationManager.onSessionStateChange(state);
     }
-
-    /**
-     * Notification about an activity of the host app being started. Needed to alter presentation
-     * behavior.
-     *
-     * @param activity the activity of the host application that has started
-     */
-    void onActivityStarted(final Activity activity) {
-        assuranceSessionPresentationManager.onActivityStarted(activity);
-    }
-
     /**
      * Notification about an activity of the host app that has resumed. Needed to alter presentation
      * behavior.
@@ -480,16 +411,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
      */
     void onActivityResumed(final Activity activity) {
         assuranceSessionPresentationManager.onActivityResumed(activity);
-    }
-
-    /**
-     * Notification about an activity of the host app that was destroyed. Needed to alter
-     * presentation behavior.
-     *
-     * @param activity the activity of the host application that has been destroyed
-     */
-    void onActivityDestroyed(final Activity activity) {
-        assuranceSessionPresentationManager.onActivityDestroyed(activity);
     }
 
     /**
@@ -516,49 +437,6 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         }
     }
 
-    /** Prepares the components required for starting a session. */
-    private void initializeSession() {
-        assuranceSessionPresentationManager.onSessionInitialized();
-    }
-
-    /** Attempts to reconnect to an Assurance session that is already running. */
-    private void attemptReconnect() {
-        final String connectionUrl = connectionDataStore.getStoredConnectionURL();
-
-        if (StringUtils.isNullOrEmpty(connectionUrl)) {
-            // An internal attempt to reconnect is missing a previously stored valid session URL.
-            // This, if encountered, is likely a logic error.
-            Log.debug(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Attempt to reconnect is missing a previously "
-                            + "stored valid connection URL.");
-            initializeSession();
-            return;
-        }
-
-        final Uri uri = Uri.parse(connectionUrl);
-        final String pin = uri.getQueryParameter(AssuranceConstants.DataStoreKeys.TOKEN);
-
-        if (StringUtils.isNullOrEmpty(pin)) {
-            Log.debug(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Attempt to reconnect is missing a previously " + "stored valid token.");
-            initializeSession();
-            return;
-        }
-
-        Log.trace(
-                Assurance.LOG_TAG,
-                LOG_TAG,
-                String.format(
-                        "Assurance Session was already connected during "
-                                + "previous app launch. Attempting to reconnect. URL: %s",
-                        connectionUrl));
-        connect(pin);
-    }
-
     /**
      * Handles {@code AssuranceConstants.ControlType.START_EVENT_FORWARDING} event by doing the
      * following :
@@ -573,12 +451,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     private void onStartForwardingEvent() {
         outboundEventQueueWorker.unblock();
         assuranceSessionPresentationManager.onSessionConnected();
-
-        for (AssuranceSessionStatusListener listener : sessionStatusListeners) {
-            if (listener != null) {
-                listener.onSessionConnected();
-            }
-        }
+        notifySessionConnection();
 
         // If the initial SDK events were cleared because of Assurance shutting down after 5 second
         // timeout
@@ -594,6 +467,30 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         pluginManager.onSessionConnected();
     }
 
+    /** Notifies {@code AssuranceSessionStatusListener}'s of session being connected. */
+    private void notifySessionConnection() {
+        for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
+            if (listener != null) {
+                listener.onSessionConnected();
+            }
+        }
+    }
+
+    /**
+     * Notifies {@code AssuranceSessionStatusListener}'s of session being disconnected with an
+     * optional error.
+     *
+     * @param error optional error that caused the session to disconnect.
+     */
+    private void notifySessionDisconnection(
+            @Nullable AssuranceConstants.AssuranceConnectionError error) {
+        for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
+            if (listener != null) {
+                listener.onSessionDisconnected(error);
+            }
+        }
+    }
+
     /**
      * Notifies {@code AssuranceSessionStatusListener}'s of session being disconnected and also
      * unregisters the listener. This is to eliminate the possibility of preventing garbage
@@ -604,8 +501,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
             @Nullable AssuranceConstants.AssuranceConnectionError error) {
         for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
             if (listener != null) {
-                listener.onSessionTerminated(error);
-                unregisterStatusListener(listener);
+                listener.onSessionDisconnected(error);
             }
         }
     }

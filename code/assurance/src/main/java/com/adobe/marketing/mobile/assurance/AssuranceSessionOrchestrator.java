@@ -14,7 +14,6 @@ package com.adobe.marketing.mobile.assurance;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,23 +22,19 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.Log;
-import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.StringUtils;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An orchestrating component that manages the creation and teardown of sessions in response to
- * different events or work flows (scanning QR code, disconnection from PIN screen, shake gesture
+ * different events or work flows (scanning QR code, disconnection from Pin screen, shake gesture
  * for QuickConnect etc).
  *
  * <p>Acts as the source of truth for all operations related to active session.
  */
 class AssuranceSessionOrchestrator {
     private static final String LOG_TAG = "AssuranceSessionOrchestrator";
-    private final ApplicationHandle applicationHandle;
     private final HostAppActivityLifecycleObserver activityLifecycleObserver;
     private final AssuranceStateManager assuranceStateManager;
     private final List<AssurancePlugin> plugins;
@@ -54,104 +49,16 @@ class AssuranceSessionOrchestrator {
      */
     private List<AssuranceEvent> outboundEventBuffer;
 
-    /**
-     * Acts as a glue between the session presentation layer and session control layer. Responsible
-     * for relaying the UI operations relating to session management from the user back to the
-     * orchestrator.
-     */
-    private final SessionUIOperationHandler sessionUIOperationHandler =
-            new SessionUIOperationHandler() {
-                @Override
-                public void onConnect(final String pin) {
-                    if (session == null) {
-                        Log.error(
-                                Assurance.LOG_TAG,
-                                LOG_TAG,
-                                "PIN Confirmation without active session!");
-                        return;
-                    }
-
-                    if (StringUtils.isNullOrEmpty(pin)) {
-                        Log.error(
-                                Assurance.LOG_TAG,
-                                LOG_TAG,
-                                "Null/Empty PIN recorded. Cannot connect to session.");
-                        terminateSession(true);
-                        return;
-                    }
-
-                    session.connect(pin);
-                }
-
-                @Override
-                public void onQuickConnect(
-                        @NonNull String sessionId,
-                        @NonNull String token,
-                        @NonNull AssuranceSession.AssuranceSessionStatusListener listener) {
-
-                    if (session != null) {
-                        // There is an active session,  check the authorizing presentation to
-                        // determine if a new session can be started or not.
-                        if (session.getAuthorizingPresentationType()
-                                == SessionAuthorizingPresentation.Type.PIN) {
-                            // This should never happen in an ideal situation.
-                            Log.warning(
-                                    Assurance.LOG_TAG,
-                                    LOG_TAG,
-                                    "Cannot start Quick Connect session. An active PIN based"
-                                            + " session exists.");
-                            listener.onSessionTerminated(
-                                    AssuranceConstants.AssuranceConnectionError.UNEXPECTED_ERROR);
-                            return;
-                        } else {
-                            // This is a Quick Connect retry scenario. Disconnect existing session
-                            // without clearing the buffered events for this retry scenario and
-                            // connect again.
-                            Log.debug(
-                                    Assurance.LOG_TAG,
-                                    LOG_TAG,
-                                    "Disconnecting active QuickConnect session and recreating.");
-
-                            terminateSession(false);
-                        }
-                    }
-
-                    createSession(
-                            sessionId,
-                            AssuranceConstants.AssuranceEnvironment.PROD,
-                            token,
-                            listener,
-                            SessionAuthorizingPresentation.Type.QUICK_CONNECT);
-                }
-
-                @Override
-                public void onDisconnect() {
-                    Log.debug(
-                            Assurance.LOG_TAG,
-                            LOG_TAG,
-                            "On Disconnect clicked. Disconnecting session.");
-                    terminateSession(true);
-                }
-
-                @Override
-                public void onCancel() {
-                    Log.debug(
-                            Assurance.LOG_TAG,
-                            LOG_TAG,
-                            "On Cancel Clicked. Disconnecting session.");
-                    terminateSession(true);
-                }
-            };
+    private final SessionUIOperationHandler sessionUIOperationHandler;
 
     /**
      * Responsible for listening to the state of the session connection. Required for releasing
      * resources associated with the session (if any).
      */
-    private final AssuranceSession.AssuranceSessionStatusListener sessionStatusListener =
-            new AssuranceSession.AssuranceSessionStatusListener() {
+    private final AssuranceSessionStatusListener sessionStatusListener =
+            new AssuranceSessionStatusListener() {
                 @Override
                 public void onSessionConnected() {
-
                     if (outboundEventBuffer == null) {
                         return;
                     }
@@ -163,8 +70,16 @@ class AssuranceSessionOrchestrator {
                 }
 
                 @Override
-                public void onSessionTerminated(
+                public void onSessionDisconnected(
                         final AssuranceConstants.AssuranceConnectionError error) {
+                    // Do nothing here. This callback is invoked when the session is disconnected
+                    // There may be a reconnect attempt later, so wait for the session to be
+                    // terminated.
+                }
+
+                @Override
+                public void onSessionTerminated(
+                        @Nullable AssuranceConstants.AssuranceConnectionError error) {
                     // In case of a user initiated AssuranceSessionOrchestrator#terminateSession()
                     // will unregister the listener against the session
                     // before disconnecting it. So this callback is never invoked in that flow.
@@ -185,9 +100,6 @@ class AssuranceSessionOrchestrator {
                 assuranceStateManager,
                 plugins,
                 connectionURLStore,
-                new ApplicationHandle(
-                        application,
-                        ServiceProvider.getInstance().getAppContextService().getCurrentActivity()),
                 new AssuranceSessionCreator());
     }
 
@@ -197,16 +109,14 @@ class AssuranceSessionOrchestrator {
             final AssuranceStateManager assuranceStateManager,
             final List<AssurancePlugin> plugins,
             final AssuranceConnectionDataStore connectionURLStore,
-            final ApplicationHandle applicationHandle,
             final AssuranceSessionCreator sessionCreator) {
-        this.applicationHandle = applicationHandle;
         this.assuranceStateManager = assuranceStateManager;
         this.plugins = plugins;
         this.connectionURLStore = connectionURLStore;
-        this.activityLifecycleObserver =
-                new HostAppActivityLifecycleObserver(applicationHandle, this);
+        this.activityLifecycleObserver = new HostAppActivityLifecycleObserver(this);
         this.outboundEventBuffer = new ArrayList<>();
         this.sessionCreator = sessionCreator;
+        this.sessionUIOperationHandler = new SessionUIOperationHandler(this);
 
         application.registerActivityLifecycleCallbacks(activityLifecycleObserver);
         AssuranceComponentRegistry.INSTANCE.initialize(
@@ -220,7 +130,7 @@ class AssuranceSessionOrchestrator {
      * @param sessionId the session id that the {@code AssuranceSession} should be connected to.
      * @param environment the {@code AssuranceEnvironment} the {@code AssuranceSession} should be
      *     connected to.
-     * @param code the PIN code with which the {@code AssuranceSession} should be authenticated
+     * @param code the Pin code with which the {@code AssuranceSession} should be authenticated
      *     with.
      * @param statusListener an optional status listener that can be attached to the session
      * @param authorizingPresentationType the type of the authorization UI to be shown for the
@@ -229,9 +139,9 @@ class AssuranceSessionOrchestrator {
     synchronized void createSession(
             @NonNull final String sessionId,
             @NonNull final AssuranceConstants.AssuranceEnvironment environment,
-            @Nullable final String code,
-            @Nullable final AssuranceSession.AssuranceSessionStatusListener statusListener,
-            @NonNull final SessionAuthorizingPresentation.Type authorizingPresentationType) {
+            @NonNull final String code,
+            @Nullable final AssuranceSessionStatusListener statusListener,
+            @NonNull final SessionAuthorizingPresentationType authorizingPresentationType) {
         if (session != null) {
             Log.error(
                     Assurance.LOG_TAG,
@@ -244,12 +154,11 @@ class AssuranceSessionOrchestrator {
         session =
                 sessionCreator.create(
                         sessionId,
+                        code,
                         environment,
-                        sessionUIOperationHandler,
                         assuranceStateManager,
                         plugins,
                         connectionURLStore,
-                        applicationHandle,
                         outboundEventBuffer,
                         statusListener,
                         authorizingPresentationType);
@@ -261,7 +170,7 @@ class AssuranceSessionOrchestrator {
         assuranceStateManager.shareAssuranceSharedState(sessionId);
 
         // Attempt connection to the session
-        session.connect(code);
+        session.connect();
     }
 
     /**
@@ -331,7 +240,7 @@ class AssuranceSessionOrchestrator {
                 "Initializing Assurance session. %s using stored connection details:%s ",
                 sessionId,
                 connectionURL);
-        createSession(sessionId, environment, pin, null, SessionAuthorizingPresentation.Type.PIN);
+        createSession(sessionId, environment, pin, null, SessionAuthorizingPresentationType.PIN);
         return true;
     }
 
@@ -380,84 +289,16 @@ class AssuranceSessionOrchestrator {
     }
 
     /**
-     * Interface that acts as a glue between the session presentation layer and session control
-     * layer.
-     */
-    interface SessionUIOperationHandler {
-        /** Invoked when an UI operation corresponding to session connection attempt is made. */
-        void onConnect(final String pin);
-
-        /**
-         * Invoked when a UI/gesture corresponding to QuickConnect is made.
-         *
-         * @param sessionId the session id of the Assurance quick connect session
-         * @param token token/pin to authorize the session
-         * @param listener an {@code AssuranceSessionStatusListener} to identify the status of the
-         *     session created by quick connect
-         */
-        void onQuickConnect(
-                @NonNull final String sessionId,
-                @NonNull final String token,
-                @NonNull final AssuranceSession.AssuranceSessionStatusListener listener);
-
-        /** Invoked when an UI operation corresponding to session disconnect is made. */
-        void onDisconnect();
-
-        /** Invoked when an UI operation related to abandoning a session is made. */
-        void onCancel();
-    }
-
-    /**
-     * Serves as a handle to retrieve the context information about the host application that this
-     * extension is registered against. Intentionally a separate class than the {@code
-     * HostAppActivityLifecycleObserver} to limit access to the publicly overridden methods of an
-     * activity lifecycle observer.
-     */
-    static class ApplicationHandle {
-        private final AtomicReference<WeakReference<Activity>> currentActivity;
-        private final WeakReference<Application> application;
-
-        ApplicationHandle(final Application application, final Activity activity) {
-            this.application = new WeakReference<>(application);
-            this.currentActivity = new AtomicReference<>(new WeakReference<Activity>(activity));
-        }
-
-        private void setCurrentActivity(final Activity activity) {
-            currentActivity.set(new WeakReference<>(activity));
-        }
-
-        /**
-         * @return the {@code Application} {@code Context} that the extension is registered against
-         */
-        Context getAppContext() {
-            return application.get();
-        }
-
-        /**
-         * @return current foreground {@code Activity} of the application that this extension is
-         *     registered against, if one exists, null otherwise
-         */
-        Activity getCurrentActivity() {
-            final WeakReference<Activity> activityReference = currentActivity.get();
-            return activityReference == null ? null : activityReference.get();
-        }
-    }
-
-    /**
      * Responsible for observing the activity lifecycle of the host application that this extension
      * is registered against. Acts as the primary source of deeplink based session initiation. This
      * class also relays the details of the current activity for use by other components of the
-     * extension via the {@code ApplicationHandle} and the active {@code AssuranceSession}
+     * extension.
      */
     static class HostAppActivityLifecycleObserver
             implements Application.ActivityLifecycleCallbacks {
-        private final ApplicationHandle applicationHandle;
         private final AssuranceSessionOrchestrator sessionOrchestrator;
 
-        HostAppActivityLifecycleObserver(
-                final ApplicationHandle applicationHandle,
-                final AssuranceSessionOrchestrator sessionOrchestrator) {
-            this.applicationHandle = applicationHandle;
+        HostAppActivityLifecycleObserver(final AssuranceSessionOrchestrator sessionOrchestrator) {
             this.sessionOrchestrator = sessionOrchestrator;
         }
 
@@ -479,29 +320,12 @@ class AssuranceSessionOrchestrator {
         }
 
         @Override
-        public void onActivityStarted(@NonNull Activity activity) {
-            Log.trace(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Session Activity Hook - onActivityStarted called "
-                            + activity.getClass().getCanonicalName());
-
-            final AssuranceSession activeSession = sessionOrchestrator.getActiveSession();
-
-            if (activeSession != null) {
-                activeSession.onActivityStarted(activity);
-            }
-        }
-
-        @Override
         public void onActivityResumed(@NonNull Activity activity) {
             Log.trace(
                     Assurance.LOG_TAG,
                     LOG_TAG,
                     "Session Activity Hook - onActivityResumed called "
                             + activity.getClass().getCanonicalName());
-
-            applicationHandle.setCurrentActivity(activity);
             final AssuranceSession activeSession = sessionOrchestrator.getActiveSession();
 
             if (activeSession != null) {
@@ -510,42 +334,20 @@ class AssuranceSessionOrchestrator {
         }
 
         @Override
-        public void onActivityPaused(@NonNull Activity activity) {
-            Log.trace(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Session Activity Hook - onActivityPaused called "
-                            + activity.getClass().getCanonicalName());
-            applicationHandle.setCurrentActivity(null);
-        }
+        public void onActivityStarted(@NonNull Activity activity) {}
 
         @Override
-        public void onActivityStopped(@NonNull Activity activity) {
-            Log.trace(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Session Activity Hook - onActivityStopped called "
-                            + activity.getClass().getCanonicalName());
-        }
+        public void onActivityPaused(@NonNull Activity activity) {}
+
+        @Override
+        public void onActivityStopped(@NonNull Activity activity) {}
 
         @Override
         public void onActivitySaveInstanceState(
                 @NonNull Activity activity, @NonNull Bundle outState) {}
 
         @Override
-        public void onActivityDestroyed(@NonNull Activity activity) {
-            Log.trace(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Session Activity Hook - onActivityDestroyed called "
-                            + activity.getClass().getCanonicalName());
-
-            final AssuranceSession activeSession = sessionOrchestrator.getActiveSession();
-
-            if (activeSession != null) {
-                activeSession.onActivityDestroyed(activity);
-            }
-        }
+        public void onActivityDestroyed(@NonNull Activity activity) {}
     }
 
     /** Exists ONLY for test convenience. */
@@ -556,7 +358,7 @@ class AssuranceSessionOrchestrator {
 
     /** Exists ONLY for test convenience. */
     @VisibleForTesting
-    AssuranceSession.AssuranceSessionStatusListener getAssuranceSessionStatusListener() {
+    AssuranceSessionStatusListener getAssuranceSessionStatusListener() {
         return sessionStatusListener;
     }
 
@@ -568,23 +370,20 @@ class AssuranceSessionOrchestrator {
     static class AssuranceSessionCreator {
         AssuranceSession create(
                 final String sessionId,
+                final String pin,
                 final AssuranceConstants.AssuranceEnvironment environment,
-                final SessionUIOperationHandler sessionUIOperationHandler,
                 final AssuranceStateManager assuranceStateManager,
                 final List<AssurancePlugin> plugins,
                 final AssuranceConnectionDataStore connectionURLStore,
-                final ApplicationHandle applicationHandle,
                 final List<AssuranceEvent> outboundEventBuffer,
-                final AssuranceSession.AssuranceSessionStatusListener
-                        authorizingPresentationListener,
-                final SessionAuthorizingPresentation.Type authorizingPresentationType) {
+                final AssuranceSessionStatusListener authorizingPresentationListener,
+                final SessionAuthorizingPresentationType authorizingPresentationType) {
             return new AssuranceSession(
-                    applicationHandle,
                     assuranceStateManager,
                     sessionId,
+                    pin,
                     environment,
                     connectionURLStore,
-                    sessionUIOperationHandler,
                     plugins,
                     outboundEventBuffer,
                     authorizingPresentationType,

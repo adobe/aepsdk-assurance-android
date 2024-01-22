@@ -19,6 +19,7 @@ import android.net.ParseException;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceEnvironment;
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceActivity;
 import com.adobe.marketing.mobile.util.StringUtils;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,7 +56,7 @@ final class AssuranceUtil {
             return "";
         }
 
-        return String.format("-%s", assuranceEnvironment.stringValue());
+        return String.format("-%s", assuranceEnvironment.stringValue);
     }
 
     /**
@@ -238,9 +239,8 @@ final class AssuranceUtil {
      * @return true if an activity is an Assurance activity; false otherwise
      */
     static boolean isAssuranceActivity(@NonNull final Activity activity) {
-        return (activity instanceof AssuranceFullScreenTakeoverActivity
-                || activity instanceof AssuranceQuickConnectActivity
-                || activity instanceof AssuranceErrorDisplayActivity);
+        return (activity instanceof AssuranceActivity
+                || activity instanceof AssuranceQuickConnectActivity);
     }
 
     /**
@@ -316,7 +316,7 @@ final class AssuranceUtil {
             return true;
         }
 
-        final String resolvedEnv = AssuranceConstants.AssuranceEnvironment.get(env).stringValue();
+        final String resolvedEnv = AssuranceConstants.AssuranceEnvironment.get(env).stringValue;
         return resolvedEnv.equalsIgnoreCase(env);
     }
 

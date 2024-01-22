@@ -17,7 +17,6 @@ import com.adobe.marketing.mobile.assurance.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Assurance {
@@ -44,31 +43,6 @@ public class Assurance {
     @NonNull
     public static String extensionVersion() {
         return EXTENSION_VERSION;
-    }
-
-    /**
-     * Register Assurance extension with the Mobile SDK. This method should be called only once in
-     * you application class.
-     *
-     * @return true if Assurance extension registration was successfully triggered, false otherwise.
-     * @deprecated as of 2.0.0, use {@link MobileCore#registerExtensions(List, AdobeCallback)} with
-     *     {@link Assurance#EXTENSION} instead.
-     */
-    @Deprecated
-    public static boolean registerExtension() {
-        ExtensionErrorCallback<ExtensionError> errorCallback =
-                new ExtensionErrorCallback<ExtensionError>() {
-                    @Override
-                    public void error(final ExtensionError adbExtensionError) {
-                        Log.error(
-                                LOG_TAG,
-                                LOG_TAG,
-                                String.format(
-                                        "Assurance registration failed with error %s.",
-                                        adbExtensionError.getErrorName()));
-                    }
-                };
-        return MobileCore.registerExtension(AssuranceExtension.class, errorCallback);
     }
 
     /**
@@ -111,7 +85,6 @@ public class Assurance {
      */
     public static void startSession() {
         Log.debug(LOG_TAG, LOG_TAG, "QuickConnect api triggered.");
-
         // Send a quick connect start session event irrespective of the build here.
         // Validation will be done when the extension handles this event.
         final Event startSessionEvent =

@@ -18,6 +18,7 @@ import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventNa
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
@@ -32,6 +33,7 @@ import com.adobe.marketing.mobile.SharedStateResolution;
 import com.adobe.marketing.mobile.SharedStateResult;
 import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.GenericEventPayloadKey;
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceActivity;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.DataReader;
@@ -73,7 +75,7 @@ public final class AssuranceExtension extends Extension {
     AssuranceExtension(final ExtensionApi extensionApi) {
         this(
                 extensionApi,
-                new AssuranceStateManager(extensionApi, MobileCore.getApplication()),
+                new AssuranceStateManager(extensionApi),
                 new AssuranceConnectionDataStore(MobileCore.getApplication()),
                 Collections.unmodifiableList(
                         Arrays.asList(
@@ -182,17 +184,28 @@ public final class AssuranceExtension extends Extension {
                                 AssuranceConstants.DeeplinkURLKeys
                                         .START_URL_QUERY_KEY_ENVIRONMENT));
 
-        // Create a new session. Note that new session creation via new deeplink will never have a
-        // PIN and will go through the PIN flow. So at this time it is OK to pass a null pin.
-        // Additionally, UI state of such a pin session can be controlled via a reference to the
-        // UI so a status listener/delegate is not needed.
-        assuranceSessionOrchestrator.createSession(
-                sessionId, environment, null, null, SessionAuthorizingPresentation.Type.PIN);
-        Log.trace(
-                Assurance.LOG_TAG,
-                LOG_TAG,
-                "Received sessionID. Initializing Assurance session. %s",
-                sessionId);
+        final Context hostApplication = MobileCore.getApplication();
+
+        if (hostApplication == null) {
+            Log.warning(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Unable to start Assurance session. Host application is null");
+            return;
+        }
+
+        // Change the session state to Authorizing
+        AssuranceComponentRegistry.appState.onSessionPhaseChange(
+                new AssuranceAppState.SessionPhase.Authorizing(
+                        new AssuranceAppState.AssuranceAuthorization.PinConnect(
+                                sessionId, environment)));
+
+        // Launch the Assurance Activity
+        final Intent intent = new Intent(hostApplication, AssuranceActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        hostApplication.startActivity(intent);
     }
 
     /**

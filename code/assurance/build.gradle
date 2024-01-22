@@ -89,6 +89,13 @@ android {
         languageVersion = rootProject.ext.kotlinLanguageVersion
         apiVersion = rootProject.ext.kotlinApiVersion
     }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion kotlinComposeCompilerExtensionVersion
+    }
 }
 
 
@@ -244,11 +251,37 @@ task platformFunctionalTestJacocoReport(type: JacocoReport, dependsOn: "createPh
         html.required = true
     }
 }
+
+// TODO: Remove this once we uplevel to Kotlin 1.6.20
+// See: https://stackoverflow.com/a/71525095
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += ["-Xjvm-default=all",]
+    }
+}
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinApiVersion"
-    implementation "com.adobe.marketing.mobile:core:${rootProject.mavenCoreVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+
+    // TODO: Uncomment when Core is published to Maven Central
+    // implementation "com.adobe.marketing.mobile:core:${rootProject.mavenCoreVersion}"
+    implementation("com.github.adobe.aepsdk-core-android:core:feature~uiservice-SNAPSHOT") {}
+
+    // Jetpack Compose runtime
+    implementation "androidx.compose.runtime:runtime:${composeVersion}"
+    // Compose Navigation
+    implementation 'androidx.navigation:navigation-compose:2.4.0'
+    // Compose ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    // Material UI 1.x
+    implementation "androidx.compose.material:material:${composeVersion}"
+    // Jetpack + Activity integration
+    implementation 'androidx.activity:activity-compose:1.5.0'
+    // Jetpack Compose tooling
+    debugImplementation "androidx.compose.ui:ui-tooling:${composeVersion}"
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.code.gson:gson:2.8.5'

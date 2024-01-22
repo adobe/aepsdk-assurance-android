@@ -49,8 +49,7 @@ public class AssuranceSessionOrchestratorTest {
     @Mock private AssuranceSessionOrchestrator.AssuranceSessionCreator mockAssuranceSessionCreator;
     @Mock private AssuranceSession mockAssuranceSession;
 
-    @Mock
-    private AssuranceSession.AssuranceSessionStatusListener mockAuthorizingPresentationListener;
+    @Mock private AssuranceSessionStatusListener mockAuthorizingPresentationListener;
 
     private AssuranceSessionOrchestrator.HostAppActivityLifecycleObserver
             hostAppActivityLifecycleObserver;
@@ -348,7 +347,7 @@ public class AssuranceSessionOrchestratorTest {
     public void testSessionUIOperationHandler_OnConnect() {
         setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
 
-        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+        SessionUIOperationHandler sessionUIOperationHandler =
                 assuranceSessionOrchestrator.getSessionUIOperationHandler();
         Assert.assertNotNull(sessionUIOperationHandler);
 
@@ -363,7 +362,7 @@ public class AssuranceSessionOrchestratorTest {
         setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
         setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
 
-        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+        SessionUIOperationHandler sessionUIOperationHandler =
                 assuranceSessionOrchestrator.getSessionUIOperationHandler();
         Assert.assertNotNull(sessionUIOperationHandler);
 
@@ -382,7 +381,7 @@ public class AssuranceSessionOrchestratorTest {
         final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
         setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
         setInternalState(assuranceSessionOrchestrator, "session", mockAssuranceSession);
-        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+        SessionUIOperationHandler sessionUIOperationHandler =
                 assuranceSessionOrchestrator.getSessionUIOperationHandler();
         Assert.assertNotNull(sessionUIOperationHandler);
 
@@ -416,7 +415,7 @@ public class AssuranceSessionOrchestratorTest {
                         eq(SessionAuthorizingPresentation.Type.QUICK_CONNECT)))
                 .thenReturn(mockAssuranceSession);
 
-        AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+        SessionUIOperationHandler sessionUIOperationHandler =
                 assuranceSessionOrchestrator.getSessionUIOperationHandler();
         Assert.assertNotNull(sessionUIOperationHandler);
 
@@ -453,7 +452,7 @@ public class AssuranceSessionOrchestratorTest {
         final List<AssuranceEvent> mockBuffer = Mockito.mock(List.class);
         setInternalState(assuranceSessionOrchestrator, "outboundEventBuffer", mockBuffer);
 
-        final AssuranceSessionOrchestrator.SessionUIOperationHandler sessionUIOperationHandler =
+        final SessionUIOperationHandler sessionUIOperationHandler =
                 assuranceSessionOrchestrator.getSessionUIOperationHandler();
         Assert.assertNotNull(sessionUIOperationHandler);
 

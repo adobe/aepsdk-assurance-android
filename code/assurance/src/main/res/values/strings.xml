@@ -17,5 +17,12 @@
     <string name="quick_connect_button_cancel">Cancel</string>
     <string name="quick_connect_button_waiting">Waiting..</string>
     <string name="quick_connect_button_retry">Retry</string>
+    <string name="pin_connect_button_dismiss">Dismiss</string>
+    <string name="pin_connect_button_cancel">Cancel</string>
+    <string name="pin_connect_button_connect">Connect</string>
+    <string name="pin_connect_button_retry">Retry</string>
+    <string name="pin_connect_enter_pin_text">Enter the 4 digit PIN to continue</string>
+    <string name="status_button_disconnect">Disconnect</string>
+    <string name="status_button_clear_log">Clear Log</string>
 
 </resources>

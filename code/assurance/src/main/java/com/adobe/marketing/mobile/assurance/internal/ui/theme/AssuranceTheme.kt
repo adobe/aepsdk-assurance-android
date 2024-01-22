@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2023 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,13 +9,10 @@
  * governing permissions and limitations under the License.
  */
 
-package com.adobe.marketing.mobile.assurance;
+package com.adobe.marketing.mobile.assurance.internal.ui.theme
 
+import androidx.compose.ui.graphics.Color
 
-import android.app.Activity;
-
-interface AssuranceSessionLifecycleListener {
-    void onActivityResumed(final Activity activity);
-
-    void onActivityDestroyed(final Activity activity);
+internal object AssuranceTheme {
+    val backgroundColor = Color(0xFF1C1F28)
 }

@@ -63,7 +63,7 @@ public class AssuranceSessionTest {
 
     @Mock AssuranceSessionPresentationManager mockAssuranceSessionPresentationManager;
 
-    @Mock AssuranceSession.AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
+    @Mock AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
 
     @Mock AssuranceWebViewSocket mockAssuranceWebViewSocket;
 

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2022 Adobe. All rights reserved.
   ~ This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -9,10 +10,7 @@
   ~ governing permissions and limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.adobe.marketing.mobile.assurance">
-    <application>
-        <activity android:name=".internal.ui.AssuranceActivity" android:exported="false" android:theme="@style/AssuranceAppThemeDark" />
-        <activity android:name=".AssuranceQuickConnectActivity" android:exported="false"/>
-    </application>
-</manifest>
+<resources>
+    <style name="AssuranceAppThemeDark" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
+</resources>

@@ -46,8 +46,7 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
     @Mock
     private AssuranceSessionOrchestrator.SessionUIOperationHandler mockSessionUIOperationHandler;
 
-    @Mock
-    private AssuranceSession.AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
+    @Mock private AssuranceSessionStatusListener mockAssuranceSessionStatusListener;
 
     @Mock private SessionAuthorizingPresentation.Type mockSessionAuthorizingPresentationType;
 
@@ -191,7 +190,7 @@ public class AssuranceSessionPresentationManagerTest extends TestCase {
     public void testOnSessionDisconnected_ABNORMAL() {
         final Activity mockActivity = mock(Activity.class);
         when(mockApplicationHandle.getCurrentActivity()).thenReturn(mockActivity);
-        when(mockSessionAuthorizingPresentation.isDisplayed()).thenReturn(false);
+        when(mockSessionAuthorizingPresentation.isDisplayed).thenReturn(false);
 
         assuranceSessionPresentationManager.onSessionDisconnected(
                 AssuranceConstants.SocketCloseCode.ABNORMAL);
