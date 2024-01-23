@@ -239,8 +239,7 @@ final class AssuranceUtil {
      * @return true if an activity is an Assurance activity; false otherwise
      */
     static boolean isAssuranceActivity(@NonNull final Activity activity) {
-        return (activity instanceof AssuranceActivity
-                || activity instanceof AssuranceQuickConnectActivity);
+        return (activity instanceof AssuranceActivity);
     }
 
     /**

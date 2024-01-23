@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Adobe. All rights reserved.
+ * Copyright 2022 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,16 +9,9 @@
  * governing permissions and limitations under the License.
  */
 
-package com.adobe.marketing.mobile.assurance.internal.ui.pin
+package com.adobe.marketing.mobile.assurance.internal.ui.common
 
-import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
-
-/**
- * Data class for storing the Pin Screen state.
- * @param pin the pin entered via the UI if any
- * @param connectionState the current connection state as tracked by the Pin Screen
- */
-internal data class PinScreenState(
-    val pin: String = "",
-    val connectionState: ConnectionState = ConnectionState.Disconnected(null)
-)
+internal object AssuranceCommonTestTags {
+    internal const val ASSURANCE_HEADER = "assuranceHeader"
+    internal const val ASSURANCE_SUB_HEADER = "assuranceSubHeader"
+}
