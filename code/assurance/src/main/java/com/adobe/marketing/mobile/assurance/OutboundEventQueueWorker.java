@@ -287,11 +287,12 @@ class OutboundEventQueueWorker extends EventQueueWorker<AssuranceEvent> {
                 final String chunkId = UUID.randomUUID().toString();
                 int chunkNumber = 0;
 
-                while (byteArrayInputStream.read(buffer) != -1) {
+                int bytesRead;
+                while ((bytesRead = byteArrayInputStream.read(buffer)) != -1) {
                     final HashMap<String, Object> payload = new HashMap<>();
                     payload.put(
                             AssuranceConstants.AssuranceEventKeys.CHUNK_DATA,
-                            new String(buffer, Charset.forName("UTF-8")));
+                            new String(buffer, 0, bytesRead, Charset.forName("UTF-8")));
 
                     final HashMap<String, Object> metadata = new HashMap<>();
                     metadata.put(AssuranceConstants.AssuranceEventKeys.CHUNK_ID, chunkId);
