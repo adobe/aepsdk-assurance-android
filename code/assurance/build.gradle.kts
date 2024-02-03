@@ -11,8 +11,8 @@ val viewModelComposeVersion = "2.5.1"
 aepLibrary {
     namespace = "com.adobe.marketing.mobile.assurance"
     compose = true
-    //enableSpotless = true
-    //enableCheckStyle = true
+    enableSpotless = true
+    enableCheckStyle = true
 
     publishing {
         gitRepoName = "aepsdk-assurance-android"
