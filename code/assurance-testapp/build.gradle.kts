@@ -65,12 +65,12 @@ android {
     }
 
     dependencies {
-        val composeVersion = "1.5.0"
+        implementation("androidx.core:core-ktx:1.8.0")
 
-        implementation("androidx.core:core-ktx:1.9.0")
-        implementation("androidx.compose.ui:ui:$composeVersion")
-        implementation("androidx.compose.material:material:$composeVersion")
-        implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
+        implementation(platform("androidx.compose:compose-bom:2024.01.00"))
+        implementation("androidx.compose.ui:ui")
+        implementation("androidx.compose.material:material")
+        implementation("androidx.compose.ui:ui-tooling-preview")
 
         implementation("androidx.appcompat:appcompat:1.0.0")
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
@@ -96,9 +96,13 @@ android {
         }
 
         testImplementation("junit:junit:4.13.2")
+
         androidTestImplementation("androidx.test.ext:junit:1.1.3")
         androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-        androidTestImplementation("androidx.compose.ui:ui-test-junit4:${BuildConstants.Versions.COMPOSE}")
-        debugImplementation("androidx.compose.ui:ui-tooling:${BuildConstants.Versions.COMPOSE}")
+        androidTestImplementation(platform("androidx.compose:compose-bom:2024.01.00"))
+        androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+        debugImplementation(platform("androidx.compose:compose-bom:2024.01.00"))
+        debugImplementation("androidx.compose.ui:ui-tooling")
     }
 }
