@@ -12,7 +12,7 @@ aepLibrary {
     namespace = "com.adobe.marketing.mobile.assurance"
     compose = true
     enableSpotless = true
-    //enableCheckStyle = true
+    enableCheckStyle = true
 
     publishing {
         gitRepoName = "aepsdk-assurance-android"
