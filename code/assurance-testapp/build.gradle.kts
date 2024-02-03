@@ -65,10 +65,12 @@ android {
     }
 
     dependencies {
-        implementation("androidx.core:core-ktx:${BuildConstants.Versions.KOTLIN}")
-        implementation("androidx.compose.ui:ui:${BuildConstants.Versions.COMPOSE}")
-        implementation("androidx.compose.material:material:${BuildConstants.Versions.COMPOSE}")
-        implementation("androidx.compose.ui:ui-tooling-preview:${BuildConstants.Versions.COMPOSE}")
+        val composeVersion = "1.5.0"
+
+        implementation("androidx.core:core-ktx:1.9.0")
+        implementation("androidx.compose.ui:ui:$composeVersion")
+        implementation("androidx.compose.material:material:$composeVersion")
+        implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
 
         implementation("androidx.appcompat:appcompat:1.0.0")
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
