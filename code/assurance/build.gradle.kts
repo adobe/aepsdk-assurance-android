@@ -11,7 +11,7 @@ val viewModelComposeVersion = "2.5.1"
 aepLibrary {
     namespace = "com.adobe.marketing.mobile.assurance"
     compose = true
-    //enableSpotless = true
+    enableSpotless = true
     //enableCheckStyle = true
 
     publishing {
