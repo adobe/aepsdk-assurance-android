@@ -9,7 +9,7 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.assurance;
+package com.adobe.marketing.mobile.assurance
 
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 

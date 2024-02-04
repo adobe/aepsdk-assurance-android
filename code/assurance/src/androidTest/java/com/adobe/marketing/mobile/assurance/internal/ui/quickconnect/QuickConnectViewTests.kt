@@ -1,3 +1,14 @@
+/*
+  Copyright 2024 Adobe. All rights reserved.
+  This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+*/
+
 package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +23,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import com.adobe.marketing.mobile.assurance.AssuranceConstants
-import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceCommonTestTags
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import org.junit.Rule
 import org.junit.Test
@@ -32,33 +43,33 @@ class QuickConnectViewTests {
         }
 
         // Verify
-        composeTestRule.onNodeWithTag(QuickConnectScreenTestTags.QUICK_CONNECT_VIEW).assertExists()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW).assertExists()
 
         // Verify the header and sub-header exist and are displayed
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_HEADER).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.QUICK_CONNECT_VIEW,
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.CANCEL_BUTTON)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
             )
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
             )
 
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.PROGRESS_BUTTON,
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
             ).assertAny(
-                !hasTestTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
     }
 
@@ -73,33 +84,33 @@ class QuickConnectViewTests {
         }
 
         // Verify the initial state of being idle and disconnected
-        composeTestRule.onNodeWithTag(QuickConnectScreenTestTags.QUICK_CONNECT_VIEW).assertExists()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW).assertExists()
 
         // Verify the header and sub-header exist and are displayed
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_HEADER).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.QUICK_CONNECT_VIEW,
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.CANCEL_BUTTON)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
             )
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
             )
 
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.PROGRESS_BUTTON,
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
             ).assertAny(
-                !hasTestTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
 
         // Update the state to connecting
@@ -112,14 +123,14 @@ class QuickConnectViewTests {
         // on the assertion of whether or not a click action can be performed.
         // Refer to the ProgressButtonTests.kt file for the click logic tests.
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.PROGRESS_BUTTON,
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT).and(hasText("Waiting.."))
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(hasText("Waiting.."))
             ).assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
     }
 
@@ -138,20 +149,20 @@ class QuickConnectViewTests {
         composeTestRule.waitForIdle()
 
         // Verify the header and sub-header exist and are displayed
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_HEADER).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(AssuranceCommonTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
 
         // Verify that the progress button responds to Connecting state and shows the progress indicator
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.PROGRESS_BUTTON,
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
             useUnmergedTree = true
         ).assertHasClickAction()
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
                     .and(hasText("Waiting.."))
             ).assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
 
         // Update the state to disconnected with error
@@ -161,26 +172,26 @@ class QuickConnectViewTests {
 
         // Verify that the QuickConnectErrorPanel is shown
         val errorPanelContent = composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.CONNECTION_ERROR_PANEL,
+            AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_PANEL,
             useUnmergedTree = true
         )
             .assertExists()
             .onChildren()
 
-        errorPanelContent.filterToOne(hasTestTag(QuickConnectScreenTestTags.CONNECTION_ERROR_TEXT))
+        errorPanelContent.filterToOne(hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_TEXT))
             .assertTextEquals(error.error)
-        errorPanelContent.filterToOne(hasTestTag(QuickConnectScreenTestTags.CONNECTION_ERROR_DESCRIPTION))
+        errorPanelContent.filterToOne(hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_DESCRIPTION))
             .assertTextEquals(error.description)
 
         composeTestRule.onNodeWithTag(
-            QuickConnectScreenTestTags.PROGRESS_BUTTON,
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
             useUnmergedTree = true
         )
             .onChildren()
             .assertAny(
-                hasTestTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT).and(hasText("Retry"))
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(hasText("Retry"))
             ).assertAny(
-                !hasTestTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
     }
 }

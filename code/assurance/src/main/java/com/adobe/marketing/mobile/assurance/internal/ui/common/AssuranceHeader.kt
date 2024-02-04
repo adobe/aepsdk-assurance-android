@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Assurance header text
@@ -50,7 +51,7 @@ internal fun AssuranceHeader() {
             ),
             modifier = Modifier
                 .wrapContentSize(Alignment.Center)
-                .testTag(AssuranceCommonTestTags.ASSURANCE_HEADER)
+                .testTag(AssuranceUiTestTags.ASSURANCE_HEADER)
         )
     }
 }

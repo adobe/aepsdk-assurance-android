@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Displays the provided [text] as a sub header.
@@ -49,7 +50,7 @@ internal fun AssuranceSubHeader(text: String) {
             ),
             modifier = Modifier
                 .wrapContentSize(Alignment.Center)
-                .testTag(AssuranceCommonTestTags.ASSURANCE_SUB_HEADER)
+                .testTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER)
         )
     }
 }
