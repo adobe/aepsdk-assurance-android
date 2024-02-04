@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Adobe. All rights reserved.
+ * Copyright 2024 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -14,6 +14,7 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
@@ -22,12 +23,16 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url 'https://jitpack.io' }
+        mavenLocal()
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
 
 rootProject.name = "aepsdk-assurance-android"
-include ':assurance'
-include ':assurance-testapp'
+include (
+    ":assurance",
+    ":assurance-testapp"
+)
+
