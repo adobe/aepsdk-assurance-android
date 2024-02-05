@@ -81,10 +81,10 @@ internal fun QuickConnectView(
                     QuickConnectErrorPanel(disconnectedState.error)
                 }
             }
-        }
 
-        // Action buttons for triggering the connection
-        ActionButtonRow(quickConnectState = quickConnectState.value, onAction = onAction)
+            // Action buttons for triggering the connection
+            ActionButtonRow(quickConnectState = quickConnectState.value, onAction = onAction)
+        }
 
         // Adobe Logo at the bottom of the screen
         Image(
