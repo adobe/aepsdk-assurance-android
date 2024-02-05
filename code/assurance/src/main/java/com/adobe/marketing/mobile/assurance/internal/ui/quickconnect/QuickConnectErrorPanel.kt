@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Composable to [AssuranceConstants.AssuranceConnectionError] details during QuickConnect authorization
@@ -37,7 +38,7 @@ import com.adobe.marketing.mobile.assurance.AssuranceConstants
 @Composable
 internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectionError) {
     // This is a row with a columnar content inside it.
-    Row(modifier = Modifier.testTag(QuickConnectScreenTestTags.CONNECTION_ERROR_PANEL)) {
+    Row(modifier = Modifier.testTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_PANEL)) {
         Column {
             // Text for the connection error if any
             Text(
@@ -45,7 +46,7 @@ internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectio
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 8.dp, bottom = 4.dp)
-                    .testTag(QuickConnectScreenTestTags.CONNECTION_ERROR_TEXT),
+                    .testTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_TEXT),
                 text = error.error,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
@@ -59,7 +60,7 @@ internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectio
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .testTag(QuickConnectScreenTestTags.CONNECTION_ERROR_DESCRIPTION),
+                    .testTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_DESCRIPTION),
                 text = error.description,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,

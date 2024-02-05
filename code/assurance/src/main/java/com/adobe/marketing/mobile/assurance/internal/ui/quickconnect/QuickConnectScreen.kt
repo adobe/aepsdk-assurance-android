@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
 import com.adobe.marketing.mobile.assurance.AssuranceConstants
@@ -25,6 +24,10 @@ import com.adobe.marketing.mobile.assurance.AssuranceStateManager
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 
+/**
+ * Represents the screen that is the entry point for a QuickConnect based session.
+ * @param environment the Assurance environment that the session is being connected to
+ */
 @Composable
 internal fun QuickConnectScreen(environment: AssuranceConstants.AssuranceEnvironment) {
     val activity: Activity? = LocalContext.current.findActivity()
@@ -61,10 +64,4 @@ internal fun QuickConnectScreen(environment: AssuranceConstants.AssuranceEnviron
             activity?.finish()
         }
     }
-}
-
-@Composable
-@Preview
-fun QuickConnectScreenPreview() {
-    QuickConnectScreen(environment = AssuranceConstants.AssuranceEnvironment.PROD)
 }

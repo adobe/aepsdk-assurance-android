@@ -1,5 +1,5 @@
 /*
-  Copyright 2022 Adobe. All rights reserved.
+  Copyright 2024 Adobe. All rights reserved.
   This file is licensed to you under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License. You may obtain a copy
   of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -31,10 +31,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 
+/**
+ * Represents the row of action buttons for the QuickConnect screen.
+ * @param quickConnectState the current state of the QuickConnect connection.
+ * @param onAction the callback to be invoked when an action is performed.
+ */
 @Composable
-internal fun ActionButtonRow(quickConnectState: ConnectionState, onAction: (QuickConnectScreenAction) -> Unit) {
+internal fun ActionButtonRow(
+    quickConnectState: ConnectionState,
+    onAction: (QuickConnectScreenAction) -> Unit
+) {
     // Cancel and Connect buttons for triggering the connection
     Row(
         modifier = Modifier
@@ -46,7 +55,7 @@ internal fun ActionButtonRow(quickConnectState: ConnectionState, onAction: (Quic
         OutlinedButton(
             modifier = Modifier
                 .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp)
-                .testTag(QuickConnectScreenTestTags.CANCEL_BUTTON),
+                .testTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON),
             onClick = {
                 onAction(QuickConnectScreenAction.Cancel)
             },

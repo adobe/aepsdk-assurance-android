@@ -34,8 +34,17 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 
+/**
+ * A button that can be in one of the three states: Idle, Waiting, or Retry.
+ * The style and behavior of the button are governed by the state.
+ *
+ * @param modifier the [Modifier] to apply to the button container.
+ * @param buttonState the current state of the button.
+ * @param onClick the callback invoked when the button is clicked.
+ */
 @Composable
 internal fun ProgressButton(
     modifier: Modifier = Modifier,
@@ -55,12 +64,12 @@ internal fun ProgressButton(
                 }
             )
             .background(buttonState.backgroundColor, shape = RoundedCornerShape(20.dp))
-            .testTag(QuickConnectScreenTestTags.PROGRESS_BUTTON)
+            .testTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
     ) {
         if (buttonState is ButtonState.Waiting) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .testTag(QuickConnectScreenTestTags.PROGRESS_INDICATOR)
+                    .testTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
                     .size(25.dp)
                     .padding(start = 8.dp, top = 4.dp, bottom = 4.dp),
                 strokeWidth = 2.dp,
@@ -70,7 +79,7 @@ internal fun ProgressButton(
         Text(
             modifier = Modifier
                 .padding(8.dp)
-                .testTag(QuickConnectScreenTestTags.PROGRESS_BUTTON_TEXT),
+                .testTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT),
             text = stringResource(id = buttonState.text),
             color = buttonState.foregroundColor,
             fontFamily = FontFamily.SansSerif,
@@ -79,18 +88,29 @@ internal fun ProgressButton(
     }
 }
 
+/**
+ * Represents the behavior and style of the button.
+ *
+ * @param text the text to be displayed on the button.
+ * @param backgroundColor the background color of the button.
+ * @param foregroundColor the text color of the button.
+ * @param clickable the flag to indicate if the button is clickable.
+ */
 internal sealed class ButtonState(
     @StringRes val text: Int,
     val backgroundColor: Color,
     val foregroundColor: Color,
     val clickable: Boolean = true
-
 ) {
 
     companion object {
         val activeBackgroundColor = Color(0xFF068CE4)
         val inactiveBackgroundColor = Color(0xFF484E50)
 
+        /**
+         * Maps the [ConnectionState] to a [ButtonState].
+         * @param connectionState the current state of the connection.
+         */
         fun from(connectionState: ConnectionState): ButtonState = when (connectionState) {
             is ConnectionState.Disconnected -> {
                 connectionState.error?.let { Retry() } ?: Idle()
@@ -101,18 +121,27 @@ internal sealed class ButtonState(
         }
     }
 
+    /**
+     * Represents the button state when the button is idle.
+     */
     internal class Idle(
         backgroundColor: Color = activeBackgroundColor,
         foregroundColor: Color = Color.White,
         clickable: Boolean = true
     ) : ButtonState(R.string.quick_connect_button_connect, backgroundColor, foregroundColor, clickable)
 
+    /**
+     * Represents the button state when the button is waiting for the connection to be established.
+     */
     internal class Waiting(
         backgroundColor: Color = inactiveBackgroundColor,
         foregroundColor: Color = Color.White,
         clickable: Boolean = false
     ) : ButtonState(R.string.quick_connect_button_waiting, backgroundColor, foregroundColor, clickable)
 
+    /**
+     * Represents the button state when the button is in a retry state.
+     */
     internal class Retry(
         backgroundColor: Color = activeBackgroundColor,
         foregroundColor: Color = Color.White,

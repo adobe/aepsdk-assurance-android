@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceSubHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
@@ -48,7 +49,7 @@ internal fun QuickConnectView(
             .fillMaxSize()
             .background(AssuranceTheme.backgroundColor)
             .padding(horizontal = 24.dp)
-            .testTag(QuickConnectScreenTestTags.QUICK_CONNECT_VIEW)
+            .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
     ) {
         Column(
             modifier = Modifier
@@ -67,7 +68,7 @@ internal fun QuickConnectView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp, vertical = 16.dp)
-                    .testTag(QuickConnectScreenTestTags.QUICK_CONNECT_LOGO)
+                    .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_LOGO)
 
             )
 
@@ -94,7 +95,7 @@ internal fun QuickConnectView(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp, vertical = 32.dp)
-                .testTag(QuickConnectScreenTestTags.ADOBE_LOGO)
+                .testTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
 
         )
     }
