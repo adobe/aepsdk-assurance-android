@@ -12,17 +12,18 @@
 package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
 import com.adobe.marketing.mobile.assurance.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.AssuranceStateManager
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
+import com.adobe.marketing.mobile.services.Log
 
 /**
  * Represents the screen that is the entry point for a QuickConnect based session.
@@ -34,8 +35,8 @@ internal fun QuickConnectScreen(environment: AssuranceConstants.AssuranceEnviron
 
     val assuranceStateManager: AssuranceStateManager =
         AssuranceComponentRegistry.assuranceStateManager ?: run {
-            Log.e(
-                "QuickConnectScreen",
+            Log.error(
+                Assurance.LOG_TAG, "QuickConnectScreen",
                 "AssuranceStateManager is not initialized. Cannot proceed with Quick Connect."
             )
             activity?.finish()

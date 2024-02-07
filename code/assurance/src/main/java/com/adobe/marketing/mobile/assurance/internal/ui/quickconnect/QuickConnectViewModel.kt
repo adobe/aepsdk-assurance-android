@@ -41,6 +41,7 @@ internal class QuickConnectViewModel : ViewModel {
     private val environment: AssuranceConstants.AssuranceEnvironment
     private val _state: MutableState<ConnectionState>
     internal val state: State<ConnectionState>
+        get() = _state
 
     /**
      * Creates a new [QuickConnectViewModel].
@@ -121,7 +122,6 @@ internal class QuickConnectViewModel : ViewModel {
         environment: AssuranceConstants.AssuranceEnvironment
     ) {
         this._state = state
-        this.state = _state
         this.quickConnectManager = quickConnectManager
         this.environment = environment
     }
