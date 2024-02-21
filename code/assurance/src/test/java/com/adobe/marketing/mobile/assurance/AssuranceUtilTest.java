@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 
 import android.app.Activity;
 import android.net.Uri;
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceActivity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -225,15 +226,8 @@ public class AssuranceUtilTest {
 
     @Test
     public void test_isAssuranceActivity() {
-        final Activity assuranceQuickConnectActivity = mock(AssuranceQuickConnectActivity.class);
-        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceQuickConnectActivity));
-
-        final Activity assuranceErrorDisplayActivity = mock(AssuranceErrorDisplayActivity.class);
-        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceErrorDisplayActivity));
-
-        final Activity assuranceFullScreenTakeoverActivity =
-                mock(AssuranceFullScreenTakeoverActivity.class);
-        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceFullScreenTakeoverActivity));
+        final Activity assuranceActivity = mock(AssuranceActivity.class);
+        assertTrue(AssuranceUtil.isAssuranceActivity(assuranceActivity));
 
         final Activity nonAssuranceActivity = mock(Activity.class);
         assertFalse(AssuranceUtil.isAssuranceActivity(nonAssuranceActivity));

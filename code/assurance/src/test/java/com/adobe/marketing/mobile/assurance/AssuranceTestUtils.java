@@ -41,7 +41,7 @@ class AssuranceTestUtils {
             privateField.setAccessible(true);
             privateField.set(classToSet, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            fail(String.format("Failed to set %s.%s", classToSet, name));
+            fail(String.format("Failed to set %s.%s - %s", classToSet, name, e.getMessage()));
         }
     }
 

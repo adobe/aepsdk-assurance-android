@@ -42,5 +42,5 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:4.5.1")
     testImplementation("net.sf.kxml:kxml2:2.3.0@jar")
     testImplementation("org.json:json:20171018")
-    testImplementation("org.robolectric:robolectric:4.2")
+    testImplementation("org.robolectric:robolectric:4.7")
 }

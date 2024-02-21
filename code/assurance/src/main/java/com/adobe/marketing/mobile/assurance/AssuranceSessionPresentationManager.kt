@@ -13,6 +13,7 @@ package com.adobe.marketing.mobile.assurance
 
 import android.app.Activity
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.SocketCloseCode
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.UILogColorVisibility
 import com.adobe.marketing.mobile.assurance.AssuranceWebViewSocket.SocketReadyState
@@ -21,14 +22,28 @@ import com.adobe.marketing.mobile.assurance.internal.ui.floatingbutton.Assurance
 import com.adobe.marketing.mobile.services.ServiceProvider
 
 /** Manages the UI elements required for an Assurance Session.  */
-internal class AssuranceSessionPresentationManager(private val authorizingPresentationType: SessionAuthorizingPresentationType) {
+internal class AssuranceSessionPresentationManager {
 
     companion object {
         private const val LOG_TAG = "AssuranceSessionPresentationManager"
     }
 
-    private val button: AssuranceFloatingButton =
+    private val authorizingPresentationType: SessionAuthorizingPresentationType
+    private val button: AssuranceFloatingButton
+
+    constructor(authorizingPresentationType: SessionAuthorizingPresentationType) : this(
+        authorizingPresentationType,
         AssuranceFloatingButton(ServiceProvider.getInstance().appContextService)
+    )
+
+    @VisibleForTesting
+    constructor(
+        authorizingPresentationType: SessionAuthorizingPresentationType,
+        assuranceFloatingButton: AssuranceFloatingButton
+    ) {
+        this.authorizingPresentationType = authorizingPresentationType
+        this.button = assuranceFloatingButton
+    }
 
     /**
      * Shows the UI elements (currently connecting screen) that are required when a session
