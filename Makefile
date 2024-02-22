@@ -2,12 +2,9 @@ EXTENSION-LIBRARY-FOLDER-NAME = assurance
 TEST-APP-FOLDER-NAME = assurance-testapp
 TEST-APP-DEBUG-APK = assurance-testapp-debug.apk
 
-BUILD-ASSEMBLE-LOCATION = ./ci/assemble
 ROOT_DIR=$(shell git rev-parse --show-toplevel)
 
-PROJECT_NAME = $(shell cat $(ROOT_DIR)/code/gradle.properties | grep "moduleProjectName" | cut -d'=' -f2)
-SOURCE_FILE_DIR =  $(ROOT_DIR)/code/$(PROJECT_NAME)
-AAR_FILE_DIR =  $(ROOT_DIR)/code/$(PROJECT_NAME)/build/outputs/aar
+AAR_FILE_DIR =  $(ROOT_DIR)/code/$(EXTENSION-LIBRARY-FOLDER-NAME)/build/outputs/aar
 TEST_APP_APK_OUTPUT_DIR = $(ROOT_DIR)/code/$(TEST-APP-FOLDER-NAME)/build/outputs/apk
 ARTIFACTS_DIR = $(ROOT_DIR)/artifacts
 
@@ -21,10 +18,8 @@ checkformat:
 format:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessApply)
 
-build:
-	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) lint)
-	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) assemblePhone)
-
+## This is a custom app build command to generate and copy the test app apk
+## Use assemble-app for general usecases
 build-app:
 	(./code/gradlew -p code clean)
 	# Delete TEST-APP-DEBUG-APK-NAME from the contents of ARTIFACTS_DIR
@@ -37,32 +32,42 @@ build-app:
 	(cp -r $(TEST_APP_APK_OUTPUT_DIR)/debug/$(TEST-APP-DEBUG-APK) $(ARTIFACTS_DIR))
 
 unit-test:
-	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) platformUnitTestJacocoReport)
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) testPhoneDebugUnitTest)
+
+unit-test-coverage:
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) createPhoneDebugUnitTestCoverageReport)
 
 functional-test:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) uninstallPhoneDebugAndroidTest)
-	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) connectedPhoneDebugAndroidTest platformFunctionalTestJacocoReport)
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) connectedPhoneDebugAndroidTest)
+
+functional-test-coverage:
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) uninstallPhoneDebugAndroidTest)
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) createPhoneDebugAndroidTestCoverageReport)
 
 javadoc:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) javadocJar)
 
-generate-library-debug:
+assemble-phone:
+	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) assemblePhone)
+
+assemble-phone-debug:
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME}  assemblePhoneDebug)
 
-generate-library-release:
+assemble-phone-release:
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME}  assemblePhoneRelease)
 
-build-release:
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} clean lint assemblePhoneRelease)
+assemble-app:
+	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
 
-ci-publish-staging: clean build-release
+ci-publish-staging: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository --stacktrace)
 
-ci-publish-main: clean build-release
+ci-publish-main: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository -Prelease)
 
-ci-publish-maven-local: clean build-release
+ci-publish-maven-local: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
 
-ci-publish-jitpack: clean build-release
+core-publish-maven-local-jitpack: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack -x signReleasePublication)

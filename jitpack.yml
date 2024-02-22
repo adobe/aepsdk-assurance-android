@@ -1,5 +1,5 @@
 jdk:
-  - openjdk11
+  - openjdk17
 install:
    - echo "Attempting to publish to jitpack"
-   - make ci-publish-jitpack
+   - make core-publish-maven-local-jitpack
