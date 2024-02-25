@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -33,6 +34,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,9 +46,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
 
 @Composable
@@ -66,6 +70,10 @@ internal fun AssuranceStatusScreen() {
         }
 
         // Assurance status text view
+        val logs = remember {
+            AssuranceComponentRegistry.appState.statusLogs
+        }
+
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -73,11 +81,23 @@ internal fun AssuranceStatusScreen() {
                 .fillMaxHeight(0.9f)
                 .background(Color(4281743682))
         ) {
-            Text(
-                text = "",
-                fontFamily = FontFamily.SansSerif,
-                style = TextStyle(color = Color.White, fontSize = 24.sp)
-            )
+            // Lazy column to display the logs
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(AssuranceTheme.dimensions.padding.small)
+            ) {
+                items(logs.value.size) {
+                    val message = logs.value[it].message
+                    val color = logs.value[it].level.toColor()
+                    Text(
+                        text = message,
+                        fontFamily = AssuranceTheme.typography.font.family,
+                        style = TextStyle(color = color, fontSize = AssuranceTheme.typography.font.size.small.sp)
+                    )
+                }
+            }
         }
 
         // Clear and Disconnect buttons displayed at the bottom of the screen
@@ -85,7 +105,7 @@ internal fun AssuranceStatusScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextButton(onClick = { }) {
+            TextButton(onClick = { AssuranceComponentRegistry.appState.clearLogs() }) {
                 Text(
                     text = stringResource(id = R.string.status_button_clear_log),
                     fontFamily = FontFamily.SansSerif,
@@ -143,5 +163,18 @@ private fun CloseButton(modifier: Modifier, onClick: () -> Unit) {
             fontFamily = FontFamily.SansSerif,
             style = TextStyle(color = Color.White, fontSize = 14.sp)
         )
+    }
+}
+
+/**
+ * Converts the [AssuranceConstants.UILogColorVisibility] to a [Color] for display in the UI.
+ * @return [Color] for the given [AssuranceConstants.UILogColorVisibility]
+ */
+private fun AssuranceConstants.UILogColorVisibility.toColor(): Color {
+    return when (this) {
+        AssuranceConstants.UILogColorVisibility.LOW -> Color.LightGray
+        AssuranceConstants.UILogColorVisibility.NORMAL -> Color.DarkGray
+        AssuranceConstants.UILogColorVisibility.HIGH -> Color.Yellow
+        AssuranceConstants.UILogColorVisibility.CRITICAL -> Color.Red
     }
 }

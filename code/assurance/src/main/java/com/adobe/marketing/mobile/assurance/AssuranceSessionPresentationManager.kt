@@ -161,7 +161,8 @@ internal class AssuranceSessionPresentationManager {
      */
     @JvmName("logLocalUI")
     internal fun logLocalUI(visibility: UILogColorVisibility?, message: String?) {
-        // TODO
+        if (visibility == null || message == null) return
+        AssuranceComponentRegistry.appState.logStatus(visibility, message)
     }
 
     private fun showAssuranceActivity(currentActivity: Activity?) {
