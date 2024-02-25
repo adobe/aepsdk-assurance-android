@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * A button that can be in one of the three states: Idle, Waiting, or Retry.
@@ -71,19 +72,23 @@ internal fun ProgressButton(
                 modifier = Modifier
                     .testTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
                     .size(25.dp)
-                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp),
+                    .padding(
+                        start = AssuranceTheme.dimensions.padding.small,
+                        top = AssuranceTheme.dimensions.padding.xSmall,
+                        bottom = AssuranceTheme.dimensions.padding.xSmall
+                    ),
                 strokeWidth = 2.dp,
                 color = Color(0xFF1A73E8)
             )
         }
         Text(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(AssuranceTheme.dimensions.padding.small)
                 .testTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT),
             text = stringResource(id = buttonState.text),
             color = buttonState.foregroundColor,
             fontFamily = FontFamily.SansSerif,
-            style = TextStyle(color = Color.White, fontSize = 14.sp)
+            style = TextStyle(color = Color.White, fontSize = AssuranceTheme.typography.font.size.medium.sp)
         )
     }
 }
@@ -128,7 +133,12 @@ internal sealed class ButtonState(
         backgroundColor: Color = activeBackgroundColor,
         foregroundColor: Color = Color.White,
         clickable: Boolean = true
-    ) : ButtonState(R.string.quick_connect_button_connect, backgroundColor, foregroundColor, clickable)
+    ) : ButtonState(
+        R.string.quick_connect_button_connect,
+        backgroundColor,
+        foregroundColor,
+        clickable
+    )
 
     /**
      * Represents the button state when the button is waiting for the connection to be established.
@@ -137,7 +147,12 @@ internal sealed class ButtonState(
         backgroundColor: Color = inactiveBackgroundColor,
         foregroundColor: Color = Color.White,
         clickable: Boolean = false
-    ) : ButtonState(R.string.quick_connect_button_waiting, backgroundColor, foregroundColor, clickable)
+    ) : ButtonState(
+        R.string.quick_connect_button_waiting,
+        backgroundColor,
+        foregroundColor,
+        clickable
+    )
 
     /**
      * Represents the button state when the button is in a retry state.
@@ -146,5 +161,10 @@ internal sealed class ButtonState(
         backgroundColor: Color = activeBackgroundColor,
         foregroundColor: Color = Color.White,
         clickable: Boolean = true
-    ) : ButtonState(R.string.quick_connect_button_retry, backgroundColor, foregroundColor, clickable)
+    ) : ButtonState(
+        R.string.quick_connect_button_retry,
+        backgroundColor,
+        foregroundColor,
+        clickable
+    )
 }

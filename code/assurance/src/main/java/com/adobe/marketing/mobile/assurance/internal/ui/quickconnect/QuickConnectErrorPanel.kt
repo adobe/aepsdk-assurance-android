@@ -25,10 +25,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * Composable to [AssuranceConstants.AssuranceConnectionError] details during QuickConnect authorization
@@ -45,13 +45,20 @@ internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectio
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 8.dp, bottom = 4.dp)
+                    .padding(
+                        top = AssuranceTheme.dimensions.padding.small,
+                        bottom = AssuranceTheme.dimensions.padding.xSmall
+                    )
                     .testTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_TEXT),
                 text = error.error,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
                 textAlign = TextAlign.Center,
-                style = TextStyle(color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = AssuranceTheme.typography.font.size.large.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             )
 
             // Text for connection description
@@ -59,13 +66,19 @@ internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectio
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(
+                        top = AssuranceTheme.dimensions.padding.small,
+                        bottom = AssuranceTheme.dimensions.padding.xSmall
+                    )
                     .testTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_DESCRIPTION),
                 text = error.description,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
                 textAlign = TextAlign.Center,
-                style = TextStyle(color = Color.White, fontSize = 14.sp)
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = AssuranceTheme.typography.font.size.large.sp
+                )
             )
         }
     }

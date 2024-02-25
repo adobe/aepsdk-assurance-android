@@ -27,12 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * Represents the row of action buttons for the QuickConnect screen.
@@ -48,13 +48,19 @@ internal fun ActionButtonRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 16.dp),
+            .padding(
+                horizontal = AssuranceTheme.dimensions.padding.small,
+                vertical = AssuranceTheme.dimensions.padding.medium
+            ),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         // Cancel button
         OutlinedButton(
             modifier = Modifier
-                .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp)
+                .defaultMinSize(
+                    minHeight = AssuranceTheme.dimensions.button.height.medium.dp,
+                    minWidth = AssuranceTheme.dimensions.button.width.medium.dp
+                )
                 .testTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON),
             onClick = {
                 onAction(QuickConnectScreenAction.Cancel)
@@ -68,8 +74,8 @@ internal fun ActionButtonRow(
         ) {
             Text(
                 text = stringResource(id = R.string.quick_connect_button_cancel),
-                fontFamily = FontFamily.SansSerif,
-                style = TextStyle(color = Color.White, fontSize = 14.sp)
+                fontFamily = AssuranceTheme.typography.font.family,
+                style = TextStyle(color = Color.White, fontSize = AssuranceTheme.typography.font.size.medium.sp)
             )
         }
 
@@ -78,7 +84,10 @@ internal fun ActionButtonRow(
         ProgressButton(
             buttonState = buttonState,
             modifier = Modifier
-                .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp)
+                .defaultMinSize(
+                    minHeight = AssuranceTheme.dimensions.button.height.medium.dp,
+                    minWidth = AssuranceTheme.dimensions.button.width.medium.dp
+                )
         ) {
             val action = if (buttonState is ButtonState.Idle) {
                 QuickConnectScreenAction.Connect

@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
@@ -48,13 +49,13 @@ internal fun QuickConnectView(
         modifier = Modifier
             .fillMaxSize()
             .background(AssuranceTheme.backgroundColor)
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = AssuranceTheme.dimensions.padding.large)
             .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AssuranceHeader()
@@ -67,7 +68,10 @@ internal fun QuickConnectView(
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 16.dp)
+                    .padding(
+                        horizontal = AssuranceTheme.dimensions.padding.xLarge,
+                        vertical = AssuranceTheme.dimensions.padding.medium
+                    )
                     .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_LOGO)
 
             )
@@ -94,7 +98,10 @@ internal fun QuickConnectView(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = 32.dp)
+                .padding(
+                    horizontal = AssuranceTheme.dimensions.padding.medium,
+                    vertical = AssuranceTheme.dimensions.padding.xLarge
+                )
                 .testTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
 
         )
