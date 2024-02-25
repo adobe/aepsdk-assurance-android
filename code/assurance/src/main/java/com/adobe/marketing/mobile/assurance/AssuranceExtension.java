@@ -241,11 +241,18 @@ public final class AssuranceExtension extends Extension {
             return;
         }
 
-        final Intent quickConnectIntent =
-                new Intent(hostApplication, AssuranceQuickConnectActivity.class);
-        quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        quickConnectIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        currentActivity.startActivity(quickConnectIntent);
+        // Change the session state to Authorizing with QuickConnect authorization
+        AssuranceComponentRegistry.appState.onSessionPhaseChange(
+                new AssuranceAppState.SessionPhase.Authorizing(
+                        new AssuranceAppState.AssuranceAuthorization.QuickConnect(
+                                AssuranceEnvironment.PROD)));
+
+        // Launch the Assurance Activity
+        final Intent intent = new Intent(hostApplication, AssuranceActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        hostApplication.startActivity(intent);
     }
 
     // ========================================================================================

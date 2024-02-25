@@ -97,7 +97,7 @@ class QuickConnectManagerTest {
 
     @Test
     fun `Invoking register launches DeviceCreationTask`() {
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
 
@@ -112,7 +112,7 @@ class QuickConnectManagerTest {
 
     @Test
     fun `Invoking register called multiple times without cancelling launches DeviceCreationTask only once`() {
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
 
@@ -130,7 +130,7 @@ class QuickConnectManagerTest {
     @Test
     fun `Invoking register results in launching DeviceStatusCheckerTask on successful response`() {
         // setup
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
 
@@ -157,7 +157,7 @@ class QuickConnectManagerTest {
     @Test
     fun `Invoking register calls onError on failed device creation request`() {
         // setup
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
 
@@ -188,7 +188,7 @@ class QuickConnectManagerTest {
     @Test
     fun `Check status retries on a successful response without session details`() {
         // Setup
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
         // simulate device registration and "activeness"
@@ -266,7 +266,7 @@ class QuickConnectManagerTest {
         val mockCreatorFuture = mock<Future<*>>()
         val mockStatusCheckFuture = mock<ScheduledFuture<*>>()
 
-        `when`(mockAssuranceStateManager.clientId).thenReturn(TEST_CLIENT_ID)
+        `when`(mockAssuranceStateManager.getClientId()).thenReturn(TEST_CLIENT_ID)
         `when`(mockAssuranceStateManager.getOrgId(false)).thenReturn(TEST_CLIENT_ID)
         `when`(mockDeviceInfoService.deviceName).thenReturn(TEST_DEVICE_NAME)
         `when`(mockExecutorService.submit(any(QuickConnectDeviceCreator::class.java))).thenReturn(mockCreatorFuture)

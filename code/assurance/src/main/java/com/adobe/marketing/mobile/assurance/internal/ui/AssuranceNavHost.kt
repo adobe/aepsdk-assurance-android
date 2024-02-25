@@ -12,7 +12,6 @@
 package com.adobe.marketing.mobile.assurance.internal.ui
 
 import android.app.Activity
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -22,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.adobe.marketing.mobile.assurance.AssuranceAppState
 import com.adobe.marketing.mobile.assurance.internal.ui.error.AssuranceErrorScreen
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreen
+import com.adobe.marketing.mobile.assurance.internal.ui.quickconnect.QuickConnectScreen
 import com.adobe.marketing.mobile.assurance.internal.ui.status.AssuranceStatusScreen
 
 /**
@@ -53,8 +53,14 @@ internal fun AssuranceNavHost(
         }
 
         composable(AssuranceNavRoute.QuickConnectRoute.path) {
-            // TODO: implement QuickConnect screen in compose
-            Text(text = "QUICK CONNECT")
+            val quickConnect = (startDestination as? AssuranceDestination.QuickConnectDestination)?.quickConnect
+                ?: kotlin.run {
+                    // QuickConnect route should always be mapped to QuickConnectDestination
+                    activity?.finish()
+                    return@composable
+                }
+
+            QuickConnectScreen(environment = quickConnect.environment)
         }
 
         composable(AssuranceNavRoute.StatusRoute.path) {

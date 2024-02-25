@@ -9,23 +9,22 @@
   governing permissions and limitations under the License.
 */
 
-package com.adobe.marketing.mobile.assurance;
+package com.adobe.marketing.mobile.assurance
 
-import androidx.annotation.NonNull;
+import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 
 /**
- * A callback that allows components integrating with {@link QuickConnectManager} to receive a
+ * A callback that allows components integrating with [QuickConnectManager] to receive a
  * notification about the status of the QuickConnect connection request.
  */
-interface QuickConnectCallback {
-
+internal interface QuickConnectCallback {
     /**
      * Invoked when an error occurs when during QuickConnect connection workflow.
      *
-     * @param error an {@code AssuranceConnectionError} that occurred resulting in quick connect
-     *     workflow cancellation
+     * @param error an `AssuranceConnectionError` that occurred resulting in quick connect
+     * workflow cancellation
      */
-    void onError(@NonNull AssuranceConstants.AssuranceConnectionError error);
+    fun onError(error: AssuranceConnectionError)
 
     /**
      * Invoked with the quick connect session details when the QuickConnect workflow is successful.
@@ -34,5 +33,5 @@ interface QuickConnectCallback {
      * @param sessionUUID the sessionId associated with the quick connect session
      * @param token the authorizing token for the quick connect session
      */
-    void onSuccess(@NonNull String sessionUUID, @NonNull String token);
+    fun onSuccess(sessionUUID: String, token: String)
 }

@@ -20,6 +20,7 @@ import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnecti
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceEnvironment
 import com.adobe.marketing.mobile.assurance.AssuranceSessionStatusListener
 import com.adobe.marketing.mobile.assurance.SessionAuthorizingPresentationType
+import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 
 /**
  * ViewModel for the PinScreen.

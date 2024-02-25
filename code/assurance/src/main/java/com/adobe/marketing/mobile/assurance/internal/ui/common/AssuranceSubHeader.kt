@@ -20,10 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Displays the provided [text] as a sub header.
@@ -41,10 +44,13 @@ internal fun AssuranceSubHeader(text: String) {
             style = TextStyle(
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Normal
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
             ),
-            modifier = Modifier.wrapContentSize(Alignment.Center)
+            modifier = Modifier
+                .wrapContentSize(Alignment.Center)
+                .testTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER)
         )
     }
 }

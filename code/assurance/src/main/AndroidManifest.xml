@@ -13,6 +13,5 @@
     package="com.adobe.marketing.mobile.assurance">
     <application>
         <activity android:name=".internal.ui.AssuranceActivity" android:exported="false" android:theme="@style/AssuranceAppThemeDark" />
-        <activity android:name=".AssuranceQuickConnectActivity" android:exported="false"/>
     </application>
 </manifest>

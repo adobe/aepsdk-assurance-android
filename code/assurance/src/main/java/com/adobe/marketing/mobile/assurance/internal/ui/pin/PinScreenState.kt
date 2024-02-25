@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.pin
 
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 
 /**
  * Data class for storing the Pin Screen state.
@@ -22,25 +22,3 @@ internal data class PinScreenState(
     val pin: String = "",
     val connectionState: ConnectionState = ConnectionState.Disconnected(null)
 )
-
-/**
- * Represents the current state of the Assurance connection attempt as tracked by the Pin Screen.
- */
-internal sealed class ConnectionState {
-    /**
-     * Represents the state of Assurance connection being disconnected.
-     * @param error the error that caused the disconnection
-     */
-    data class Disconnected(val error: AssuranceConstants.AssuranceConnectionError?) :
-        ConnectionState()
-
-    /**
-     * Represents the state of Assurance connection attempt in progress.
-     */
-    object Connecting : ConnectionState()
-
-    /**
-     * Represents the state of Assurance connection being connected successfully.
-     */
-    object Connected : ConnectionState()
-}

@@ -501,6 +501,7 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
         for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
             if (listener != null) {
                 listener.onSessionDisconnected(error);
+                unregisterStatusListener(listener);
             }
         }
     }
