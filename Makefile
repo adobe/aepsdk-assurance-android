@@ -69,5 +69,5 @@ ci-publish-main: clean assemble-phone
 ci-publish-maven-local: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
 
-core-publish-maven-local-jitpack: clean assemble-phone
+ci-publish-maven-local-jitpack: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack -x signReleasePublication)

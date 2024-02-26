@@ -2,4 +2,4 @@ jdk:
   - openjdk17
 install:
    - echo "Attempting to publish to jitpack"
-   - make core-publish-maven-local-jitpack
+   - make ci-publish-maven-local-jitpack
