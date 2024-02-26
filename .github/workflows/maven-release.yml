@@ -34,6 +34,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Verify version
+        run: |
+          set -eo pipefail
+          echo Release version: ${{ github.event.inputs.tag }}
+          (./scripts/version.sh -v ${{ github.event.inputs.tag }})
+
       - name: Import GPG key
         env:
           GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
