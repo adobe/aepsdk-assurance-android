@@ -13,6 +13,7 @@ aepLibrary {
     compose = true
     enableSpotless = true
     enableCheckStyle = true
+    enableDokkaDoc = true
 
     publishing {
         gitRepoName = "aepsdk-assurance-android"

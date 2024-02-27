@@ -22,9 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceSubHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
@@ -47,6 +49,7 @@ internal fun DialPadView(
             .fillMaxSize()
             .background(backgroundColor)
             .padding(horizontal = 64.dp)
+            .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

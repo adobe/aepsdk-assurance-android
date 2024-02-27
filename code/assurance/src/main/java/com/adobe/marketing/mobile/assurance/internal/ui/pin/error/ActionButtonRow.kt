@@ -19,12 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 
@@ -44,10 +46,13 @@ internal fun ActionButtonRow(
     val activity = LocalContext.current.findActivity() ?: return
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
-        TextButton(onClick = {
-            onAction(PinScreenAction.Cancel)
-            activity.finish()
-        }) {
+        TextButton(
+            modifier = Modifier.testTag(AssuranceUiTestTags.PinScreen.PIN_ERROR_CANCEL_BUTTON),
+            onClick = {
+                onAction(PinScreenAction.Cancel)
+                activity.finish()
+            }
+        ) {
             Text(
                 text = stringResource(id = R.string.pin_connect_button_cancel),
                 fontFamily = FontFamily.SansSerif,
@@ -56,7 +61,10 @@ internal fun ActionButtonRow(
         }
 
         if (error != null && error.isRetryable) {
-            TextButton(onClick = { onAction(PinScreenAction.Retry) }) {
+            TextButton(
+                modifier = Modifier.testTag(AssuranceUiTestTags.PinScreen.PIN_ERROR_RETRY_BUTTON),
+                onClick = { onAction(PinScreenAction.Retry) }
+            ) {
                 Text(
                     text = stringResource(id = R.string.pin_connect_button_retry),
                     fontFamily = FontFamily.SansSerif,

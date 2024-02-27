@@ -11,6 +11,9 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui
 
+/**
+ * Tags used to identify UI elements in Assurance UI tests.
+ */
 internal object AssuranceUiTestTags {
     internal const val ASSURANCE_HEADER = "assuranceHeader"
     internal const val ASSURANCE_SUB_HEADER = "assuranceSubHeader"
@@ -27,5 +30,25 @@ internal object AssuranceUiTestTags {
         internal const val CONNECTION_ERROR_PANEL = "connectionErrorPanel"
         internal const val CONNECTION_ERROR_TEXT = "connectionErrorText"
         internal const val CONNECTION_ERROR_DESCRIPTION = "connectionErrorDescription"
+    }
+
+    internal object PinScreen {
+        internal const val DIAL_PAD_VIEW = "dialPadView"
+        internal const val NUMBER_ROW = "dialPadRow"
+        internal const val SYMBOL_ROW = "symbolRow"
+        internal const val DIAL_PAD_BUTTON = "dialPadButton"
+        internal const val DIAL_PAD_DELETE_BUTTON = "dialPadDeleteButton"
+        internal const val DIAL_PAD_NUMERIC_BUTTON_TEXT = "dialPadNumericButton"
+        internal const val INPUT_FEEDBACK_ROW = "inputFeedbackRow"
+        internal const val DIAL_PAD_ACTION_BUTTON_ROW = "dialPadActionButtonRow"
+        internal const val DIAL_PAD_CANCEL_BUTTON = "dialPadCancelButton"
+        internal const val DIAL_PAD_CONNECT_BUTTON = "dialPadConnectButton"
+
+        internal const val PIN_ERROR_VIEW = "pinErrorView"
+        internal const val PIN_ERROR_HEADER = "pinErrorHeader"
+        internal const val PIN_ERROR_CONTENT = "pinErrorContent"
+        internal const val PIN_ERROR_ACTION_BUTTON_ROW = "pinErrorActionButtonRow"
+        internal const val PIN_ERROR_CANCEL_BUTTON = "pinErrorCancelButton"
+        internal const val PIN_ERROR_RETRY_BUTTON = "pinErrorRetryButton"
     }
 }

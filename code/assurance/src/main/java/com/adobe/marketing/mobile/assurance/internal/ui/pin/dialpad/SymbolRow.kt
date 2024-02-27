@@ -25,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.util.StreamUtils
 
@@ -39,7 +41,8 @@ import com.adobe.marketing.mobile.util.StreamUtils
 @Composable
 internal fun SymbolRow(onClick: (PinScreenAction) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .testTag(AssuranceUiTestTags.PinScreen.SYMBOL_ROW),
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // Intentionally empty content button for filling the grid evenly
