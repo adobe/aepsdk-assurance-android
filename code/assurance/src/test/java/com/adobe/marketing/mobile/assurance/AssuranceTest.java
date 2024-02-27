@@ -14,15 +14,12 @@ package com.adobe.marketing.mobile.assurance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.Event;
 import com.adobe.marketing.mobile.EventSource;
 import com.adobe.marketing.mobile.EventType;
-import com.adobe.marketing.mobile.ExtensionError;
-import com.adobe.marketing.mobile.ExtensionErrorCallback;
 import com.adobe.marketing.mobile.MobileCore;
 import com.adobe.marketing.mobile.util.DataReader;
 import junit.framework.TestCase;
@@ -89,27 +86,6 @@ public class AssuranceTest {
 
         // verify
         mockedStaticMobileCore.verify(() -> MobileCore.dispatchEvent(any(Event.class)), times(0));
-    }
-
-    @Test
-    public void test_RegisterExtension() {
-        // prepare
-        final ArgumentCaptor<ExtensionErrorCallback> extensionErrorCallbackCaptor =
-                ArgumentCaptor.forClass(ExtensionErrorCallback.class);
-
-        // test
-        Assurance.registerExtension();
-
-        // verify
-        mockedStaticMobileCore.verify(
-                () ->
-                        MobileCore.registerExtension(
-                                eq(AssuranceExtension.class),
-                                extensionErrorCallbackCaptor.capture()),
-                times(1));
-
-        // test 2 - ErrorCallback is handled without crashing
-        extensionErrorCallbackCaptor.getValue().error(ExtensionError.UNEXPECTED_ERROR);
     }
 
     @Test

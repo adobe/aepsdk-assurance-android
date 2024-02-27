@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance
 
+import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.Event
 import com.adobe.marketing.mobile.EventSource
@@ -29,15 +30,24 @@ import java.net.URLEncoder
  * Responsible for managing the Assurance shared state (via [AssuranceSharedStateManager])
  * as well as fetching shared states for other extensions.
  */
-internal class AssuranceStateManager(private val extensionApi: ExtensionApi) {
+internal class AssuranceStateManager {
     internal companion object {
         private const val LOG_TAG = "AssuranceStateManager"
     }
 
-    private val assuranceSharedStateManager: AssuranceSharedStateManager =
-        AssuranceSharedStateManager(
-            ServiceProvider.getInstance().dataStoreService
-        )
+    private val extensionApi: ExtensionApi
+    private val assuranceSharedStateManager: AssuranceSharedStateManager
+
+    constructor(extensionApi: ExtensionApi) : this(extensionApi, AssuranceSharedStateManager(ServiceProvider.getInstance().dataStoreService))
+
+    @VisibleForTesting
+    constructor(
+        extensionApi: ExtensionApi,
+        assuranceSharedStateManager: AssuranceSharedStateManager
+    ) {
+        this.extensionApi = extensionApi
+        this.assuranceSharedStateManager = assuranceSharedStateManager
+    }
 
     /**
      * Most recent event received from the EventHub. Internally used for fetching states of other

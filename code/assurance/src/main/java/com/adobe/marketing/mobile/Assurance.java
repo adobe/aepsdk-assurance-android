@@ -22,7 +22,7 @@ public class Assurance {
 
     public static final Class<? extends Extension> EXTENSION = AssuranceExtension.class;
     public static final String LOG_TAG = "Assurance";
-    public static final String EXTENSION_VERSION = "2.2.0";
+    public static final String EXTENSION_VERSION = "3.0.0";
     public static final String EXTENSION_NAME = "com.adobe.assurance";
     public static final String EXTENSION_FRIENDLY_NAME = "Assurance";
 

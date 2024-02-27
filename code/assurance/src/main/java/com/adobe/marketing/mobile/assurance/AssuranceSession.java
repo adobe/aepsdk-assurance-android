@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.StringUtils;
@@ -60,7 +61,8 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     private final AssuranceConnectionDataStore connectionDataStore;
     private final SessionAuthorizingPresentationType authorizingPresentationType;
 
-    private final InboundEventQueueWorker.InboundQueueEventListener inboundQueueEventListener =
+    @VisibleForTesting
+    final InboundEventQueueWorker.InboundQueueEventListener inboundQueueEventListener =
             new InboundEventQueueWorker.InboundQueueEventListener() {
                 @Override
                 public void onInboundEvent(final AssuranceEvent event) {
