@@ -36,9 +36,6 @@ dependencies {
     // Compose ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$viewModelComposeVersion")
 
-    // TODO: Will be removed once QuickConnect migrates to Compose shortly
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-
     testImplementation("org.mockito:mockito-inline:4.5.1")
     testImplementation("net.sf.kxml:kxml2:2.3.0@jar")
     testImplementation("org.json:json:20171018")
