@@ -22,6 +22,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -52,7 +53,8 @@ internal fun ActionButtonRow(
                 horizontal = AssuranceTheme.dimensions.padding.small,
                 vertical = AssuranceTheme.dimensions.padding.medium
             ),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // Cancel button
         OutlinedButton(

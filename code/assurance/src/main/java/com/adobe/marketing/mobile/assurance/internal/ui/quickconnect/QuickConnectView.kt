@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -27,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
@@ -94,11 +96,11 @@ internal fun QuickConnectView(
             contentDescription = "Adobe Logo",
             contentScale = ContentScale.Inside,
             modifier = Modifier
+                .height(20.dp)
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(
-                    horizontal = AssuranceTheme.dimensions.padding.medium,
-                    vertical = AssuranceTheme.dimensions.padding.xLarge
+                    bottom = AssuranceTheme.dimensions.padding.xSmall
                 )
                 .testTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
 
