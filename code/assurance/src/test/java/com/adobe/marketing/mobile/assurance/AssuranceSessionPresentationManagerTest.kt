@@ -374,6 +374,66 @@ class AssuranceSessionPresentationManagerTest {
         assertFalse { assuranceSessionPresentationManager.isAuthorizingPresentationActive() }
     }
 
+    @Test
+    fun `Test #logLocalUI updates app status logs`() {
+        // Setup
+        val assuranceSessionPresentationManager = AssuranceSessionPresentationManager(
+            SessionAuthorizingPresentationType.QUICK_CONNECT,
+            mockAssuranceFloatingButton
+        )
+        val message = "Assurance disconnected, attempting to reconnect ..."
+
+        // Test
+        assuranceSessionPresentationManager.logLocalUI(
+            AssuranceConstants.UILogColorVisibility.HIGH,
+            message
+        )
+
+        // Verify
+        assertEquals(
+            AssuranceAppState.StatusLog(
+                AssuranceConstants.UILogColorVisibility.HIGH,
+                message
+            ),
+            AssuranceComponentRegistry.appState.statusLogs.value[0]
+        )
+    }
+
+    @Test
+    fun `Test #logLocalUI updates when message is null`() {
+        // Setup
+        val assuranceSessionPresentationManager = AssuranceSessionPresentationManager(
+            SessionAuthorizingPresentationType.QUICK_CONNECT,
+            mockAssuranceFloatingButton
+        )
+        val message = null
+
+        // Test
+        assuranceSessionPresentationManager.logLocalUI(
+            AssuranceConstants.UILogColorVisibility.HIGH,
+            message
+        )
+
+        // Verify
+        assertTrue { AssuranceComponentRegistry.appState.statusLogs.value.isEmpty() }
+    }
+
+    @Test
+    fun `Test #logLocalUI updates when log level is null`() {
+        // Setup
+        val assuranceSessionPresentationManager = AssuranceSessionPresentationManager(
+            SessionAuthorizingPresentationType.QUICK_CONNECT,
+            mockAssuranceFloatingButton
+        )
+        val message = "Some message"
+
+        // Test
+        assuranceSessionPresentationManager.logLocalUI(null, message)
+
+        // Verify
+        assertTrue { AssuranceComponentRegistry.appState.statusLogs.value.isEmpty() }
+    }
+
     @After
     fun teardown() {
         mockedStaticServiceProvider.close()
@@ -382,5 +442,6 @@ class AssuranceSessionPresentationManagerTest {
                 null
             )
         )
+        AssuranceComponentRegistry.appState.clearLogs()
     }
 }
