@@ -16,7 +16,6 @@ import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDat
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.PayloadDataKeys.XDM_STATE_DATA;
 import static com.adobe.marketing.mobile.assurance.AssuranceConstants.SDKEventName.XDM_SHARED_STATE_CHANGE;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -223,13 +222,6 @@ public final class AssuranceExtension extends Extension {
                     Assurance.LOG_TAG,
                     LOG_TAG,
                     "startSession() API is available only on debug builds.");
-            return;
-        }
-
-        final Activity currentActivity =
-                ServiceProvider.getInstance().getAppContextService().getCurrentActivity();
-        if (currentActivity == null) {
-            Log.debug(Assurance.LOG_TAG, LOG_TAG, "No foreground activity to launch quick flow.");
             return;
         }
 
