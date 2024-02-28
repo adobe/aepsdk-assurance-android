@@ -82,7 +82,7 @@ internal class AssuranceAppState {
      */
     val sessionPhase: State<SessionPhase> = _sessionPhase
 
-    private val _statusLogs = mutableStateOf<List<StatusLog>>(emptyList())
+    private val _statusLogs = mutableStateOf(emptyList<StatusLog>())
 
     /**
      * Represents the Status UI logs for the current session.
@@ -106,7 +106,7 @@ internal class AssuranceAppState {
      */
     @JvmName("logStatus")
     internal fun logStatus(level: AssuranceConstants.UILogColorVisibility, status: String) {
-        _statusLogs.value = _statusLogs.value + StatusLog(level, status)
+        _statusLogs.value += StatusLog(level, status)
     }
 
     /**
