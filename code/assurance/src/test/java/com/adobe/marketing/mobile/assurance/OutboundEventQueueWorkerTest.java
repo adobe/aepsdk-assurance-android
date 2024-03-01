@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.adobe.marketing.mobile.util.JSONUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -304,7 +305,7 @@ public class OutboundEventQueueWorkerTest {
         try {
             // Prepare & read large payload from resources.
             final String expectedPayloadKeyValue =
-                    readPayloadFromResource("assurance_large_event_payload_key_value_20KB.txt");
+                    readFromResource("assurance_large_event_payload_key_value_20KB.txt");
 
             // Construct expected event payload
             final HashMap<String, Object> expectedEventPayload = new HashMap<>();
@@ -344,7 +345,7 @@ public class OutboundEventQueueWorkerTest {
         try {
             // Prepare & read large payload from resources.
             final String expectedPayloadKeyValue =
-                    readPayloadFromResource("assurance_large_event_payload_key_value_40KB.txt");
+                    readFromResource("assurance_large_event_payload_key_value_40KB.txt");
 
             // Construct expected event payload
             final HashMap<String, Object> expectedEventPayload = new HashMap<>();
@@ -419,7 +420,7 @@ public class OutboundEventQueueWorkerTest {
         try {
             // Prepare & read large payload from resources.
             final String expectedPayloadKeyValue =
-                    readPayloadFromResource("assurance_large_event_payload_key_value_html.txt");
+                    readFromResource("assurance_large_event_payload_key_value_html.txt");
 
             // Construct expected event payload
             final HashMap<String, Object> expectedEventPayload = new HashMap<>();
@@ -486,7 +487,78 @@ public class OutboundEventQueueWorkerTest {
         }
     }
 
-    private String readPayloadFromResource(final String resourceName) throws IOException {
+    @Test
+    public void test_sendEvent_overflow_clientInfo() {
+        when(mockAssuranceWebViewSocket.getState())
+                .thenReturn(AssuranceWebViewSocket.SocketReadyState.OPEN);
+        try {
+            final String payloadString =
+                    readFromResource("assurance_large_full_event_outbound_flow.txt");
+
+            // Construct event from payload
+            final AssuranceEvent largeAssuranceEvent = new AssuranceEvent(payloadString);
+
+            // Simulate event enqueueing into outbound queue.
+            outboundEventQueueWorker.offer(largeAssuranceEvent);
+            outboundEventQueueWorker.start();
+            outboundEventQueueWorker.unblock();
+
+            // Capture data being sent through the socket and Verify 8 events trigger in total.
+            // 1 client info event and 7 chunked Assurance events.
+            ArgumentCaptor<byte[]> socketDataCaptor = ArgumentCaptor.forClass(byte[].class);
+            verify(mockAssuranceWebViewSocket, times(8)).sendData(socketDataCaptor.capture());
+            final List<byte[]> capturedEventData = socketDataCaptor.getAllValues();
+            assertEquals(8, capturedEventData.size());
+
+            final StringBuilder actualPayloadValue = new StringBuilder();
+            final Set<String> chunkIds = new HashSet<>();
+
+            // Start from 1 because 0th event is mock client info event.
+            for (int i = 1; i < capturedEventData.size(); i++) {
+                // Verify that the chunked bytes sent is below the permitted limit.
+                final byte[] capturedChunkedEventBytes = capturedEventData.get(i);
+                assertTrue(
+                        capturedChunkedEventBytes.length < OutboundEventQueueWorker.MAX_EVENT_SIZE);
+
+                final String assuranceEventString =
+                        new String(capturedEventData.get(i), Charset.forName("UTF-8"));
+                final AssuranceEvent actualEvent = new AssuranceEvent(assuranceEventString);
+                final String chunkData =
+                        (String)
+                                actualEvent
+                                        .getPayload()
+                                        .get(AssuranceConstants.AssuranceEventKeys.CHUNK_DATA);
+                // Construct the actual de-chunked event payload from chunked events.
+                actualPayloadValue.append(chunkData);
+
+                // Validate metadata keys - chunkId, sequence number, total chunks per event.
+                final Map<String, Object> metadata = actualEvent.getMetadata();
+                // collect chunkId's for verifying similarity.
+                chunkIds.add((String) metadata.get(AssuranceConstants.AssuranceEventKeys.CHUNK_ID));
+                assertEquals(
+                        i - 1,
+                        metadata.get(AssuranceConstants.AssuranceEventKeys.CHUNK_SEQUENCE_NUMBER));
+                assertEquals(7, metadata.get(AssuranceConstants.AssuranceEventKeys.CHUNK_TOTAL));
+
+                // Verify that the other event values are same as the original event
+                assertEquals(largeAssuranceEvent.vendor, actualEvent.vendor);
+                assertEquals(largeAssuranceEvent.type, actualEvent.type);
+                assertEquals(largeAssuranceEvent.timestamp, actualEvent.timestamp);
+            }
+
+            // Validate that the chunkId is same across events.
+            assertEquals(1, chunkIds.size());
+
+            // Validate that the de-chunked payload matches the combined chunks.
+            final JSONObject actualPayloadJson = new JSONObject(actualPayloadValue.toString());
+            final Map<String, Object> actualPayloadMap = JSONUtils.toMap(actualPayloadJson);
+            assertEquals(largeAssuranceEvent.payload, actualPayloadMap);
+        } catch (JSONException | IOException e) {
+            fail();
+        }
+    }
+
+    private String readFromResource(final String resourceName) throws IOException {
         final InputStream payloadValueStream =
                 this.getClass().getClassLoader().getResourceAsStream(resourceName);
         final BufferedReader bufferedReader =
@@ -497,7 +569,6 @@ public class OutboundEventQueueWorkerTest {
 
         while ((curentLine = bufferedReader.readLine()) != null) {
             resourceContent.append(curentLine);
-            resourceContent.append("\n");
         }
 
         return resourceContent.toString();
