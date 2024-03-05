@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance
 
+import androidx.annotation.VisibleForTesting
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.services.Log
 
@@ -44,5 +45,14 @@ internal object AssuranceComponentRegistry {
 
         this.assuranceStateManager = assuranceStateManager
         this.sessionUIOperationHandler = uiOperationHandler
+    }
+
+    /**
+     * Exists ONLY for testing purposes for resetting the state of the registry.
+     */
+    @VisibleForTesting
+    internal fun reset() {
+        assuranceStateManager = null
+        sessionUIOperationHandler = null
     }
 }
