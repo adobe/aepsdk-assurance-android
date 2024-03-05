@@ -68,12 +68,27 @@ internal class AssuranceAppState {
         object Connected : SessionPhase()
     }
 
+    /**
+     * Represent a log line in the Assurance Status UI.
+     * @param level the visibility of the log line
+     * @param message the message to display
+     */
+    internal data class StatusLog(val level: AssuranceConstants.UILogColorVisibility, val message: String)
+
     private val _sessionPhase = mutableStateOf<SessionPhase>(SessionPhase.Disconnected())
 
     /**
      * Represents the current phase of the assurance session.
      */
     val sessionPhase: State<SessionPhase> = _sessionPhase
+
+    private val _statusLogs = mutableStateOf(emptyList<StatusLog>())
+
+    /**
+     * Represents the Status UI logs for the current session.
+     * These logs are not the same as device logs collected via log plugin.
+     */
+    internal val statusLogs: State<List<StatusLog>> = _statusLogs
 
     /**
      * Updates the current session phase to the given [sessionPhase].
@@ -82,5 +97,22 @@ internal class AssuranceAppState {
     @JvmName("onSessionPhaseChange")
     internal fun onSessionPhaseChange(sessionPhase: SessionPhase) {
         _sessionPhase.value = sessionPhase
+    }
+
+    /**
+     * Logs the given [status] with the given [level] to reflect on the Status UI.
+     * @param level the visibility of the log line
+     * @param status the message to display
+     */
+    @JvmName("logStatus")
+    internal fun logStatus(level: AssuranceConstants.UILogColorVisibility, status: String) {
+        _statusLogs.value += StatusLog(level, status)
+    }
+
+    /**
+     * Clears Assurance status logs.
+     */
+    internal fun clearLogs() {
+        _statusLogs.value = emptyList()
     }
 }
