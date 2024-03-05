@@ -13,11 +13,11 @@ package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
-import com.adobe.marketing.mobile.assurance.AssuranceStateManager
-import com.adobe.marketing.mobile.assurance.QuickConnectManager
-import com.adobe.marketing.mobile.assurance.SessionUIOperationHandler
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.AssuranceStateManager
+import com.adobe.marketing.mobile.assurance.internal.QuickConnectManager
+import com.adobe.marketing.mobile.assurance.internal.SessionUIOperationHandler
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import org.junit.After
 import org.junit.Assert

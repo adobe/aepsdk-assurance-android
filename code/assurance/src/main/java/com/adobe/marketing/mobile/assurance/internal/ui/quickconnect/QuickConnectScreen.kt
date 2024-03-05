@@ -18,9 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adobe.marketing.mobile.Assurance
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
-import com.adobe.marketing.mobile.assurance.AssuranceStateManager
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.AssuranceStateManager
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.services.Log

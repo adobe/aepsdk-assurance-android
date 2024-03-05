@@ -23,8 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceConnectionError
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 

@@ -11,8 +11,8 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui
 
-import com.adobe.marketing.mobile.assurance.AssuranceAppState.AssuranceAuthorization
-import com.adobe.marketing.mobile.assurance.AssuranceAppState.SessionPhase
+import com.adobe.marketing.mobile.assurance.internal.AssuranceAppState.AssuranceAuthorization
+import com.adobe.marketing.mobile.assurance.internal.AssuranceAppState.SessionPhase
 
 /**
  * Defines various destination Assurance screens that can be navigated to based on the state of the current

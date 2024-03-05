@@ -45,9 +45,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
