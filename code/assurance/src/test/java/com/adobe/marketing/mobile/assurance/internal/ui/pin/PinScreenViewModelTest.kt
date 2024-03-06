@@ -11,12 +11,12 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.pin
 
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
-import com.adobe.marketing.mobile.assurance.AssuranceSessionStatusListener
-import com.adobe.marketing.mobile.assurance.AssuranceStateManager
-import com.adobe.marketing.mobile.assurance.SessionAuthorizingPresentationType
-import com.adobe.marketing.mobile.assurance.SessionUIOperationHandler
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.AssuranceSessionStatusListener
+import com.adobe.marketing.mobile.assurance.internal.AssuranceStateManager
+import com.adobe.marketing.mobile.assurance.internal.SessionAuthorizingPresentationType
+import com.adobe.marketing.mobile.assurance.internal.SessionUIOperationHandler
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import org.junit.After
 import org.junit.Before
