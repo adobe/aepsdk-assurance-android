@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.adobe.marketing.mobile.assurance.AssuranceAppState
+import com.adobe.marketing.mobile.assurance.internal.AssuranceAppState
 import com.adobe.marketing.mobile.assurance.internal.ui.error.AssuranceErrorScreen
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreen
 import com.adobe.marketing.mobile.assurance.internal.ui.quickconnect.QuickConnectScreen

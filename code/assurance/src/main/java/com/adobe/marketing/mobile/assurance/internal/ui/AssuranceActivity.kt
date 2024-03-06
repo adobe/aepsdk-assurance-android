@@ -20,7 +20,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.rememberNavController
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
 
 /**

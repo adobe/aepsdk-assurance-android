@@ -17,13 +17,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
-import com.adobe.marketing.mobile.assurance.AssuranceSessionStatusListener
-import com.adobe.marketing.mobile.assurance.AssuranceStateManager
-import com.adobe.marketing.mobile.assurance.QuickConnectCallback
-import com.adobe.marketing.mobile.assurance.QuickConnectManager
-import com.adobe.marketing.mobile.assurance.SessionAuthorizingPresentationType
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.AssuranceSessionStatusListener
+import com.adobe.marketing.mobile.assurance.internal.AssuranceStateManager
+import com.adobe.marketing.mobile.assurance.internal.QuickConnectCallback
+import com.adobe.marketing.mobile.assurance.internal.QuickConnectManager
+import com.adobe.marketing.mobile.assurance.internal.SessionAuthorizingPresentationType
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import java.util.concurrent.Executors
 
