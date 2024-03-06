@@ -20,11 +20,13 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenState
@@ -44,11 +46,17 @@ internal fun ActionButtonRow(
 ) {
     val activity = LocalContext.current.findActivity()
 
-    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
-        TextButton(onClick = {
-            onAction(PinScreenAction.Cancel)
-            activity?.finish()
-        }) {
+    Row(
+        modifier = modifier.testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_ACTION_BUTTON_ROW),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        TextButton(
+            modifier = Modifier.testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_CANCEL_BUTTON),
+            onClick = {
+                onAction(PinScreenAction.Cancel)
+                activity?.finish()
+            }
+        ) {
             Text(
                 text = stringResource(id = R.string.pin_connect_button_cancel),
                 fontFamily = FontFamily.SansSerif,
@@ -58,7 +66,10 @@ internal fun ActionButtonRow(
 
         val pin = pinScreenState.value.pin
         if (pin.length == 4) {
-            TextButton(onClick = { onAction(PinScreenAction.Connect(pin)) }) {
+            TextButton(
+                modifier = Modifier.testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_CONNECT_BUTTON),
+                onClick = { onAction(PinScreenAction.Connect(pin)) }
+            ) {
                 Text(
                     text = stringResource(id = R.string.pin_connect_button_connect),
                     fontFamily = FontFamily.SansSerif,

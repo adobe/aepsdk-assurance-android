@@ -22,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Represents a button that contains one digit or symbol.
@@ -48,6 +50,7 @@ internal fun DialPadButton(
                 BorderStroke(3.dp, borderColor),
                 CircleShape
             )
+            .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_BUTTON)
             .then(modifier),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

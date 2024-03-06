@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceConnectionError
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
@@ -44,6 +46,7 @@ internal fun PinErrorView(
             .fillMaxSize()
             .background(backgroundColor)
             .padding(horizontal = 32.dp)
+            .testTag(AssuranceUiTestTags.PinScreen.PIN_ERROR_VIEW)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -58,7 +61,8 @@ internal fun PinErrorView(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
-                .padding(bottom = 20.dp),
+                .padding(bottom = 20.dp)
+                .testTag(AssuranceUiTestTags.PinScreen.PIN_ERROR_ACTION_BUTTON_ROW),
             error = assuranceConnectionError,
             onAction = { action -> onAction(action) }
         )

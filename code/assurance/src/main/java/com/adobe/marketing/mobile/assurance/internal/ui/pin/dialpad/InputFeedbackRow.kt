@@ -24,12 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 
 /**
  * Displays the input feedback for the pin entered using the pinpad.
@@ -47,7 +49,7 @@ internal fun InputFeedbackRow(input: String) {
         decorationBox = {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().testTag(AssuranceUiTestTags.PinScreen.INPUT_FEEDBACK_ROW)
             ) {
                 repeat(4) { index ->
                     CharHolder(

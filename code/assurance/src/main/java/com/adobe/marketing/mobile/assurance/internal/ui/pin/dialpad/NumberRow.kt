@@ -19,9 +19,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 
 /**
@@ -33,7 +35,8 @@ import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 internal fun NumberRow(contents: List<String>, onClick: (PinScreenAction) -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .testTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW),
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         contents.forEach { symbol ->
@@ -43,7 +46,8 @@ internal fun NumberRow(contents: List<String>, onClick: (PinScreenAction) -> Uni
                         text = symbol,
                         color = Color.White,
                         fontSize = 28.sp,
-                        fontFamily = FontFamily.SansSerif
+                        fontFamily = FontFamily.SansSerif,
+                        modifier = Modifier.testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_NUMERIC_BUTTON_TEXT)
                     )
                 },
                 borderColor = Color.White,
