@@ -15,11 +15,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.adobe.marketing.mobile.assurance.AssuranceComponentRegistry
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceConnectionError
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceEnvironment
-import com.adobe.marketing.mobile.assurance.AssuranceSessionStatusListener
-import com.adobe.marketing.mobile.assurance.SessionAuthorizingPresentationType
+import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceConnectionError
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceEnvironment
+import com.adobe.marketing.mobile.assurance.internal.AssuranceSessionStatusListener
+import com.adobe.marketing.mobile.assurance.internal.SessionAuthorizingPresentationType
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 
 /**

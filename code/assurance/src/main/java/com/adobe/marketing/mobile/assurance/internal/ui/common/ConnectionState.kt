@@ -11,7 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.common
 
-import com.adobe.marketing.mobile.assurance.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
 
 /**
  * Represents the current state of the Assurance connection attempt as tracked by the Pin Screen or

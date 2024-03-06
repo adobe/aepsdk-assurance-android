@@ -12,7 +12,7 @@
 package com.adobe.marketing.mobile;
 
 import androidx.annotation.NonNull;
-import com.adobe.marketing.mobile.assurance.AssuranceExtension;
+import com.adobe.marketing.mobile.assurance.internal.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
 import java.util.Collections;
 import java.util.HashMap;

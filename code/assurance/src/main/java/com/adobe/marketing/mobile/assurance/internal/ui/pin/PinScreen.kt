@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.adobe.marketing.mobile.assurance.AssuranceConstants.AssuranceEnvironment
+import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceEnvironment
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.dialpad.DialPadView
