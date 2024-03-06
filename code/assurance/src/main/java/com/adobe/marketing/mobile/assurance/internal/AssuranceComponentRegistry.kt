@@ -37,12 +37,12 @@ internal object AssuranceComponentRegistry {
         assuranceStateManager: AssuranceStateManager,
         uiOperationHandler: SessionUIOperationHandler
     ) {
-        if (AssuranceComponentRegistry.assuranceStateManager != null || sessionUIOperationHandler != null) {
+        if (this.assuranceStateManager != null || sessionUIOperationHandler != null) {
             Log.warning(Assurance.LOG_TAG, LOG_SOURCE, "Components already initialized.")
             return
         }
 
-        AssuranceComponentRegistry.assuranceStateManager = assuranceStateManager
+        this.assuranceStateManager = assuranceStateManager
         sessionUIOperationHandler = uiOperationHandler
     }
 }
