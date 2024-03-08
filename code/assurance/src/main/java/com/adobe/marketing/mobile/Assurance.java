@@ -1,30 +1,28 @@
 /*
- * Copyright 2022 Adobe. All rights reserved.
- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License. You may obtain a copy
- * of the License at http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
- */
+  Copyright 2022 Adobe. All rights reserved.
+  This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License. You may obtain a copy
+  of the License at http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software distributed under
+  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+*/
 
 package com.adobe.marketing.mobile;
 
-
 import androidx.annotation.NonNull;
-import com.adobe.marketing.mobile.assurance.AssuranceExtension;
+import com.adobe.marketing.mobile.assurance.internal.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Assurance {
 
     public static final Class<? extends Extension> EXTENSION = AssuranceExtension.class;
     public static final String LOG_TAG = "Assurance";
-    public static final String EXTENSION_VERSION = "2.2.1";
+    public static final String EXTENSION_VERSION = "3.0.0";
     public static final String EXTENSION_NAME = "com.adobe.assurance";
     public static final String EXTENSION_FRIENDLY_NAME = "Assurance";
 
@@ -41,34 +39,8 @@ public class Assurance {
      *
      * @return A {@link String} representing Assurance extension version
      */
-    @NonNull
-    public static String extensionVersion() {
+    @NonNull public static String extensionVersion() {
         return EXTENSION_VERSION;
-    }
-
-    /**
-     * Register Assurance extension with the Mobile SDK. This method should be called only once in
-     * you application class.
-     *
-     * @return true if Assurance extension registration was successfully triggered, false otherwise.
-     * @deprecated as of 2.0.0, use {@link MobileCore#registerExtensions(List, AdobeCallback)} with
-     *     {@link Assurance#EXTENSION} instead.
-     */
-    @Deprecated
-    public static boolean registerExtension() {
-        ExtensionErrorCallback<ExtensionError> errorCallback =
-                new ExtensionErrorCallback<ExtensionError>() {
-                    @Override
-                    public void error(final ExtensionError adbExtensionError) {
-                        Log.error(
-                                LOG_TAG,
-                                LOG_TAG,
-                                String.format(
-                                        "Assurance registration failed with error %s.",
-                                        adbExtensionError.getErrorName()));
-                    }
-                };
-        return MobileCore.registerExtension(AssuranceExtension.class, errorCallback);
     }
 
     /**
@@ -111,7 +83,6 @@ public class Assurance {
      */
     public static void startSession() {
         Log.debug(LOG_TAG, LOG_TAG, "QuickConnect api triggered.");
-
         // Send a quick connect start session event irrespective of the build here.
         // Validation will be done when the extension handles this event.
         final Event startSessionEvent =
