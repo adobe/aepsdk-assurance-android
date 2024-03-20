@@ -26,9 +26,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * Displays the content of the error message in the pin authorization flow.
@@ -52,7 +52,7 @@ internal fun PinAuthErrorMessageContent(text: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentSize(Alignment.Center)
-                .padding(bottom = 4.dp)
+                .padding(bottom = AssuranceTheme.dimensions.padding.xSmall)
                 .testTag(AssuranceUiTestTags.PinScreen.PIN_ERROR_CONTENT)
         )
     }
