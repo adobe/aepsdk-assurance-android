@@ -7,11 +7,21 @@ Assurance extension has a dependency on [AEP Core SDK](https://github.com/adobe/
 
 ## Add Assurance extension to your app
 
-1. Installation via [Maven](https://maven.apache.org/) & [Gradle](https://gradle.org/) is the easiest and recommended way to get the AEP SDK into your Android app. Add a dependency on Assurance and Core to your mobile application. To ensure consistent builds, it is best to explicitly  specify the dependency version and update them manually.
+1. Installation via [Maven](https://maven.apache.org/) & [Gradle](https://gradle.org/) is the easiest and recommended way to get the AEP SDK into your Android app. Add a dependency on Assurance and Core to your mobile application. To ensure consistent builds, it is best to use the AEP SDK Bill of Materials (BOM) and explicitly specify the `sdk-bom` dependency version and update it manually when required.
+    ### Kotlin
 
+    ```kotlin
+    implementation(platform("com.adobe.marketing.mobile:sdk-bom:3.+"))
+    implementation("com.adobe.marketing.mobile:core")
+    implementation("com.adobe.marketing.mobile:assurance")
     ```
-    implementation 'com.adobe.marketing.mobile:core:2.+'
-    implementation 'com.adobe.marketing.mobile:assurance:2.+'
+
+    ### Groovy
+
+    ```groovy
+    implementation platform('com.adobe.marketing.mobile:sdk-bom:3.+')
+    implementation 'com.adobe.marketing.mobile:core'
+    implementation 'com.adobe.marketing.mobile:assurance'
     ```
 
 2. Import MobileCore and Assurance extensions:
@@ -29,13 +39,6 @@ Assurance extension has a dependency on [AEP Core SDK](https://github.com/adobe/
    import com.adobe.marketing.mobile.MobileCore
    import com.adobe.marketing.mobile.Assurance
    ```
-
-    **Note**: Assurance SDK displays some UI components using the source app context. If you see an error similar to the following :
-
-    ```
-    AAPT: error: attribute layout_constraintStart_toStartOf (aka <your_app_name>:layout_constraintStart_toStartOf) not found
-    ```
-    while building your app with Assurance SDK, include a dependency on `implementation 'androidx.constraintlayout:constraintlayout:1.1.3'` or newer in your app.
 
 3. Import the Assurance library into your project and register it with `MobileCore`
    
