@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
 
 /**
@@ -36,12 +37,12 @@ internal fun PinConnectingView() {
         modifier = Modifier.run {
             fillMaxSize()
                 .background(backgroundColor)
-                .padding(horizontal = 32.dp)
+                .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
         }
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AssuranceHeader()
