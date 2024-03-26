@@ -19,9 +19,9 @@ Assurance extension has a dependency on [AEP Core SDK](https://github.com/adobe/
     ### Groovy
 
     ```groovy
-    implementation platform("com.adobe.marketing.mobile:sdk-bom:3.+")
-    implementation "com.adobe.marketing.mobile:core"
-    implementation "com.adobe.marketing.mobile:assurance"
+    implementation platform('com.adobe.marketing.mobile:sdk-bom:3.+')
+    implementation 'com.adobe.marketing.mobile:core'
+    implementation 'com.adobe.marketing.mobile:assurance'
     ```
 
 2. Import MobileCore and Assurance extensions:
