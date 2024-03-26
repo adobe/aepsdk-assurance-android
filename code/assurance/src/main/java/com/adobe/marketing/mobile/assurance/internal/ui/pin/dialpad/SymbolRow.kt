@@ -27,10 +27,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.util.StreamUtils
 
 /**
@@ -43,7 +43,7 @@ internal fun SymbolRow(onClick: (PinScreenAction) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth()
             .testTag(AssuranceUiTestTags.PinScreen.SYMBOL_ROW),
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+        horizontalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.small)
     ) {
         // Intentionally empty content button for filling the grid evenly
         DialPadButton(

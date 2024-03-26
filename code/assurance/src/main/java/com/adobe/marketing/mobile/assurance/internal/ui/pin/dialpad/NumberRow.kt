@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * A row of dial pad buttons that are digits.
@@ -37,7 +37,7 @@ internal fun NumberRow(contents: List<String>, onClick: (PinScreenAction) -> Uni
         modifier = Modifier
             .fillMaxWidth()
             .testTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW),
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+        horizontalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.small)
     ) {
         contents.forEach { symbol ->
             DialPadButton(

@@ -24,13 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceSubHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenState
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
 
 /**
@@ -48,12 +48,12 @@ internal fun DialPadView(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(horizontal = 64.dp)
+            .padding(horizontal = AssuranceTheme.dimensions.padding.xxLarge)
             .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
         ) {
             AssuranceHeader()
             AssuranceSubHeader(text = stringResource(id = R.string.pin_connect_enter_pin_text))
@@ -68,7 +68,7 @@ internal fun DialPadView(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
-                .padding(bottom = 20.dp),
+                .padding(bottom = AssuranceTheme.dimensions.padding.medium),
             pinScreenState = pinScreenState,
             onAction = { action -> onAction(action) }
         )
