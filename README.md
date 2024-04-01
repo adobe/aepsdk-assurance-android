@@ -19,7 +19,7 @@ Refer to the [getting started guide](./Documentation/getting-started.md) for set
 
 1. Fork this repo for your username and clone it on your development machine.
 2. If you haven't already, install Android Studio on your development machine. This project has been verified to work with Andrid Studio Dolphin.
-3. Open `aepsdk-assurance-android/code/settings.gradle` file in AndroidStudio
+3. Open `aepsdk-assurance-android/code/settings.gradle.kts` file in AndroidStudio
 
 You should now be able to see `assurance` and `assurance-testapp` modules under the `Project --> Android` section.
 
