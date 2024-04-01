@@ -86,9 +86,15 @@ android {
         implementation("com.adobe.marketing.mobile:lifecycle:3.0.0")
         // Messaging, Edge, and EdgeIdentity will be available after Core, Assurance release.
         // Use Snapshot version for initial Assurance release.
-        implementation("com.adobe.marketing.mobile:messaging:3.0.0-beta.1-SNAPSHOT")
-        implementation("com.adobe.marketing.mobile:edge:3.0.0-beta.1-SNAPSHOT")
-        implementation("com.adobe.marketing.mobile:edgeidentity:3.0.0-beta.1-SNAPSHOT")
+        implementation("com.adobe.marketing.mobile:messaging:3.0.0-beta.1-SNAPSHOT") {
+            isTransitive = false
+        }
+        implementation("com.adobe.marketing.mobile:edge:3.0.0-beta.1-SNAPSHOT") {
+            isTransitive = false
+        }
+        implementation("com.adobe.marketing.mobile:edgeidentity:3.0.0-beta.1-SNAPSHOT") {
+            isTransitive = false
+        }
 
         testImplementation("junit:junit:4.13.2")
 
