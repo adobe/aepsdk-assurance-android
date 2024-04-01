@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 
 /**
  * Displays the input feedback for the pin entered using the pinpad.
@@ -71,7 +72,10 @@ private fun CharHolder(character: Char) {
         text = character.toString(),
         modifier = Modifier
             .width(48.dp)
-            .padding(vertical = 8.dp, horizontal = 4.dp)
+            .padding(
+                vertical = AssuranceTheme.dimensions.padding.small,
+                horizontal = AssuranceTheme.dimensions.padding.xSmall
+            )
             .background(Color.Transparent)
             .drawBehind {
                 drawLine(

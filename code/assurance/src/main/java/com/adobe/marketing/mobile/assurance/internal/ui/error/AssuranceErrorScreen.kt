@@ -31,7 +31,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
@@ -50,11 +49,11 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
         modifier = Modifier
             .fillMaxSize()
             .background(AssuranceTheme.backgroundColor)
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
         ) {
             AssuranceHeader()
 
