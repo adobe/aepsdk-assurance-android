@@ -68,30 +68,31 @@ android {
         implementation("androidx.core:core-ktx:1.8.0")
 
         implementation(platform("androidx.compose:compose-bom:2024.01.00"))
+        // Compose dependencies
         implementation("androidx.compose.ui:ui")
         implementation("androidx.compose.material:material")
         implementation("androidx.compose.ui:ui-tooling-preview")
 
+        // Compose Navigation, Activity, and Lifecycle dependencies
         implementation("androidx.appcompat:appcompat:1.0.0")
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
         implementation("androidx.activity:activity-compose:1.5.0")
         implementation("androidx.navigation:navigation-compose:2.4.0")
 
+        // AEP SDK dependencies
         implementation(project(":assurance"))
-        implementation("com.adobe.marketing.mobile:core:3.0.0-SNAPSHOT") {}
-        implementation("com.adobe.marketing.mobile:signal:3.0.0-SNAPSHOT") {
+        implementation("com.adobe.marketing.mobile:core:3.0.0")
+        implementation("com.adobe.marketing.mobile:signal:3.0.0")
+        implementation("com.adobe.marketing.mobile:lifecycle:3.0.0")
+        // Messaging, Edge, and EdgeIdentity will be available after Core, Assurance release.
+        // Use Snapshot version for initial Assurance release.
+        implementation("com.adobe.marketing.mobile:messaging:3.0.0-beta.1-SNAPSHOT") {
             isTransitive = false
         }
-        implementation("com.adobe.marketing.mobile:lifecycle:3.0.0-SNAPSHOT") {
+        implementation("com.adobe.marketing.mobile:edge:3.0.0-beta.1-SNAPSHOT") {
             isTransitive = false
         }
-        implementation("com.adobe.marketing.mobile:messaging:2.1.4") {
-            isTransitive = false
-        }
-        implementation("com.adobe.marketing.mobile:edge:2.1.0") {
-            isTransitive = false
-        }
-        implementation("com.adobe.marketing.mobile:edgeidentity:2.0.0") {
+        implementation("com.adobe.marketing.mobile:edgeidentity:3.0.0-beta.1-SNAPSHOT") {
             isTransitive = false
         }
 
