@@ -12,8 +12,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adobe.marketing.mobile.assurance">
     <application>
-        <activity android:name=".AssuranceFullScreenTakeoverActivity" android:exported="false"/>
-        <activity android:name=".AssuranceErrorDisplayActivity" android:exported="false"/>
-        <activity android:name=".AssuranceQuickConnectActivity" android:exported="false"/>
+        <activity android:name=".internal.ui.AssuranceActivity" android:exported="false" android:theme="@style/AssuranceAppThemeDark" />
     </application>
 </manifest>

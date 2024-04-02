@@ -53,8 +53,10 @@ function connect(url) {
 }
 
 function doPing() {
-    nativeCode.log("Network -- PING");
-    _socket.send("__ping__");
+    if (_socket.readyState == 1) {
+      nativeCode.log("Network -- PING");
+      _socket.send("__ping__");
+    }
 }
 
 function sendDataFromQueue() {
