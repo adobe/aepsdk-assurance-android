@@ -26,6 +26,8 @@ import com.adobe.marketing.mobile.SharedStateResolution
 import com.adobe.marketing.mobile.SharedStateResult
 import com.adobe.marketing.mobile.SharedStateStatus
 import com.adobe.marketing.mobile.services.AppContextService
+import com.adobe.marketing.mobile.services.DataStoring
+import com.adobe.marketing.mobile.services.NamedCollection
 import com.adobe.marketing.mobile.services.ServiceProvider
 import org.junit.After
 import org.junit.Before
@@ -85,6 +87,12 @@ class AssuranceExtensionTest {
     @Mock
     private lateinit var mockSession: AssuranceSession
 
+    @Mock
+    private lateinit var mockDataStoring: DataStoring
+
+    @Mock
+    private lateinit var mockNamedCollection: NamedCollection
+
     private lateinit var mockedStaticServiceProvider: MockedStatic<ServiceProvider>
     private lateinit var mockedStaticMobileCore: MockedStatic<MobileCore>
     private lateinit var mockedStaticUri: MockedStatic<Uri>
@@ -112,6 +120,9 @@ class AssuranceExtensionTest {
 
         `when`(mockServiceProvider.appContextService).thenReturn(mockAppContextService)
         `when`(mockApplication.applicationContext).thenReturn(mockContext)
+        `when`(mockServiceProvider.dataStoreService).thenReturn(mockDataStoring)
+        `when`(mockDataStoring.getNamedCollection(AssuranceConstants.DataStoreKeys.DATASTORE_NAME)).thenReturn(mockNamedCollection)
+        `when`(mockNamedCollection.getString(AssuranceConstants.DataStoreKeys.ENVIRONMENT, "")).thenReturn("")
     }
 
     @Test

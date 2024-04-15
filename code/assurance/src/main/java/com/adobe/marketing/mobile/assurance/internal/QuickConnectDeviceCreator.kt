@@ -37,6 +37,7 @@ internal class QuickConnectDeviceCreator(
     private val orgId: String,
     private val clientId: String,
     private val deviceName: String,
+    private val environment: String = "",
     private val callback: AdobeCallback<Response<HttpConnecting, AssuranceConnectionError>>
 ) : Runnable {
 
@@ -64,8 +65,8 @@ internal class QuickConnectDeviceCreator(
      * Builds the network request for creating device.
      */
     private fun buildRequest(): NetworkRequest {
-        val url =
-            "${QuickConnect.BASE_DEVICE_API_URL}/${QuickConnect.DEVICE_API_PATH_CREATE}"
+        val prefixedEnv = if (environment.isNotEmpty()) "-$environment" else ""
+        val url = "${String.format(QuickConnect.BASE_DEVICE_API_URL_FORMAT, prefixedEnv)}/${QuickConnect.DEVICE_API_PATH_CREATE}"
 
         val headers: Map<String, String> = mapOf(
             NetworkingConstants.Headers.ACCEPT to NetworkingConstants.HeaderValues.CONTENT_TYPE_JSON_APPLICATION,

@@ -91,6 +91,7 @@ class QuickConnectManagerTest {
         quickConnectManager = QuickConnectManager(
             mockAssuranceStateManager,
             mockExecutorService,
+            "",
             mockQuickConnectCallback
         )
     }
