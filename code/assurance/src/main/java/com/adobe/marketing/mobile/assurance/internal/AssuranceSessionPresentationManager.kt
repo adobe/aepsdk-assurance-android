@@ -65,12 +65,17 @@ internal class AssuranceSessionPresentationManager {
     /** Shows the UI elements that are required when a session connection has been disconnected.  */
     @JvmName("onSessionDisconnected")
     internal fun onSessionDisconnected(closeCode: Int) {
+        // Remove the button from the UI on any disconnection. This is OK since
+        // 1. The button will be  re-added when the session is connected via (onSessionConnected) or
+        //    re-connected (onSessionReconnecting) again after an error.
+        // 2. The button is not shown anyway when the Assurance Authorization UI is active.
+        button.remove()
+
         val error = SocketCloseCode.toAssuranceConnectionError(closeCode)
         if (error == null) {
             AssuranceComponentRegistry.appState.onSessionPhaseChange(
                 AssuranceAppState.SessionPhase.Disconnected()
             )
-            button.remove()
             logLocalUI(
                 UILogColorVisibility.LOW,
                 "Assurance disconnected."
@@ -96,7 +101,11 @@ internal class AssuranceSessionPresentationManager {
      */
     @JvmName("onSessionReconnecting")
     internal fun onSessionReconnecting() {
-        button.updateGraphic(false)
+        button.apply {
+            show()
+            updateGraphic(connected = false)
+        }
+
         logLocalUI(
             UILogColorVisibility.HIGH,
             "Assurance disconnected, attempting to reconnect ..."

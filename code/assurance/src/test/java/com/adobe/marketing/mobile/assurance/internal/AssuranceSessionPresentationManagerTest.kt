@@ -124,6 +124,9 @@ class AssuranceSessionPresentationManagerTest {
 
         // Verify
 
+        // Floating button should be removed on disconnection
+        verify(mockAssuranceFloatingButton).remove()
+
         // Session phase should remain in Authorizing phase because the UI is active
         assertEquals(
             AssuranceAppState.SessionPhase.Authorizing(credentials),
@@ -131,7 +134,6 @@ class AssuranceSessionPresentationManagerTest {
         )
 
         // no changes in ui elements
-        verify(mockAssuranceFloatingButton, never()).remove()
         verify(mockActivity, never()).startActivity(any())
     }
 
@@ -210,6 +212,7 @@ class AssuranceSessionPresentationManagerTest {
         assuranceSessionPresentationManager.onSessionReconnecting()
 
         // Verify
+        verify(mockAssuranceFloatingButton).show()
         verify(mockAssuranceFloatingButton).updateGraphic(false)
         val currentPhase = AssuranceComponentRegistry.appState.sessionPhase.value
         assertTrue { currentPhase is AssuranceAppState.SessionPhase.Disconnected }
