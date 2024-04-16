@@ -35,7 +35,8 @@ import java.util.concurrent.TimeUnit
 internal class QuickConnectManager(
     private val assuranceSharedStateManager: AssuranceStateManager,
     private val executorService: ScheduledExecutorService,
-    private val quickConnectCallback: QuickConnectCallback
+    private val quickConnectEnvironment: String = "",
+    private val quickConnectCallback: QuickConnectCallback,
 ) {
 
     companion object {
@@ -90,7 +91,7 @@ internal class QuickConnectManager(
         val deviceName = ServiceProvider.getInstance().deviceInfoService.deviceName
         Log.trace(LOG_TAG, LOG_SOURCE, "Attempting to register device with deviceName:$deviceName, orgId: $orgId, clientId: $clientId.")
 
-        val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName) {
+        val quickConnectDeviceCreator = QuickConnectDeviceCreator(orgId, clientId, deviceName, quickConnectEnvironment) {
             when (it) {
                 is Response.Success -> checkDeviceStatus(orgId, clientId)
                 is Response.Failure -> {
@@ -111,7 +112,7 @@ internal class QuickConnectManager(
      */
     @VisibleForTesting
     internal fun checkDeviceStatus(orgId: String, clientId: String) {
-        val statusCheckerTask = QuickConnectDeviceStatusChecker(orgId, clientId) { response ->
+        val statusCheckerTask = QuickConnectDeviceStatusChecker(orgId, clientId, quickConnectEnvironment) { response ->
             handleStatusCheckResponse(orgId, clientId, response)
         }
 

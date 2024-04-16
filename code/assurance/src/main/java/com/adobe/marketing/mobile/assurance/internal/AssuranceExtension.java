@@ -34,6 +34,7 @@ import com.adobe.marketing.mobile.SharedStateStatus;
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.GenericEventPayloadKey;
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceActivity;
 import com.adobe.marketing.mobile.services.Log;
+import com.adobe.marketing.mobile.services.NamedCollection;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.util.DataReader;
 import com.adobe.marketing.mobile.util.DataReaderException;
@@ -234,10 +235,20 @@ public final class AssuranceExtension extends Extension {
         }
 
         // Change the session state to Authorizing with QuickConnect authorization
+        final NamedCollection assurancePreferenceStore =
+                ServiceProvider.getInstance()
+                        .getDataStoreService()
+                        .getNamedCollection(AssuranceConstants.DataStoreKeys.DATASTORE_NAME);
+        final String environment =
+                assurancePreferenceStore == null
+                        ? ""
+                        : assurancePreferenceStore.getString(
+                                AssuranceConstants.DataStoreKeys.ENVIRONMENT, "");
+
         AssuranceComponentRegistry.appState.onSessionPhaseChange(
                 new AssuranceAppState.SessionPhase.Authorizing(
                         new AssuranceAppState.AssuranceAuthorization.QuickConnect(
-                                AssuranceEnvironment.PROD)));
+                                AssuranceEnvironment.get(environment))));
 
         // Launch the Assurance Activity
         final Intent intent = new Intent(hostApplication, AssuranceActivity.class);

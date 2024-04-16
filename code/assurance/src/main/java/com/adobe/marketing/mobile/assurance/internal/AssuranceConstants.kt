@@ -215,7 +215,7 @@ internal object AssuranceConstants {
     }
 
     internal object QuickConnect {
-        const val BASE_DEVICE_API_URL = "https://device.griffon.adobe.com/device"
+        val BASE_DEVICE_API_URL_FORMAT = "https://device%s.griffon.adobe.com/device"
         const val DEVICE_API_PATH_CREATE = "create"
         const val DEVICE_API_PATH_STATUS = "status"
         const val KEY_SESSION_ID = "sessionUuid"

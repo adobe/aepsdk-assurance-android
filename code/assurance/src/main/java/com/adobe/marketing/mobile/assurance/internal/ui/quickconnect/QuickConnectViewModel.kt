@@ -89,6 +89,7 @@ internal class QuickConnectViewModel : ViewModel {
         quickConnectManager = QuickConnectManager(
             assuranceStateManager,
             Executors.newSingleThreadScheduledExecutor(),
+            if (environment == AssuranceConstants.AssuranceEnvironment.PROD) "" else environment.stringValue,
             object : QuickConnectCallback {
                 override fun onError(error: AssuranceConstants.AssuranceConnectionError) {
                     state.value = ConnectionState.Disconnected(error)
@@ -105,7 +106,7 @@ internal class QuickConnectViewModel : ViewModel {
                 }
             }
         ),
-        environment = AssuranceConstants.AssuranceEnvironment.PROD
+        environment = environment
     )
 
     /**
@@ -133,6 +134,7 @@ internal class QuickConnectViewModel : ViewModel {
     internal fun onAction(quickConnectScreenAction: QuickConnectScreenAction) {
         when (quickConnectScreenAction) {
             is QuickConnectScreenAction.Cancel -> {
+                quickConnectManager.cancel()
                 _state.value = ConnectionState.Disconnected(null)
                 AssuranceComponentRegistry.sessionUIOperationHandler?.onCancel()
             }
