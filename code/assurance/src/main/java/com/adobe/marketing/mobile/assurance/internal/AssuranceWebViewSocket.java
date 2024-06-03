@@ -19,6 +19,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.adobe.marketing.mobile.Assurance;
@@ -228,7 +229,10 @@ final class AssuranceWebViewSocket {
                                     webView == null
                                             ? new WebView(MobileCore.getApplication())
                                             : webView;
-                            currentSocket.webView.getSettings().setJavaScriptEnabled(true);
+                            final WebSettings webSettings = currentSocket.webView.getSettings();
+                            webSettings.setJavaScriptEnabled(true);
+                            webSettings.setAllowContentAccess(false);
+                            webSettings.setAllowFileAccess(false);
                             currentSocket.webView.setWebViewClient(new WebViewSocketClient());
                             currentSocket.webView.setWebChromeClient(
                                     new WebChromeClient() {
