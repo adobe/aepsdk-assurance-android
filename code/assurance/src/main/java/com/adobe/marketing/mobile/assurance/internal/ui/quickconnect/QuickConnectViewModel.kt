@@ -134,7 +134,6 @@ internal class QuickConnectViewModel : ViewModel {
     internal fun onAction(quickConnectScreenAction: QuickConnectScreenAction) {
         when (quickConnectScreenAction) {
             is QuickConnectScreenAction.Cancel -> {
-                quickConnectManager.cancel()
                 _state.value = ConnectionState.Disconnected(null)
                 quickConnectManager.cancel()
                 AssuranceComponentRegistry.sessionUIOperationHandler?.onCancel()
