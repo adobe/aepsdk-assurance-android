@@ -91,6 +91,7 @@ class QuickConnectViewModelTest {
             ConnectionState.Disconnected(null),
             quickConnectViewModel.state.value
         )
+        verify(mockQuickConnectManager).cancel()
         verify(mockSessionUIOperationHandler).onCancel()
     }
 
