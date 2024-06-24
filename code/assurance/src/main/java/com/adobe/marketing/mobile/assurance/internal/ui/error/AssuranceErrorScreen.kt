@@ -97,7 +97,7 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Text(
-                text = stringResource(id = R.string.pin_connect_button_dismiss),
+                text = stringResource(id = R.string.error_screen_button_dismiss),
                 fontFamily = FontFamily.SansSerif,
                 style = TextStyle(color = Color.White, fontSize = 24.sp)
             )

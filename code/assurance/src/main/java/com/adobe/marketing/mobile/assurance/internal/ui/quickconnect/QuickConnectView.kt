@@ -59,7 +59,7 @@ internal fun QuickConnectView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AssuranceHeader()
-            AssuranceSubHeader(text = stringResource(id = R.string.quick_connect_description))
+            AssuranceSubHeader(text = stringResource(id = R.string.quick_connect_screen_header))
 
             // Quick Connect  flow image
             Image(
