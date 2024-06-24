@@ -58,7 +58,7 @@ internal fun ActionButtonRow(
             }
         ) {
             Text(
-                text = stringResource(id = R.string.pin_connect_button_cancel),
+                text = stringResource(id = R.string.pin_screen_button_cancel),
                 fontFamily = FontFamily.SansSerif,
                 style = TextStyle(color = Color.White, fontSize = 24.sp)
             )
@@ -71,7 +71,7 @@ internal fun ActionButtonRow(
                 onClick = { onAction(PinScreenAction.Connect(pin)) }
             ) {
                 Text(
-                    text = stringResource(id = R.string.pin_connect_button_connect),
+                    text = stringResource(id = R.string.pin_screen_button_connect),
                     fontFamily = FontFamily.SansSerif,
                     style = TextStyle(color = Color.White, fontSize = 24.sp)
                 )
