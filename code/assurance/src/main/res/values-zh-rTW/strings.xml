@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2024 Adobe. All rights reserved.
+  ~ This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License. You may obtain a copy
+  ~ of the License at http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software distributed under
+  ~ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  ~ OF ANY KIND, either express or implied. See the License for the specific language
+  ~ governing permissions and limitations under the License.
+  -->
+
+<resources>
+    <string name="assurance_title">Assurance</string>
+    <string name="error_desc_connection_limit">您已達到工作階段所允許的連接裝置數上限。</string>
+    <string name="error_desc_event_limit">您已達到每分鐘可以傳送的事件數上限。</string>
+    <string name="error_desc_incorrect_pin_or_network">由於網路問題或 PIN 碼不正確，連線可能會失敗。請驗證網路連線或 PIN 碼，然後再試一次。</string>
+    <string name="error_desc_invalid_org_id">Experience Cloud 組織識別碼無法使用。請確保 SDK 設定已正確設定。如需更多詳細資料，請參閱文件。</string>
+    <string name="error_desc_invalid_pin">無法授權 Assurance 連線。請驗證 PIN 碼並再試一次。</string>
+    <string name="error_desc_invalid_registration_request">由於無效的網路請求，連線可能會失敗。</string>
+    <string name="error_desc_invalid_registration_response">由於回應無效，連線失敗。</string>
+    <string name="error_desc_invalid_url">嘗試使用無效的 URL 進行網路請求。</string>
+    <string name="error_desc_registration_error">裝置註冊或狀態檢查期間發生錯誤。</string>
+    <string name="error_desc_retry_limit_reached">已達到擷取工作階段詳細資料所允許的重試次數上限。</string>
+    <string name="error_desc_session_deleted">您嘗試連接到已刪除的工作階段。</string>
+    <string name="error_desc_unauthorized_access">Experience Cloud 組織識別碼與 Assurance 工作階段的組織識別碼不相符。請確保正在使用正確的 Experience Cloud 組織。如需更多詳細資料，請參閱文件。</string>
+    <string name="error_desc_unexpected_error">由於意外錯誤，此用戶端已中斷連接。</string>
+    <string name="error_title_connection_limit">已達到連線上限</string>
+    <string name="error_title_event_limit">已達到事件上限</string>
+    <string name="error_title_incorrect_pin_or_network">連線錯誤</string>
+    <string name="error_title_invalid_org_id">Mobile SDK 設定無效</string>
+    <string name="error_title_invalid_pin">授權錯誤</string>
+    <string name="error_title_invalid_registration_request">連線錯誤</string>
+    <string name="error_title_invalid_registration_response">回應資料無效</string>
+    <string name="error_title_invalid_url">URL 無效</string>
+    <string name="error_title_registration_error">連線錯誤</string>
+    <string name="error_title_retry_limit_reached">已達到重試上限</string>
+    <string name="error_title_session_deleted">工作階段已刪除</string>
+    <string name="error_title_unauthorized_access">未經授權的存取</string>
+    <string name="error_title_unexpected_error">用戶端已中斷連接</string>
+    <string name="pin_screen_button_cancel">取消</string>
+    <string name="pin_screen_button_connect">連接</string>
+    <string name="pin_screen_header">輸入 4 位數字 PIN 碼以繼續</string>
+    <string name="quick_connect_screen_button_cancel">取消</string>
+    <string name="quick_connect_screen_button_connect">連接</string>
+    <string name="quick_connect_screen_button_retry">重試</string>
+    <string name="quick_connect_screen_button_waiting">等候中…</string>
+    <string name="quick_connect_screen_header">透過造訪工作階段連線詳細資料畫面以確認連線</string>
+    <string name="status_screen_button_clear">清除記錄</string>
+    <string name="status_screen_button_disconnect">中斷連接</string>
+</resources>
