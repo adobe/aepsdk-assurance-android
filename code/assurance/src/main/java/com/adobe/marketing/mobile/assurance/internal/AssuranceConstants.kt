@@ -11,6 +11,8 @@
 
 package com.adobe.marketing.mobile.assurance.internal
 
+import com.adobe.marketing.mobile.assurance.R
+import com.adobe.marketing.mobile.services.ServiceProvider
 import java.util.concurrent.TimeUnit
 
 internal object AssuranceConstants {
@@ -230,76 +232,93 @@ internal object AssuranceConstants {
     }
 
     internal enum class AssuranceConnectionError(
-        val error: String,
-        val description: String,
+        private val errorResId: Int,
+        private val descriptionResId: Int,
         @JvmField val isRetryable: Boolean
     ) {
         GENERIC_ERROR(
-            "Connection Error",
-            "The connection may be failing due to a network issue or an incorrect Pin. " +
-                "Please verify internet connectivity or the Pin and try again.",
+            R.string.error_title_incorrect_pin_or_network,
+            R.string.error_desc_incorrect_pin_or_network,
             true
         ),
         NO_ORG_ID(
-            "Invalid Configuration",
-            "The Experience Cloud organization identifier is unavailable from the SDK. Ensure" +
-                " SDK configuration is setup correctly. See documentation for more detail.",
+            R.string.error_title_invalid_org_id,
+            R.string.error_desc_invalid_org_id,
             false
         ),
         ORG_ID_MISMATCH(
-            "Unauthorized Access",
-            "The Experience Cloud organization identifier does not match with that of the" +
-                " Assurance session. Ensure the right Experience Cloud organization is being" +
-                " used. See documentation for more detail.",
+            R.string.error_title_unauthorized_access,
+            R.string.error_desc_unauthorized_access,
             false
         ),
         CONNECTION_LIMIT(
-            "Connection Limit Reached",
-            "You have reached the maximum number of connected devices allowed for a session. " +
-                "Please disconnect another device and try again.",
+            R.string.error_title_connection_limit,
+            R.string.error_desc_connection_limit,
             false
         ),
         EVENT_LIMIT(
-            "Event Limit Reached",
-            "You have reached the maximum number of events that can be sent per minute.",
+            R.string.error_title_event_limit,
+            R.string.error_desc_event_limit,
             false
         ),
         CLIENT_ERROR(
-            "Client Disconnected",
-            "This client has been disconnected due to an unexpected error. Error Code 4400.",
+            R.string.error_title_unexpected_error,
+            R.string.error_desc_unexpected_error,
             false
         ),
         SESSION_DELETED(
-            "Session Deleted",
-            "The session client connected to has been deleted. Error Code 4903.",
+            R.string.error_title_session_deleted,
+            R.string.error_desc_session_deleted,
             false
         ),
         CREATE_DEVICE_REQUEST_MALFORMED(
-            "Malformed Request",
-            "The network request for device creation was malformed.",
+            R.string.error_title_invalid_registration_request,
+            R.string.error_desc_invalid_registration_request,
             false
         ),
         STATUS_CHECK_REQUEST_MALFORMED(
-            "Malformed Request",
-            "The network request for status check  was malformed.",
+            R.string.error_title_invalid_registration_request,
+            R.string.error_desc_invalid_registration_request,
             false
         ),
         RETRY_LIMIT_REACHED(
-            "Retry Limit Reached",
-            "The maximum allowed retries for fetching the session details were reached.",
+            R.string.error_title_retry_limit_reached,
+            R.string.error_desc_retry_limit_reached,
             true
         ),
         CREATE_DEVICE_REQUEST_FAILED(
-            "Request Failed",
-            "Failed to register device.",
+            R.string.error_title_registration_error,
+            R.string.error_desc_registration_error,
             true
         ),
         DEVICE_STATUS_REQUEST_FAILED(
-            "Request Failed",
-            "Failed to get device status",
+            R.string.error_title_registration_error,
+            R.string.error_desc_registration_error,
             true
         ),
-        UNEXPECTED_ERROR("Unexpected Error", "An unexpected error occurred", true)
+        UNEXPECTED_ERROR(
+            R.string.error_title_invalid_registration_response,
+            R.string.error_desc_invalid_registration_response,
+            true
+        );
+
+        val error: String
+            get() {
+                val context = ServiceProvider.getInstance().appContextService.applicationContext
+                // This code path should never be crossed if the app context is null because the SDK
+                // operations require a valid context. Default to empty string if context is null
+                // because we don't want to crash the app.
+                return context?.getString(errorResId) ?: ""
+            }
+
+        val description: String
+            get() {
+                val context = ServiceProvider.getInstance().appContextService.applicationContext
+                // This code path should never be crossed if the app context is null because the SDK
+                // operations require a valid context. Default to empty string if context is null
+                // because we don't want to crash the app.
+                return context?.getString(descriptionResId) ?: ""
+            }
     }
 
     internal enum class UILogColorVisibility(val value: Int) {

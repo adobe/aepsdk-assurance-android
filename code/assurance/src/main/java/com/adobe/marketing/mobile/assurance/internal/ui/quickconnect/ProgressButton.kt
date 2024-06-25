@@ -134,7 +134,7 @@ internal sealed class ButtonState(
         foregroundColor: Color = Color.White,
         clickable: Boolean = true
     ) : ButtonState(
-        R.string.quick_connect_button_connect,
+        R.string.quick_connect_screen_button_connect,
         backgroundColor,
         foregroundColor,
         clickable
@@ -148,7 +148,7 @@ internal sealed class ButtonState(
         foregroundColor: Color = Color.White,
         clickable: Boolean = false
     ) : ButtonState(
-        R.string.quick_connect_button_waiting,
+        R.string.quick_connect_screen_button_waiting,
         backgroundColor,
         foregroundColor,
         clickable
@@ -162,7 +162,7 @@ internal sealed class ButtonState(
         foregroundColor: Color = Color.White,
         clickable: Boolean = true
     ) : ButtonState(
-        R.string.quick_connect_button_retry,
+        R.string.quick_connect_screen_button_retry,
         backgroundColor,
         foregroundColor,
         clickable
