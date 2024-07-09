@@ -25,6 +25,7 @@
     <string name="error_desc_session_deleted">您试图连接已删除的会话。</string>
     <string name="error_desc_unauthorized_access">Experience Cloud 组织标识符与 Assurance 会话的标识符不匹配。请确保正在使用正确的 Experience Cloud 组织。有关详细信息，请参阅文档。</string>
     <string name="error_desc_unexpected_error">由于意外错误，该客户端已断开连接。</string>
+    <string name="error_screen_button_dismiss">关闭</string>
     <string name="error_title_connection_limit">连接已达上限</string>
     <string name="error_title_event_limit">事件已达上限</string>
     <string name="error_title_incorrect_pin_or_network">连接错误</string>
@@ -40,12 +41,16 @@
     <string name="error_title_unexpected_error">客户端已断开连接</string>
     <string name="pin_screen_button_cancel">取消</string>
     <string name="pin_screen_button_connect">连接</string>
+    <string name="pin_screen_button_retry">重试</string>
+    <string name="pin_screen_connecting">正在连接...</string>
     <string name="pin_screen_header">输入 4 位 PIN 码继续</string>
     <string name="quick_connect_screen_button_cancel">取消</string>
     <string name="quick_connect_screen_button_connect">连接</string>
     <string name="quick_connect_screen_button_retry">重试</string>
     <string name="quick_connect_screen_button_waiting">正在等待…</string>
     <string name="quick_connect_screen_header">访问会话的连接详情屏幕，确认连接</string>
+    <string name="status_screen_button_cancel">取消</string>
     <string name="status_screen_button_clear">清除日志</string>
     <string name="status_screen_button_disconnect">断开连接</string>
+    <string name="status_screen_header">日志</string>
 </resources>

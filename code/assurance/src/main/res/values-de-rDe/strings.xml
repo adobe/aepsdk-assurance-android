@@ -24,6 +24,7 @@
     <string name="error_desc_session_deleted">Es wurde versucht, eine Verbindung mit einer gelöschten Sitzung herzustellen.</string>
     <string name="error_desc_unauthorized_access">Die Kennung der Experience Cloud-Organisation stimmt nicht mit der ID der Assurance-Sitzung überein. Es muss sichergestellt werden, dass die richtige Experience Cloud-Organisation verwendet wird. Weitere Details sind in der Dokumentation zu finden.</string>
     <string name="error_desc_unexpected_error">Die Verbindung mit diesem Client wurde aufgrund eines unerwarteten Fehlers getrennt.</string>
+    <string name="error_screen_button_dismiss">Schließen</string>
     <string name="error_title_connection_limit">Verbindungslimit erreicht</string>
     <string name="error_title_event_limit">Ereignislimit erreicht</string>
     <string name="error_title_incorrect_pin_or_network">Verbindungsfehler</string>
@@ -39,6 +40,8 @@
     <string name="error_title_unexpected_error">Client getrennt</string>
     <string name="pin_screen_button_cancel">Abbrechen</string>
     <string name="pin_screen_button_connect">Verbinden</string>
+    <string name="pin_screen_button_retry">Wiederholen</string>
+    <string name="pin_screen_connecting">Verbindung wird hergestellt …</string>
     <string name="pin_screen_header">Zum Fortfahren die 4-stellige PIN eingeben</string>
     <string name="quick_connect_screen_button_cancel">Abbrechen</string>
     <string name="quick_connect_screen_button_connect">Verbinden</string>
@@ -47,4 +50,5 @@
     <string name="quick_connect_screen_header">Der Bildschirm mit den Verbindungsdetails der Sitzung muss aufgerufen werden, um die Verbindung zu bestätigen</string>
     <string name="status_screen_button_clear">Protokoll löschen</string>
     <string name="status_screen_button_disconnect">Trennen</string>
+    <string name="status_screen_header">Logs</string>
 </resources>

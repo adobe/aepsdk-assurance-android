@@ -25,6 +25,7 @@
     <string name="error_desc_session_deleted">您嘗試連接到已刪除的工作階段。</string>
     <string name="error_desc_unauthorized_access">Experience Cloud 組織識別碼與 Assurance 工作階段的組織識別碼不相符。請確保正在使用正確的 Experience Cloud 組織。如需更多詳細資料，請參閱文件。</string>
     <string name="error_desc_unexpected_error">由於意外錯誤，此用戶端已中斷連接。</string>
+    <string name="error_screen_button_dismiss">關閉</string>
     <string name="error_title_connection_limit">已達到連線上限</string>
     <string name="error_title_event_limit">已達到事件上限</string>
     <string name="error_title_incorrect_pin_or_network">連線錯誤</string>
@@ -40,12 +41,16 @@
     <string name="error_title_unexpected_error">用戶端已中斷連接</string>
     <string name="pin_screen_button_cancel">取消</string>
     <string name="pin_screen_button_connect">連接</string>
+    <string name="pin_screen_button_retry">重試</string>
+    <string name="pin_screen_connecting">連接中…</string>
     <string name="pin_screen_header">輸入 4 位數字 PIN 碼以繼續</string>
     <string name="quick_connect_screen_button_cancel">取消</string>
     <string name="quick_connect_screen_button_connect">連接</string>
     <string name="quick_connect_screen_button_retry">重試</string>
     <string name="quick_connect_screen_button_waiting">等候中…</string>
     <string name="quick_connect_screen_header">透過造訪工作階段連線詳細資料畫面以確認連線</string>
+    <string name="status_screen_button_cancel">取消</string>
     <string name="status_screen_button_clear">清除記錄</string>
     <string name="status_screen_button_disconnect">中斷連接</string>
+    <string name="status_screen_header">記錄</string>
 </resources>

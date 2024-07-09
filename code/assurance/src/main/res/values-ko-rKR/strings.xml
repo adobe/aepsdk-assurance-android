@@ -25,6 +25,7 @@
     <string name="error_desc_session_deleted">삭제된 세션에 연결을 시도했습니다.</string>
     <string name="error_desc_unauthorized_access">Experience Cloud 조직 식별자가 보증 세션의 식별자와 일치하지 않습니다. 올바른 Experience Cloud 조직을 사용했는지 확인하시기 바랍니다. 자세한 내용은 설명서를 참조하십시오.</string>
     <string name="error_desc_unexpected_error">예상치 못한 오류가 발생하여 이 클라이언트와의 연결이 해제되었습니다.</string>
+    <string name="error_screen_button_dismiss">닫기</string>
     <string name="error_title_connection_limit">연결 한도 도달</string>
     <string name="error_title_event_limit">이벤트 한도 도달</string>
     <string name="error_title_incorrect_pin_or_network">연결 오류</string>
@@ -40,12 +41,16 @@
     <string name="error_title_unexpected_error">클라이언트 연결 해제됨</string>
     <string name="pin_screen_button_cancel">취소</string>
     <string name="pin_screen_button_connect">연결</string>
+    <string name="pin_screen_button_retry">다시 시도</string>
+    <string name="pin_screen_connecting">연결 중…</string>
     <string name="pin_screen_header">계속하려면 4자리 PIN 입력</string>
     <string name="quick_connect_screen_button_cancel">취소</string>
     <string name="quick_connect_screen_button_connect">연결</string>
     <string name="quick_connect_screen_button_retry">다시 시도</string>
     <string name="quick_connect_screen_button_waiting">대기 중..</string>
     <string name="quick_connect_screen_header">세션의 연결 세부 정보 화면에서 연결을 확인하시기 바랍니다.</string>
+    <string name="status_screen_button_cancel">취소</string>
     <string name="status_screen_button_clear">로그 지우기</string>
     <string name="status_screen_button_disconnect">연결 해제</string>
+    <string name="status_screen_header">로그</string>
 </resources>
