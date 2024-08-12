@@ -15,9 +15,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -44,9 +48,12 @@ internal fun DialPadView(
     pinScreenState: State<PinScreenState>,
     onAction: (action: PinScreenAction) -> Unit
 ) {
+
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .background(backgroundColor)
             .padding(horizontal = AssuranceTheme.dimensions.padding.xxLarge)
             .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW)
@@ -56,12 +63,13 @@ internal fun DialPadView(
             verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
         ) {
             AssuranceHeader()
-            AssuranceSubHeader(text = stringResource(id = R.string.pin_connect_enter_pin_text))
+            AssuranceSubHeader(text = stringResource(id = R.string.pin_screen_header))
             InputFeedbackRow(input = pinScreenState.value.pin)
             NumberRow(listOf("1", "2", "3"), onClick = { action -> onAction(action) })
             NumberRow(listOf("4", "5", "6"), onClick = { action -> onAction(action) })
             NumberRow(listOf("7", "8", "9"), onClick = { action -> onAction(action) })
             SymbolRow(onClick = { action -> onAction(action) })
+            Spacer(modifier = Modifier.height(AssuranceTheme.dimensions.spacing.xLarge))
         }
 
         ActionButtonRow(

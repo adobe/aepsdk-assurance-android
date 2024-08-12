@@ -47,7 +47,7 @@ internal fun PinAuthErrorMessageContent(text: String) {
                 fontFamily = FontFamily.SansSerif,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Justify
+                textAlign = TextAlign.Start
             ),
             modifier = Modifier
                 .fillMaxWidth()

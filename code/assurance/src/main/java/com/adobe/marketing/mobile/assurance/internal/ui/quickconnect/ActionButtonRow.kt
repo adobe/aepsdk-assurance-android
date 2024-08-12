@@ -75,7 +75,7 @@ internal fun ActionButtonRow(
             )
         ) {
             Text(
-                text = stringResource(id = R.string.quick_connect_button_cancel),
+                text = stringResource(id = R.string.quick_connect_screen_button_cancel),
                 fontFamily = AssuranceTheme.typography.font.family,
                 style = TextStyle(color = Color.White, fontSize = AssuranceTheme.typography.font.size.medium.sp)
             )
