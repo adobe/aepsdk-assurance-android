@@ -107,7 +107,7 @@ internal fun AssuranceStatusScreen() {
         ) {
             TextButton(onClick = { AssuranceComponentRegistry.appState.clearLogs() }) {
                 Text(
-                    text = stringResource(id = R.string.status_screen_button_clear_log),
+                    text = stringResource(id = R.string.status_screen_button_clear),
                     fontFamily = FontFamily.SansSerif,
                     style = TextStyle(color = Color.White, fontSize = 14.sp)
                 )
