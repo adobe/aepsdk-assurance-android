@@ -17,7 +17,7 @@
     <string name="error_desc_incorrect_pin_or_network">La connexion peut échouer en raison d’un problème réseau ou d’un code confidentiel incorrect. Vérifiez la connexion Internet ou le code confidentiel, puis réessayez.</string>
     <string name="error_desc_invalid_org_id">L’identifiant d’organisation Experience Cloud n’est pas disponible. Assurez-vous que la configuration du SDK est correctement effectuée. Voir la documentation pour plus de détails.</string>
     <string name="error_desc_invalid_pin">Impossible d’autoriser la connexion Assurance. Vérifiez le code confidentiel et réessayez.</string>
-    <string name="error_desc_invalid_registration_request">La connexion peut échouer en raison d’une demande réseau non valide.</string>
+    <string name="error_desc_invalid_registration_request">Il se peut que la connexion ne fonctionne pas en raison d’une requête de réseau non valide.</string>
     <string name="error_desc_invalid_registration_response">La connexion a échoué en raison d’une réponse non valide.</string>
     <string name="error_desc_invalid_url">Une demande réseau avec une URL non valide a été tentée.</string>
     <string name="error_desc_registration_error">Erreur lors de l’enregistrement de l’appareil ou de la vérification du statut.</string>

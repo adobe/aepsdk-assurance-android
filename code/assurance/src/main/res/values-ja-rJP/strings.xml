@@ -48,7 +48,7 @@
     <string name="quick_connect_screen_button_connect">接続</string>
     <string name="quick_connect_screen_button_retry">再試行</string>
     <string name="quick_connect_screen_button_waiting">待機中...</string>
-    <string name="quick_connect_screen_header">セッション接続の詳細画面にアクセスして接続を確認します</string>
+    <string name="quick_connect_screen_header">セッションの接続の詳細画面にアクセスすることで、接続を確認します</string>
     <string name="status_screen_button_cancel">キャンセル</string>
     <string name="status_screen_button_clear">ログをクリア</string>
     <string name="status_screen_button_disconnect">切断</string>
