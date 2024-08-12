@@ -56,7 +56,7 @@ internal fun DialPadView(
             verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
         ) {
             AssuranceHeader()
-            AssuranceSubHeader(text = stringResource(id = R.string.pin_connect_enter_pin_text))
+            AssuranceSubHeader(text = stringResource(id = R.string.pin_screen_header))
             InputFeedbackRow(input = pinScreenState.value.pin)
             NumberRow(listOf("1", "2", "3"), onClick = { action -> onAction(action) })
             NumberRow(listOf("4", "5", "6"), onClick = { action -> onAction(action) })
