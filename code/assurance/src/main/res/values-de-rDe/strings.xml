@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2024 Adobe. All rights reserved.
+  ~ This file is licensed to you under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License. You may obtain a copy
+  ~ of the License at http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software distributed under
+  ~ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+  ~ OF ANY KIND, either express or implied. See the License for the specific language
+  ~ governing permissions and limitations under the License.
+  -->
+<resources>
+    <string name="assurance_title">Assurance</string>
+    <string name="error_desc_connection_limit">Es wurde die maximale Anzahl von verbundenen Geräten erreicht, die für eine Sitzung zulässig sind.</string>
+    <string name="error_desc_event_limit">Es wurde die maximale Anzahl von Ereignissen erreicht, die pro Minute gesendet werden können.</string>
+    <string name="error_desc_incorrect_pin_or_network">Die Verbindung schlägt möglicherweise aufgrund eines Netzwerkproblems oder einer falschen PIN fehl. Bitte die Internet-Verbindung oder die PIN überprüfen und es erneut versuchen.</string>
+    <string name="error_desc_invalid_org_id">Die Kennung der Experience Cloud-Organisation ist nicht verfügbar. Die richtige Einrichtung der SDK-Konfiguration muss sichergestellt werden. Weitere Details sind in der Dokumentation zu finden.</string>
+    <string name="error_desc_invalid_pin">Assurance-Verbindung kann nicht autorisiert werden. Bitte PIN überprüfen und erneut versuchen.</string>
+    <string name="error_desc_invalid_registration_request">Möglicherweise schlägt die Verbindung aufgrund einer ungültigen Netzwerkanfrage fehl.</string>
+    <string name="error_desc_invalid_registration_response">Verbindung aufgrund einer ungültigen Antwort fehlgeschlagen.</string>
+    <string name="error_desc_invalid_url">Es wurde versucht, eine Netzwerkanfrage mit einer ungültigen URL durchzuführen.</string>
+    <string name="error_desc_registration_error">Fehler bei der Geräteregistrierung oder der Statusüberprüfung.</string>
+    <string name="error_desc_retry_limit_reached">Die maximal zulässige Zahl der Wiederholungsversuche zum Abrufen der Sitzungsdetails wurden erreicht.</string>
+    <string name="error_desc_session_deleted">Es wurde versucht, eine Verbindung mit einer gelöschten Sitzung herzustellen.</string>
+    <string name="error_desc_unauthorized_access">Die Kennung der Experience Cloud-Organisation stimmt nicht mit der ID der Assurance-Sitzung überein. Es muss sichergestellt werden, dass die richtige Experience Cloud-Organisation verwendet wird. Weitere Details sind in der Dokumentation zu finden.</string>
+    <string name="error_desc_unexpected_error">Die Verbindung mit diesem Client wurde aufgrund eines unerwarteten Fehlers getrennt.</string>
+    <string name="error_screen_button_dismiss">Schließen</string>
+    <string name="error_title_connection_limit">Verbindungslimit erreicht</string>
+    <string name="error_title_event_limit">Ereignislimit erreicht</string>
+    <string name="error_title_incorrect_pin_or_network">Verbindungsfehler</string>
+    <string name="error_title_invalid_org_id">Ungültige Mobile SDK-Konfiguration</string>
+    <string name="error_title_invalid_pin">Autorisierungsfehler</string>
+    <string name="error_title_invalid_registration_request">Verbindungsfehler</string>
+    <string name="error_title_invalid_registration_response">Ungültige Antwortdaten</string>
+    <string name="error_title_invalid_url">Ungültige URL</string>
+    <string name="error_title_registration_error">Verbindungsfehler</string>
+    <string name="error_title_retry_limit_reached">Wiederholungslimit erreicht</string>
+    <string name="error_title_session_deleted">Sitzung gelöscht</string>
+    <string name="error_title_unauthorized_access">Nicht autorisierter Zugriff</string>
+    <string name="error_title_unexpected_error">Client getrennt</string>
+    <string name="pin_screen_button_cancel">Abbrechen</string>
+    <string name="pin_screen_button_connect">Verbinden</string>
+    <string name="pin_screen_button_retry">Wiederholen</string>
+    <string name="pin_screen_connecting">Verbindung wird hergestellt …</string>
+    <string name="pin_screen_header">Zum Fortfahren die 4-stellige PIN eingeben</string>
+    <string name="quick_connect_screen_button_cancel">Abbrechen</string>
+    <string name="quick_connect_screen_button_connect">Verbinden</string>
+    <string name="quick_connect_screen_button_retry">Wiederholen</string>
+    <string name="quick_connect_screen_button_waiting">Warten…</string>
+    <string name="quick_connect_screen_header">Der Bildschirm mit den Verbindungsdetails der Sitzung muss aufgerufen werden, um die Verbindung zu bestätigen</string>
+    <string name="status_screen_button_clear">Protokoll löschen</string>
+    <string name="status_screen_button_disconnect">Trennen</string>
+    <string name="status_screen_header">Logs</string>
+</resources>
