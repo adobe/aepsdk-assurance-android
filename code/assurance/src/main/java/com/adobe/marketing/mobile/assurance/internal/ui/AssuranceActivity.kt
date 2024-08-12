@@ -15,7 +15,6 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -32,7 +31,7 @@ import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.bac
 /**
  * Activity that hosts all of the Assurance UI.
  */
-internal class AssuranceActivity : ComponentActivity() {
+class AssuranceActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +43,7 @@ internal class AssuranceActivity : ComponentActivity() {
                 content = {
                     Surface(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(backgroundColor),
+                            .fillMaxSize(),
                         color = backgroundColor
                     ) {
                         Box(
