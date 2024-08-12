@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertHasClickAction
@@ -22,15 +23,23 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.test.platform.app.InstrumentationRegistry
+import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class QuickConnectViewTests {
     @get: Rule
     val composeTestRule = createComposeRule()
+
+    @Before
+    fun setUp() {
+        MobileCore.setApplication(InstrumentationRegistry.getInstrumentation().context.applicationContext as Application)
+    }
 
     @Test
     fun testQuickConnectViewWhenIdle() {
