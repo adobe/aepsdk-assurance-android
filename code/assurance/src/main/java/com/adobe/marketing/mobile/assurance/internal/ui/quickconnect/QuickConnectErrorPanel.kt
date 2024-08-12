@@ -74,7 +74,7 @@ internal fun QuickConnectErrorPanel(error: AssuranceConstants.AssuranceConnectio
                 text = error.description,
                 color = Color.White,
                 fontFamily = FontFamily.SansSerif,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 style = TextStyle(
                     color = Color.White,
                     fontSize = AssuranceTheme.typography.font.size.large.sp
