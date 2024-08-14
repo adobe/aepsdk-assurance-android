@@ -66,7 +66,7 @@ internal object AssuranceUiTestTags {
         internal const val STATUS_VIEW = "statusView"
         internal const val LOGS_PANEL = "logsPanel"
         internal const val LOGS_CONTENT = "logsContent"
-        internal const val ACTION_BUTTON_ROW = "statusActionButtonRow"
+        internal const val LOG_ENTRY = "logEntry"
         internal const val STATUS_CLOSE_BUTTON = "statusCloseButton"
         internal const val CLEAR_LOG_BUTTON = "clearLogButton"
         internal const val STATUS_DISCONNECT_BUTTON = "statusDisconnectButton"

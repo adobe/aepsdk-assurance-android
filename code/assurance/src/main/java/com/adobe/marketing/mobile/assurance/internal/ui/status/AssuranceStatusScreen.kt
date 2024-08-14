@@ -97,6 +97,7 @@ internal fun AssuranceStatusScreen() {
                     val message = logs.value[it].message
                     val color = logs.value[it].level.toColor()
                     Text(
+                        modifier = Modifier.testTag(AssuranceUiTestTags.StatusScreen.LOG_ENTRY),
                         text = message,
                         fontFamily = AssuranceTheme.typography.font.family,
                         style = TextStyle(color = color, fontSize = AssuranceTheme.typography.font.size.small.sp)

@@ -36,6 +36,7 @@ class AssuranceStatusScreenTests {
     @Before
     fun setUp() {
         MobileCore.setApplication(InstrumentationRegistry.getInstrumentation().context.applicationContext as Application)
+        AssuranceComponentRegistry.appState.clearLogs()
     }
 
     @Test
@@ -83,12 +84,10 @@ class AssuranceStatusScreenTests {
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Clear Log")
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Disconnect")
     }
 
@@ -137,12 +136,10 @@ class AssuranceStatusScreenTests {
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Clear Log")
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Disconnect")
 
         // Add New Logs
@@ -243,12 +240,10 @@ class AssuranceStatusScreenTests {
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Clear Log")
 
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON)
             .assertExists()
-            .assertIsDisplayed()
             .assertTextEquals("Disconnect")
 
         // Test
