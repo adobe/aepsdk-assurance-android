@@ -63,7 +63,7 @@ jobs:
             test-command: make functional-test-coverage
 
         - codecov/upload:
-            file: "./code/core/build/reports/coverage/androidTest/phone/debug/connected/report.xml"
+            file: "./code/assurance/build/reports/coverage/androidTest/phone/debug/connected/report.xml"
             flags: functional-tests
 
         - store_artifacts:
