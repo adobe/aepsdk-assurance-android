@@ -36,11 +36,10 @@ import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.bac
 @Composable
 internal fun PinConnectingView() {
     Box(
-        modifier = Modifier.run {
-            fillMaxSize()
-                .background(backgroundColor)
-                .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
-        }
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+            .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
     ) {
         Column(
             modifier = Modifier.fillMaxSize().testTag(AssuranceUiTestTags.PinScreen.PIN_CONNECTING_VIEW),

@@ -39,7 +39,8 @@ internal object Dimensions {
     internal class Spacing(
         val small: Dp,
         val medium: Dp,
-        val large: Dp
+        val large: Dp,
+        val xLarge: Dp
     )
 
     internal class Size(
@@ -68,6 +69,7 @@ internal object Dimensions {
         small = 20.dp,
         medium = 24.dp,
         large = 32.dp,
+        xLarge = 64.dp
     )
 
     internal val button = Button(
