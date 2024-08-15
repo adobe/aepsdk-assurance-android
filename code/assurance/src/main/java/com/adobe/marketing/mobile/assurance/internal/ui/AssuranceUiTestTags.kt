@@ -50,5 +50,25 @@ internal object AssuranceUiTestTags {
         internal const val PIN_ERROR_ACTION_BUTTON_ROW = "pinErrorActionButtonRow"
         internal const val PIN_ERROR_CANCEL_BUTTON = "pinErrorCancelButton"
         internal const val PIN_ERROR_RETRY_BUTTON = "pinErrorRetryButton"
+
+        internal const val PIN_CONNECTING_VIEW = "pinConnectingView"
+        internal const val PIN_CONNECTING_LOADING_INDICATOR = "pinConnectingLoadingIndicator"
+    }
+
+    internal object ErrorScreen {
+        internal const val ERROR_VIEW = "errorView"
+        internal const val ERROR_TITLE = "errorTitle"
+        internal const val ERROR_DESCRIPTION = "errorDescription"
+        internal const val DISMISS_BUTTON = "dismissButton"
+    }
+
+    internal object StatusScreen {
+        internal const val STATUS_VIEW = "statusView"
+        internal const val LOGS_PANEL = "logsPanel"
+        internal const val LOGS_CONTENT = "logsContent"
+        internal const val LOG_ENTRY = "logEntry"
+        internal const val STATUS_CLOSE_BUTTON = "statusCloseButton"
+        internal const val CLEAR_LOG_BUTTON = "clearLogButton"
+        internal const val STATUS_DISCONNECT_BUTTON = "statusDisconnectButton"
     }
 }
