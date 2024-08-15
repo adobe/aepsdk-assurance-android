@@ -11,7 +11,6 @@
   -->
 
 <resources>
-    <string name="app_name">Assurance</string>
     <string name="assurance_title">Assurance</string>
     <string name="error_desc_connection_limit">You have reached the maximum number of connected device allowed to a session.</string>
     <string name="error_desc_event_limit">You have reached the maximum number of events that can be sent per minute.</string>
