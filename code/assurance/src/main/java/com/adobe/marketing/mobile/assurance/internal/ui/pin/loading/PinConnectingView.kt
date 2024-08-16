@@ -23,7 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
@@ -40,13 +42,13 @@ internal fun PinConnectingView() {
             .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().testTag(AssuranceUiTestTags.PinScreen.PIN_CONNECTING_VIEW),
             verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AssuranceHeader()
             CircularProgressIndicator(
-                modifier = Modifier.width(64.dp),
+                modifier = Modifier.width(64.dp).testTag(AssuranceUiTestTags.PinScreen.PIN_CONNECTING_LOADING_INDICATOR),
                 color = Color.LightGray,
                 strokeWidth = 6.dp
             )

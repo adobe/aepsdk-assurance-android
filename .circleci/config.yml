@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   android: circleci/android@2.4.0
-  codecov: codecov/codecov@4.0.1
+  codecov: codecov/codecov@3.2.4
 
 workflows:
   version: 2
@@ -63,7 +63,7 @@ jobs:
             test-command: make functional-test-coverage
 
         - codecov/upload:
-            file: "./code/core/build/reports/coverage/androidTest/phone/debug/connected/report.xml"
+            file: "./code/assurance/build/reports/coverage/androidTest/phone/debug/connected/report.xml"
             flags: functional-tests
 
         - store_artifacts:
