@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
@@ -60,7 +62,8 @@ internal fun AssuranceStatusScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp)
+            .testTag(AssuranceUiTestTags.StatusScreen.STATUS_VIEW),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Assurance header and close button
@@ -80,6 +83,7 @@ internal fun AssuranceStatusScreen() {
                 .fillMaxWidth()
                 .fillMaxHeight(0.9f)
                 .background(Color(4281743682))
+                .testTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
         ) {
             // Lazy column to display the logs
             LazyColumn(
@@ -87,11 +91,13 @@ internal fun AssuranceStatusScreen() {
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(AssuranceTheme.dimensions.padding.small)
+                    .testTag(AssuranceUiTestTags.StatusScreen.LOGS_CONTENT)
             ) {
                 items(logs.value.size) {
                     val message = logs.value[it].message
                     val color = logs.value[it].level.toColor()
                     Text(
+                        modifier = Modifier.testTag(AssuranceUiTestTags.StatusScreen.LOG_ENTRY),
                         text = message,
                         fontFamily = AssuranceTheme.typography.font.family,
                         style = TextStyle(color = color, fontSize = AssuranceTheme.typography.font.size.small.sp)
@@ -105,7 +111,7 @@ internal fun AssuranceStatusScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextButton(onClick = { AssuranceComponentRegistry.appState.clearLogs() }) {
+            TextButton(modifier = Modifier.testTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON), onClick = { AssuranceComponentRegistry.appState.clearLogs() }) {
                 Text(
                     text = stringResource(id = R.string.status_screen_button_clear),
                     fontFamily = FontFamily.SansSerif,
@@ -114,6 +120,7 @@ internal fun AssuranceStatusScreen() {
             }
 
             OutlinedButton(
+                modifier = Modifier.testTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON),
                 onClick = {
                     AssuranceComponentRegistry.sessionUIOperationHandler?.onDisconnect()
                     activity.finish()
@@ -154,7 +161,8 @@ private fun CloseButton(modifier: Modifier, onClick: () -> Unit) {
                 CircleShape
             )
             .aspectRatio(1f)
-            .then(modifier),
+            .then(modifier)
+            .testTag(AssuranceUiTestTags.StatusScreen.STATUS_CLOSE_BUTTON),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

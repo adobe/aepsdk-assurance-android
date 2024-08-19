@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
+import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
 import com.adobe.marketing.mobile.assurance.internal.ui.findActivity
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
@@ -52,7 +54,7 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
             .padding(horizontal = AssuranceTheme.dimensions.padding.xLarge)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().testTag(AssuranceUiTestTags.ErrorScreen.ERROR_VIEW),
             verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
         ) {
             AssuranceHeader()
@@ -69,6 +71,7 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentSize(Alignment.Center)
+                    .testTag(AssuranceUiTestTags.ErrorScreen.ERROR_TITLE)
             )
 
             // Error description
@@ -84,6 +87,7 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentSize(Alignment.Center)
+                    .testTag(AssuranceUiTestTags.ErrorScreen.ERROR_DESCRIPTION)
             )
         }
 
@@ -94,7 +98,7 @@ internal fun AssuranceErrorScreen(assuranceConnectionError: AssuranceConstants.A
             onClick = {
                 activity?.finish()
             },
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter).testTag(AssuranceUiTestTags.ErrorScreen.DISMISS_BUTTON)
         ) {
             Text(
                 text = stringResource(id = R.string.error_screen_button_dismiss),
