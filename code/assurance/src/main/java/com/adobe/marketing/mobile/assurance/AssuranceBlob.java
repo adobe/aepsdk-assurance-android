@@ -170,8 +170,8 @@ class AssuranceBlob {
                                         if (value.isEmpty()) {
                                             uploadFailure(
                                                     callback,
-                                                    "Uploading Blob failed, Invalid BlobId"
-                                                        + " returned from the fileStorage server");
+                                                    "Uploading Blob failed, Invalid BlobId returned"
+                                                            + " from the fileStorage server");
                                             return;
                                         }
 
