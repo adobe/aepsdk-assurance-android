@@ -2,7 +2,7 @@ name: Publish package to the Maven Central Staging Repository
 on:
   push:
     branches:
-      - staging
+      - staging-v2.x
 jobs:
   publish:
     runs-on: ubuntu-latest

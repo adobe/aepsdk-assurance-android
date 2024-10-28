@@ -17,6 +17,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.LocationManager;
@@ -25,12 +27,15 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Log;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityCompat;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 final class AssuranceClientInfo {
@@ -38,6 +43,12 @@ final class AssuranceClientInfo {
     private static final String VALUE_UNKNOWN = "Unknown";
     private static final String MANIFEST_FILE_NAME = "AndroidManifest.xml";
     private static final String EVENT_TYPE_CONNECT = "connect";
+    private static final String KEY_MANIFEST = "manifest";
+    private static final String KEY_PACKAGE = "package";
+    private static final String FALLBACK_KEY_VERSION_NAME = "versionName";
+    private static final String FALLBACK_KEY_VERSION_CODE = "versionCode";
+    private static final String FALLBACK_KEY_APPLICATION = "application";
+    private static final String FALLBACK_KEY_APPLICATION_NAME = "name";
 
     private final JSONObject manifestData;
 
@@ -45,7 +56,10 @@ final class AssuranceClientInfo {
         // parse the manifest file and store it in a JSONObject for later use as this does not
         // change
         // during the lifetime of the application
-        manifestData = AssuranceIOUtils.parseXMLResourceFileToJson(MANIFEST_FILE_NAME);
+        final JSONObject parsedManifest =
+                AssuranceIOUtils.parseXMLResourceFileToJson(MANIFEST_FILE_NAME);
+        final boolean isValid = validateManifestData(parsedManifest);
+        manifestData = isValid ? parsedManifest : getFallbackManifestData();
     }
 
     /**
@@ -362,5 +376,80 @@ final class AssuranceClientInfo {
         }
 
         return powerManager.isPowerSaveMode();
+    }
+
+    /**
+     * Checks that the manifest data provided is associated with the current application.
+     *
+     * @param manifestData the manifest data JSONObject to validate
+     * @return true if the manifest data is valid, false otherwise
+     */
+    @VisibleForTesting
+    boolean validateManifestData(final JSONObject manifestData) {
+        if (manifestData == null) {
+            return false;
+        }
+        final JSONObject manifest = manifestData.optJSONObject(KEY_MANIFEST);
+        if (manifest == null) {
+            return false;
+        }
+
+        final String parsedPackageName = manifest.optString(KEY_PACKAGE, "");
+        final Application app =
+                ServiceProvider.getInstance().getAppContextService().getApplication();
+        return (app != null && parsedPackageName.equals(app.getPackageName()));
+    }
+
+    /**
+     * Returns a curated JSONObject with fallback manifest data. This is typically is to be used
+     * when the manifest data parsed is invalid (i.e not associated with the application)
+     *
+     * <p>The fallback manifest data has the following structure: { "manifest": { "package":
+     * "com.mygroup.myapp", "versionName": "1.0", "versionCode": "1", "application": { "name":
+     * "MyAppName" } } }
+     *
+     * @return a JSONObject with fallback manifest data
+     */
+    @VisibleForTesting
+    JSONObject getFallbackManifestData() {
+        final Application app =
+                ServiceProvider.getInstance().getAppContextService().getApplication();
+        final JSONObject result = new JSONObject();
+        final JSONObject manifestJson = new JSONObject();
+        if (app == null) {
+            return manifestJson;
+        }
+
+        try {
+            final String appPackageName = app.getPackageName();
+            manifestJson.put(KEY_PACKAGE, appPackageName);
+
+            final PackageManager pm = app.getApplicationContext().getPackageManager();
+            try {
+                final PackageInfo packageInfo =
+                        pm.getPackageInfo(appPackageName, PackageManager.GET_PERMISSIONS);
+                final String versionName = packageInfo.versionName;
+                final String versionCode = String.valueOf(packageInfo.versionCode);
+                manifestJson.put(FALLBACK_KEY_VERSION_NAME, versionName);
+                manifestJson.put(FALLBACK_KEY_VERSION_CODE, versionCode);
+
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.d(Assurance.LOG_TAG, "Failed to get package info for " + appPackageName);
+            }
+
+            final ApplicationInfo appInfo = app.getApplicationInfo();
+            if (appInfo != null) {
+                final String applicationName = appInfo.name;
+                final JSONObject applicationJson = new JSONObject();
+                applicationJson.put(FALLBACK_KEY_APPLICATION_NAME, applicationName);
+                manifestJson.put(FALLBACK_KEY_APPLICATION, applicationJson);
+            }
+
+            result.put(KEY_MANIFEST, manifestJson);
+        } catch (JSONException e) {
+            Log.d(Assurance.LOG_TAG, "Failed to put version details into fallbackManifestData");
+        }
+
+        return result;
     }
 }
