@@ -500,9 +500,15 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
      */
     private void notifyTerminationAndRemoveStatusListeners(
             @Nullable AssuranceConstants.AssuranceConnectionError error) {
-        for (final AssuranceSessionStatusListener listener : sessionStatusListeners) {
+        // Notify about disconnection to all the listeners.
+        notifySessionDisconnection(error);
+
+        // Unregister all the listeners. Operate on a copy of the listeners as
+        // unregisterStatusListener modifies the listeners set.
+        final Set<AssuranceSessionStatusListener> listenersCopy =
+                new HashSet<>(sessionStatusListeners);
+        for (final AssuranceSessionStatusListener listener : listenersCopy) {
             if (listener != null) {
-                listener.onSessionDisconnected(error);
                 unregisterStatusListener(listener);
             }
         }
