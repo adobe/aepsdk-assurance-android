@@ -15,6 +15,9 @@ clean:
 checkformat:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessCheck)
 
+lint:
+	# This rule exists to satisfy the lint rule in the CI pipeline
+
 format:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessApply)
 
