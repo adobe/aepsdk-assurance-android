@@ -15,7 +15,8 @@ clean:
 checkformat:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessCheck)
 
-ci-lint: checkformat
+# Used by build and test CI workflow
+lint: checkformat
 
 format:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessApply)
