@@ -15,6 +15,9 @@ clean:
 checkformat:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessCheck)
 
+# Used by build and test CI workflow
+lint: checkformat
+
 format:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) spotlessApply)
 
@@ -62,6 +65,8 @@ assemble-app:
 
 ci-publish-staging: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository --stacktrace)
+
+ci-publish: ci-publish-main
 
 ci-publish-main: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository -Prelease)
