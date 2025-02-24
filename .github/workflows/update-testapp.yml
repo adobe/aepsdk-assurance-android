@@ -9,27 +9,38 @@ on:
 
 jobs:
   update-testapp:
-    runs-on: macos-latest
-
+    runs-on: macos-14
     steps:
-
     - name: Set up Java
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4.6.0
       with:
         distribution: 'zulu'
         java-version: 17
 
     - name: Checkout
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v4.2.2
       with:
         ref: ${{ github.event.inputs.branch }}
 
     - name: Generate AssuranceTestApp APK
       run: make build-app
 
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
-      with:
-        commit-message: Update Assurance Test App APK
-        title: Update AssuranceTestApp APK
-        base: ${{ github.event.inputs.branch }}
+    - name: Create pull request
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
+        branch_name="update-assurance-test-app-apk"
+        git checkout -b "$branch_name"
+        git add .
+        git commit -m "Update Assurance Test App APK"
+        git push origin "$branch_name"
+    
+        gh pr create \
+          --base "${{ github.event.inputs.branch }}" \
+          --head "$branch_name" \
+          --title "Update AssuranceTestApp APK" \
+          --body "Update AssuranceTestApp APK"
+    
