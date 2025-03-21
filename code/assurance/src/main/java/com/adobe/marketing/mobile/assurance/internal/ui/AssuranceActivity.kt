@@ -52,11 +52,20 @@ class AssuranceActivity : ComponentActivity() {
                                 .fillMaxSize()
                         ) {
 
-                            // Locks the Assurance screen to always be in portrait mode.
-                            val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                            DisposableEffect(orientation) {
+//                            // Locks the Assurance screen to always be in portrait mode.
+//                            val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//                            DisposableEffect(orientation) {
+//                                val originalOrientation = requestedOrientation
+//                                requestedOrientation = orientation
+//                                onDispose {
+//                                    // restore original orientation when view disappears
+//                                    requestedOrientation = originalOrientation
+//                                }
+//                            }
+
+                            DisposableEffect(Unit) {
                                 val originalOrientation = requestedOrientation
-                                requestedOrientation = orientation
+                                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                                 onDispose {
                                     // restore original orientation when view disappears
                                     requestedOrientation = originalOrientation
