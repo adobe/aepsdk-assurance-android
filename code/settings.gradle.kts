@@ -33,6 +33,6 @@ dependencyResolutionManagement {
 rootProject.name = "aepsdk-assurance-android"
 include (
     ":assurance",
-    ":assurance-testapp"
+    ":assurance-testapp",
+    ":assurance-tv-testapp"
 )
-
