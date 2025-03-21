@@ -39,7 +39,7 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun AssuranceTvTestAppTheme(
-    darkTheme: Boolean = true,
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) {
