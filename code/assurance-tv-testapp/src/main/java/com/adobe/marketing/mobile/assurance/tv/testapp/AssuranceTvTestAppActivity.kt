@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.assurance.tv.testapp
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -38,15 +39,33 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.rememberNavController
+import com.adobe.marketing.mobile.KeyEventMonitor
+import com.adobe.marketing.mobile.KeyType
+import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.assurance.tv.testapp.ui.views.DrawerLayout
 import com.adobe.marketing.mobile.assurance.tv.testapp.ui.navigation.NavRoutes
 import com.adobe.marketing.mobile.assurance.tv.testapp.ui.theme.AssuranceTvTestAppTheme
 import com.adobe.marketing.mobile.assurance.tv.testapp.ui.navigation.AppNavigation
-import com.adobe.marketing.mobile.assurance.tv.testapp.ui.theme.AssuranceTvTestAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class AssuranceTvTestAppActivity : ComponentActivity() {
+
+    //TODO: new API (2): Assurance.createKeyEventMonitor()
+    private val keyEventMonitor: KeyEventMonitor = Assurance.createKeyEventMonitor(arrayOf(
+        KeyType.UP,
+        KeyType.DOWN,
+        KeyType.DOWN,
+        KeyType.RIGHT
+    ))
+    //TODO: Use a complicated key combination to avoid
+    // unexpected termination of the Assurance session
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        event?.let { keyEventMonitor.onKeyEventDetected(it) }
+        return super.onKeyDown(keyCode, event)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

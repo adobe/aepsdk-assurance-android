@@ -246,6 +246,9 @@ public final class AssuranceExtension extends Extension {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         hostApplication.startActivity(intent);
     }
+    void endSession(){
+        this.assuranceSessionOrchestrator.terminateSession(true);
+    }
 
     // ========================================================================================
     // overridden methods - Extension class
@@ -366,6 +369,14 @@ public final class AssuranceExtension extends Extension {
 
     void handleAssuranceRequestContent(final Event event) {
         final Map<String, Object> eventData = event.getEventData();
+
+        final boolean isEndSessionEvent =
+                DataReader.optBoolean(
+                        eventData, AssuranceConstants.SDKEventDataKey.END_SESSION, false);
+        if(isEndSessionEvent){
+            endSession();
+            return;
+        }
 
         // Check if this is a quick connect session
         final boolean isQuickConnectEvent =
