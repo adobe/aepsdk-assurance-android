@@ -80,8 +80,8 @@ internal fun AssuranceStatusScreen() {
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.9f)
+                .weight(1f)
+                .weight(1f)
                 .background(Color(4281743682))
                 .testTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
         ) {

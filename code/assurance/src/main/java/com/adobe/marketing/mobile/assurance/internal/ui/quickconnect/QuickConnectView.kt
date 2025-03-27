@@ -61,13 +61,13 @@ internal fun QuickConnectView(
             AssuranceHeader()
             AssuranceSubHeader(text = stringResource(id = R.string.quick_connect_screen_header))
 
-            // Quick Connect  flow image
+            // Quick Connect flow image
             Image(
                 painter = painterResource(id = R.drawable.img_quick_connect),
                 contentDescription = "Quick Connect Flow",
-                contentScale = ContentScale.FillWidth,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
                     .padding(
                         horizontal = AssuranceTheme.dimensions.padding.xLarge,
                         vertical = AssuranceTheme.dimensions.padding.medium
