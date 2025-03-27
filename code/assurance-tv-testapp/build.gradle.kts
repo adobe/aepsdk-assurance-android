@@ -73,6 +73,7 @@ dependencies {
     // Compose dependencies
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3-android:1.3.1")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     // Compose Navigation, Activity, and Lifecycle dependencies

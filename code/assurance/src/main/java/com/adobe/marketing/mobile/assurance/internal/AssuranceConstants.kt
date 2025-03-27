@@ -35,6 +35,7 @@ internal object AssuranceConstants {
     internal object SDKEventDataKey {
         const val START_SESSION_URL = "startSessionURL"
         const val IS_QUICK_CONNECT = "quickConnect"
+        const val END_SESSION = "endSession"
         const val EXTENSIONS = "extensions"
         const val STATE_OWNER = "stateowner"
         const val FRIENDLY_NAME = "friendlyName"

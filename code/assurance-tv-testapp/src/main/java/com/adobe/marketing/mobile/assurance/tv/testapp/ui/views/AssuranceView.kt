@@ -11,6 +11,10 @@
 
 package com.adobe.marketing.mobile.assurance.tv.testapp.ui.views
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +27,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.tv.testapp.ui.viewmodel.AssuranceTestAppViewModel
@@ -108,17 +116,27 @@ private fun AssuranceVersionLabel(version: String) {
     )
 }
 
+private var assuranceIsConnected = false
+
 @Composable
 private fun AssuranceConnectionInput() {
+    var connected by remember { mutableStateOf(assuranceIsConnected) }
     Column {
-        Button(
-            onClick = { Assurance.startSession() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(AssuranceTvTestAppConstants.TEST_TAG_QUICK_CONNECT_BUTTON)
-        ) {
-            Text(text = stringResource(id = R.string.assurance_quick_connect_button_name))
-        }
+        Switch(
+            checked = connected,
+            onCheckedChange = { newState ->
+                connected = newState
+                assuranceIsConnected = newState
+                if (newState) {
+                    //TODO: Assurance.startSession(corner)
+                    Assurance.startSession()
+                } else {
+                    //TODO: new API (1): Assurance.endSession()
+                    Assurance.endSession()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
