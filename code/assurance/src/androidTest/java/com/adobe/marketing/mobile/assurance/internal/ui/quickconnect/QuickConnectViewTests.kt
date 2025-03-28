@@ -12,7 +12,14 @@
 package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
 import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+//import androidx.compose.foundation.layout.weight
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -28,6 +35,7 @@ import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.ConnectionState
+import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -202,5 +210,63 @@ class QuickConnectViewTests {
             ).assertAny(
                 !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
+    }
+
+    @Test
+    fun testQuickConnectViewInHorizontalOrientation() {
+        val quickConnectState = mutableStateOf<ConnectionState>(ConnectionState.Disconnected(null))
+        composeTestRule.setContent {
+            // Force horizontal layout by using a Row instead of Column
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
+            ) {
+                // Left side content
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    QuickConnectView(
+                        quickConnectState = quickConnectState,
+                        onAction = { /* no-op */ }
+                    )
+                }
+            }
+        }
+
+        // Verify the Quick Connect logo exists and is displayed
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_LOGO)
+            .assertExists()
+            .assertIsDisplayed()
+
+        // Verify the header and sub-header are still properly displayed
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+
+        // Verify the action buttons are still accessible and visible
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
+            )
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
+            )
+
+        // Verify the action buttons are actually visible and clickable
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
+            .assertIsDisplayed()
+            .assertHasClickAction()
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
+            .assertIsDisplayed()
+            .assertHasClickAction()
+
+        // Verify the Adobe logo is still visible at the bottom
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
+            .assertExists()
+            .assertIsDisplayed()
     }
 }

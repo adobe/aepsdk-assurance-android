@@ -61,7 +61,7 @@ internal fun QuickConnectView(
             AssuranceHeader()
             AssuranceSubHeader(text = stringResource(id = R.string.quick_connect_screen_header))
 
-            // Quick Connect flow image
+            // Quick Connect  flow image
             Image(
                 painter = painterResource(id = R.drawable.img_quick_connect),
                 contentDescription = "Quick Connect Flow",
