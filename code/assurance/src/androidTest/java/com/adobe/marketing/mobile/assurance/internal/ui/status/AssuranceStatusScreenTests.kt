@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
@@ -332,11 +331,11 @@ class AssuranceStatusScreenTests {
         // Verify the logs panel is visible and contains logs
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL).assertIsDisplayed()
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_CONTENT).assertIsDisplayed()
-        
+
         // Verify log entries are visible
         val logContent = composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_CONTENT)
             .assertIsDisplayed()
-        
+
         // Verify both log entries are visible
         logContent.onChildren().assertCountEquals(2)
         logContent.onChildren()[0].assertTextEquals("Test log 1")
