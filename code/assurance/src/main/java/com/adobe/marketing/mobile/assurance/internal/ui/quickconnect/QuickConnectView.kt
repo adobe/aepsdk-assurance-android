@@ -68,6 +68,7 @@ internal fun QuickConnectView(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxWidth()
                     .padding(
                         horizontal = AssuranceTheme.dimensions.padding.xLarge,
                         vertical = AssuranceTheme.dimensions.padding.medium
