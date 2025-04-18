@@ -67,8 +67,8 @@ internal fun QuickConnectView(
                 contentDescription = "Quick Connect Flow",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .weight(1f)
                     .fillMaxWidth()
+                    .height(100.dp)
                     .padding(
                         horizontal = AssuranceTheme.dimensions.padding.xLarge,
                         vertical = AssuranceTheme.dimensions.padding.medium
