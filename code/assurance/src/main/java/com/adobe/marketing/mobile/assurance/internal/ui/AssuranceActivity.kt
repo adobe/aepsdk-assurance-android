@@ -11,7 +11,6 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -51,18 +49,6 @@ class AssuranceActivity : ComponentActivity() {
                                 .safeDrawingPadding()
                                 .fillMaxSize()
                         ) {
-
-                            // Locks the Assurance screen to always be in portrait mode.
-                            val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                            DisposableEffect(orientation) {
-                                val originalOrientation = requestedOrientation
-                                requestedOrientation = orientation
-                                onDispose {
-                                    // restore original orientation when view disappears
-                                    requestedOrientation = originalOrientation
-                                }
-                            }
-
                             // Set the status bar and navigation bar colors to be the same as the
                             // background color of Assurance screens. This is to simulate an edge to edge
                             // experience while the Assurance UI is active.

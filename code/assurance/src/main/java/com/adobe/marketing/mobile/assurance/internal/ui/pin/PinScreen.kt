@@ -11,10 +11,8 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.pin
 
-import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.AssuranceEnvironment
@@ -39,17 +37,6 @@ internal fun PinScreen(sessionId: String, environment: AssuranceEnvironment) {
             environment = environment
         )
     )
-
-    // Locks the PIN screen to always be in portrait mode.
-    val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    DisposableEffect(orientation) {
-        val originalOrientation = activity.requestedOrientation
-        activity.requestedOrientation = orientation
-        onDispose {
-            // restore original orientation when view disappears
-            activity.requestedOrientation = originalOrientation
-        }
-    }
 
     // Handle back button press
     BackHandler {
