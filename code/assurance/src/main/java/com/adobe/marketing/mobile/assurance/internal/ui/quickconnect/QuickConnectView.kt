@@ -11,20 +11,26 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.quickconnect
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +51,14 @@ internal fun QuickConnectView(
     quickConnectState: State<ConnectionState>,
     onAction: (QuickConnectScreenAction) -> Unit
 ) {
+    val isTv = with(LocalConfiguration.current) {
+        remember { (this.uiMode and Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION }
+    }
+
+    val isLandscape = with(LocalConfiguration.current) {
+        remember { (this.orientation == Configuration.ORIENTATION_LANDSCAPE || this.orientation == Configuration.ORIENTATION_UNDEFINED) }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +68,9 @@ internal fun QuickConnectView(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW),
             verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -67,11 +83,12 @@ internal fun QuickConnectView(
                 contentDescription = "Quick Connect Flow",
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(
                         horizontal = AssuranceTheme.dimensions.padding.xLarge,
                         vertical = AssuranceTheme.dimensions.padding.medium
                     )
+                    // Restrict the image to a max of 1/3rd of the screen in landscape mode or TV mode
+                    .fillMaxWidth(fraction = if (isTv || isLandscape) 0.3f else 1f)
                     .testTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_LOGO)
 
             )
@@ -88,22 +105,23 @@ internal fun QuickConnectView(
 
             // Action buttons for triggering the connection
             ActionButtonRow(quickConnectState = quickConnectState.value, onAction = onAction)
+
+            // Spacer to push the Adobe Logo at the bottom of the screen while being scrollable.
+            Spacer(modifier = Modifier.weight(1f))
+
+            Image(
+                painter = painterResource(id = R.drawable.img_adobelogo),
+                contentDescription = "Adobe Logo",
+                contentScale = ContentScale.Inside,
+                modifier = Modifier
+                    .height(20.dp)
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = AssuranceTheme.dimensions.padding.xSmall
+                    )
+                    .testTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
+
+            )
         }
-
-        // Adobe Logo at the bottom of the screen
-        Image(
-            painter = painterResource(id = R.drawable.img_adobelogo),
-            contentDescription = "Adobe Logo",
-            contentScale = ContentScale.Inside,
-            modifier = Modifier
-                .height(20.dp)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(
-                    bottom = AssuranceTheme.dimensions.padding.xSmall
-                )
-                .testTag(AssuranceUiTestTags.QuickConnectScreen.ADOBE_LOGO)
-
-        )
     }
 }

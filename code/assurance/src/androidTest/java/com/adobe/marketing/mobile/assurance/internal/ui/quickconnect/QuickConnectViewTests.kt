@@ -51,6 +51,8 @@ class QuickConnectViewTests {
             )
         }
 
+        composeTestRule.waitForIdle()
+
         // Verify
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW).assertExists()
 
