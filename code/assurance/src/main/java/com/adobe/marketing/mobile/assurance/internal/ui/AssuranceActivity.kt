@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.rememberNavController
@@ -35,6 +36,7 @@ class AssuranceActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val connectionPhase = AssuranceComponentRegistry.appState.sessionPhase.value
+        val orientation = resources.configuration.orientation
 
         setContent {
             MaterialTheme(
@@ -47,7 +49,8 @@ class AssuranceActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier
                                 .safeDrawingPadding()
-                                .fillMaxSize()
+                                .fillMaxSize(),
+                            contentAlignment = TopCenter
                         ) {
                             // Set the status bar and navigation bar colors to be the same as the
                             // background color of Assurance screens. This is to simulate an edge to edge
