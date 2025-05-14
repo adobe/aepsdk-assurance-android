@@ -36,7 +36,6 @@ class AssuranceActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val connectionPhase = AssuranceComponentRegistry.appState.sessionPhase.value
-        val orientation = resources.configuration.orientation
 
         setContent {
             MaterialTheme(

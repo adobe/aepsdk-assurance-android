@@ -60,7 +60,7 @@ internal fun DialPadView(
     Box(
         modifier = Modifier
             .fillMaxHeight()
-            // Set the width to a maximum of 600dp or the screen width, whichever is smaller
+            // Set the width to a minimum of 600dp or the screen width.
             // This is to ensure that the dial pad buttons are not too large on squarish aspect ratios
             .widthIn(max = min(600f, (width.toFloat())).dp)
             .verticalScroll(scrollState)
