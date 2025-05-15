@@ -41,4 +41,6 @@ dependencies {
     testImplementation("net.sf.kxml:kxml2:2.3.0@jar")
     testImplementation("org.json:json:20171018")
     testImplementation("org.robolectric:robolectric:4.7")
+
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 }
