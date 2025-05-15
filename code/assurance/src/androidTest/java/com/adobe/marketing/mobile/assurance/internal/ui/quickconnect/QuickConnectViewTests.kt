@@ -24,6 +24,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
@@ -54,14 +55,17 @@ class QuickConnectViewTests {
         composeTestRule.waitForIdle()
 
         // Verify
-        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW).assertExists()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
+            .assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW)
+            .assertExists().assertIsDisplayed()
 
         // Verify the header and sub-header exist and are displayed
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW,
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW,
             useUnmergedTree = true
         )
             .onChildren()
@@ -85,6 +89,60 @@ class QuickConnectViewTests {
     }
 
     @Test
+    fun testQuickConnectViewWhenIdleInLandscapeMode() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+
+        val quickConnectState = mutableStateOf<ConnectionState>(ConnectionState.Disconnected(null))
+        composeTestRule.setContent {
+            QuickConnectView(
+                quickConnectState = quickConnectState,
+                onAction = { /* no-op */ }
+            )
+        }
+
+        composeTestRule.waitForIdle()
+
+        // Verify
+        composeTestRule
+            .onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
+            .assertExists().assertIsDisplayed()
+        composeTestRule
+            .onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW)
+            .assertExists().assertIsDisplayed()
+
+        // Verify the header and sub-header exist and are displayed
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
+            )
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
+            )
+
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
+            ).assertAny(
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
+            )
+
+        uiDevice.setOrientationNatural()
+    }
+
+    @Test
     fun testQuickConnectViewWhenConnecting() {
         val quickConnectState = mutableStateOf<ConnectionState>(ConnectionState.Disconnected(null))
         composeTestRule.setContent {
@@ -95,14 +153,17 @@ class QuickConnectViewTests {
         }
 
         // Verify the initial state of being idle and disconnected
-        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW).assertExists()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
+            .assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW)
+            .assertExists().assertIsDisplayed()
 
         // Verify the header and sub-header exist and are displayed
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
         composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW,
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW,
             useUnmergedTree = true
         )
             .onChildren()
@@ -139,10 +200,88 @@ class QuickConnectViewTests {
         )
             .onChildren()
             .assertAny(
-                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(hasText("Waiting.."))
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(
+                    hasText(
+                        "Waiting.."
+                    )
+                )
             ).assertAny(
                 hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
+    }
+
+    @Test
+    fun testQuickConnectViewWhenConnectingInLandscapeMode() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+
+        val quickConnectState = mutableStateOf<ConnectionState>(ConnectionState.Disconnected(null))
+        composeTestRule.setContent {
+            QuickConnectView(
+                quickConnectState = quickConnectState,
+                onAction = { /* no-op */ }
+            )
+        }
+
+        // Verify the initial state of being idle and disconnected
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_VIEW)
+            .assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW)
+            .assertExists().assertIsDisplayed()
+
+        // Verify the header and sub-header exist and are displayed
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.QUICK_CONNECT_SCROLLVIEW,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CANCEL_BUTTON)
+            )
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON)
+            )
+
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
+            ).assertAny(
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
+            )
+
+        // Update the state to connecting
+        quickConnectState.value = ConnectionState.Connecting
+        composeTestRule.waitForIdle()
+
+        // Verify that the progress button responds to Connecting state and shows the progress indicator
+        // Note that ideally this test should also check that the progress button is not clickable.
+        // However, the test framework does not checking for clickability of a Composable and
+        // on the assertion of whether or not a click action can be performed.
+        // Refer to the ProgressButtonTests.kt file for the click logic tests.
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(
+                    hasText(
+                        "Waiting.."
+                    )
+                )
+            ).assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
+            )
+
+        uiDevice.setOrientationNatural()
     }
 
     @Test
@@ -200,9 +339,84 @@ class QuickConnectViewTests {
         )
             .onChildren()
             .assertAny(
-                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(hasText("Retry"))
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(
+                    hasText(
+                        "Retry"
+                    )
+                )
             ).assertAny(
                 !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
             )
+    }
+
+    @Test
+    fun testQuickConnectViewWhenDisconnectedWithErrorInLandscapeMode() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+
+        val quickConnectState = mutableStateOf<ConnectionState>(ConnectionState.Disconnected(null))
+        composeTestRule.setContent {
+            QuickConnectView(
+                quickConnectState = quickConnectState,
+                onAction = { /* no-op */ }
+            )
+        }
+
+        // Update the state to connecting
+        quickConnectState.value = ConnectionState.Connecting
+        composeTestRule.waitForIdle()
+
+        // Verify the header and sub-header exist and are displayed
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_SUB_HEADER).assertIsDisplayed()
+
+        // Verify that the progress button responds to Connecting state and shows the progress indicator
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
+            useUnmergedTree = true
+        ).assertHasClickAction()
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT)
+                    .and(hasText("Waiting.."))
+            ).assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
+            )
+
+        // Update the state to disconnected with error
+        val error = AssuranceConstants.AssuranceConnectionError.UNEXPECTED_ERROR
+        quickConnectState.value = ConnectionState.Disconnected(error)
+        composeTestRule.waitForIdle()
+
+        // Verify that the QuickConnectErrorPanel is shown
+        val errorPanelContent = composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_PANEL,
+            useUnmergedTree = true
+        )
+            .assertExists()
+            .onChildren()
+
+        errorPanelContent.filterToOne(hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_TEXT))
+            .assertTextEquals(error.error)
+        errorPanelContent.filterToOne(hasTestTag(AssuranceUiTestTags.QuickConnectScreen.CONNECTION_ERROR_DESCRIPTION))
+            .assertTextEquals(error.description)
+
+        composeTestRule.onNodeWithTag(
+            AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON,
+            useUnmergedTree = true
+        )
+            .onChildren()
+            .assertAny(
+                hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_BUTTON_TEXT).and(
+                    hasText(
+                        "Retry"
+                    )
+                )
+            ).assertAny(
+                !hasTestTag(AssuranceUiTestTags.QuickConnectScreen.PROGRESS_INDICATOR)
+            )
+
+        uiDevice.setOrientationNatural()
     }
 }
