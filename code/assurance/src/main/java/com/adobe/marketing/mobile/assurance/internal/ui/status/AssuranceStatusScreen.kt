@@ -90,7 +90,7 @@ internal fun AssuranceStatusScreen() {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(if (isTv || isLandscape) 0.8f else 0.9f)
+                .fillMaxHeight(if (isTv || isLandscape) 0.7f else 0.9f)
                 .background(AssuranceTheme.statusLogBackgroundColor)
                 .testTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
         ) {
