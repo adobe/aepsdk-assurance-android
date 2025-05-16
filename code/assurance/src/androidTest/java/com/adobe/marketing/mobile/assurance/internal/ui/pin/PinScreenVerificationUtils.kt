@@ -77,7 +77,7 @@ internal object PinScreenVerificationUtils {
             useUnmergedTree = true
         )
         actionButtonRow.assertExists()
-            .also { if (scrollIfNecessary) it.performScrollTo() }
+            .performScrollTo()
             .assertIsDisplayed()
 
         // Verify the action button row buttons

@@ -70,7 +70,7 @@ class DialPadViewTests {
         }
 
         // Verify
-        verifyDialPadIdleSetup(composeTestRule, true)
+        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
 
         // Reset orientation
         uiDevice.setOrientationNatural()
@@ -127,7 +127,7 @@ class DialPadViewTests {
         }
 
         // Verify idle setup
-        verifyDialPadIdleSetup(composeTestRule, true)
+        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
 
         assertTrue(pinScreenActions.isEmpty())
 
@@ -184,7 +184,7 @@ class DialPadViewTests {
         val symbolRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.SYMBOL_ROW,
             useUnmergedTree = true
-        )
+        ).performScrollTo()
 
         // Clear the pin with the delete button
         symbolRow.onChildren()[2].performClick() // delete
@@ -212,7 +212,7 @@ class DialPadViewTests {
         }
 
         // Verify idle setup
-        verifyDialPadIdleSetup(composeTestRule, true)
+        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
         assertTrue(pinScreenActions.isEmpty())
 
         val numberRows = composeTestRule.onNodeWithTag(
@@ -262,7 +262,8 @@ class DialPadViewTests {
         val actionButtonRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.DIAL_PAD_ACTION_BUTTON_ROW,
             useUnmergedTree = true
-        )
+        ).performScrollTo()
+
         actionButtonRow.assertExists().assertIsDisplayed()
 
         // Verify the action button row buttons
@@ -296,7 +297,8 @@ class DialPadViewTests {
         val actionButtonRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.DIAL_PAD_ACTION_BUTTON_ROW,
             useUnmergedTree = true
-        )
+        ).performScrollTo()
+
         actionButtonRow.assertExists().assertIsDisplayed()
 
         // Verify the action button row buttons
@@ -337,7 +339,8 @@ class DialPadViewTests {
         val actionButtonRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.DIAL_PAD_ACTION_BUTTON_ROW,
             useUnmergedTree = true
-        )
+        ).performScrollTo()
+
         actionButtonRow.assertExists().performScrollTo().assertIsDisplayed()
 
         // Verify the action button row buttons
