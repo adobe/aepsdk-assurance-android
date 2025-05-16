@@ -50,6 +50,7 @@ class DialPadViewTests {
                 onAction = { action -> pinScreenActions += action }
             )
         }
+        composeTestRule.waitForIdle()
 
         // Verify
         verifyDialPadIdleSetup(composeTestRule)
@@ -68,6 +69,7 @@ class DialPadViewTests {
                 onAction = { action -> pinScreenActions += action }
             )
         }
+        composeTestRule.waitForIdle()
 
         // Verify
         verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
@@ -187,7 +189,7 @@ class DialPadViewTests {
         ).performScrollTo()
 
         // Clear the pin with the delete button
-        symbolRow.onChildren()[2].performClick() // delete
+        symbolRow.onChildren()[2].performScrollTo().performClick() // delete
 
         // Verify that the pin screen actions are recorded
         assertEquals(PinScreenAction.Number("1"), pinScreenActions[0])
