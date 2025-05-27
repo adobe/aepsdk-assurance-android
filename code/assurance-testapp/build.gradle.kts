@@ -83,7 +83,6 @@ android {
         implementation(platform("com.adobe.marketing.mobile:sdk-bom:3.9.2"))
         implementation("com.adobe.marketing.mobile:core")
         // Use the assurance module from the local project
-        // Use the assurance module from the local project
         implementation(project(":assurance"))
         implementation("com.adobe.marketing.mobile:signal")
         implementation("com.adobe.marketing.mobile:lifecycle")

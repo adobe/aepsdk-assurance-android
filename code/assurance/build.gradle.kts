@@ -30,7 +30,6 @@ aepLibrary {
 }
 
 dependencies {
-    // Stop using SNAPSHOT after Core release.
     implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
     // Compose Navigation
     implementation("androidx.navigation:navigation-compose:$navigationComposeVersion")
