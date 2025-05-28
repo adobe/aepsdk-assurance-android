@@ -20,6 +20,7 @@ internal object AssuranceUiTestTags {
 
     internal object QuickConnectScreen {
         internal const val QUICK_CONNECT_VIEW = "quickConnectView"
+        internal const val QUICK_CONNECT_SCROLLVIEW = "quickConnectScrollView"
         internal const val QUICK_CONNECT_LOGO = "quickConnectLogo"
         internal const val ADOBE_LOGO = "adobeLogo"
 
