@@ -1,11 +1,14 @@
 EXTENSION-LIBRARY-FOLDER-NAME = assurance
 TEST-APP-FOLDER-NAME = assurance-testapp
+TV-TEST-APP-FOLDER-NAME = assurance-tv-testapp
 TEST-APP-DEBUG-APK = assurance-testapp-debug.apk
+TV-TEST-APP-DEBUG-APK = assurance-tv-testapp-debug.apk
 
 ROOT_DIR=$(shell git rev-parse --show-toplevel)
 
 AAR_FILE_DIR =  $(ROOT_DIR)/code/$(EXTENSION-LIBRARY-FOLDER-NAME)/build/outputs/aar
 TEST_APP_APK_OUTPUT_DIR = $(ROOT_DIR)/code/$(TEST-APP-FOLDER-NAME)/build/outputs/apk
+TV_TEST_APP_APK_OUTPUT_DIR = $(ROOT_DIR)/code/$(TV-TEST-APP-FOLDER-NAME)/build/outputs/apk
 ARTIFACTS_DIR = $(ROOT_DIR)/artifacts
 
 clean:
@@ -33,6 +36,17 @@ build-app:
 	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
 	# Copy the debug test apk generated at TEST_APP_APK_OUTPUT_DIR to ARTIFACTS_DIR
 	(cp -r $(TEST_APP_APK_OUTPUT_DIR)/debug/$(TEST-APP-DEBUG-APK) $(ARTIFACTS_DIR))
+
+build-tv-app:
+	(./code/gradlew -p code clean)
+	# Delete TV-TEST-APP-DEBUG-APK-NAME from the contents of ARTIFACTS_DIR
+	(rm -rf $(ARTIFACTS_DIR)/$(TV-TEST-APP-DEBUG-APK))
+	# Create the artifacts directory if it did not exist
+	(mkdir -p $(ARTIFACTS_DIR))
+	# Build the Test App APK
+	(./code/gradlew -p code/$(TV-TEST-APP-FOLDER-NAME) assemble)
+	# Copy the debug test apk generated at TV_TEST_APP_APK_OUTPUT_DIR to ARTIFACTS_DIR
+	(cp -r $(TV_TEST_APP_APK_OUTPUT_DIR)/debug/$(TV-TEST-APP-DEBUG-APK) $(ARTIFACTS_DIR))
 
 unit-test:
 	(./code/gradlew -p code/$(EXTENSION-LIBRARY-FOLDER-NAME) testPhoneDebugUnitTest)
@@ -62,6 +76,9 @@ assemble-phone-release:
 
 assemble-app:
 	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
+
+assemble-tv-app:
+	(./code/gradlew -p code/$(TV-TEST-APP-FOLDER-NAME) assemble)
 
 ci-publish-staging: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository --stacktrace)
