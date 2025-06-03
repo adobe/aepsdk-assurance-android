@@ -28,7 +28,8 @@ cd aepsdk-assurance-android/code
 ```
 
 ### 3. Run on Android TV emulator
-- Launch the app on your Android TV emulator
+- **Option A**: Double-click `settings.gradle.kts` in Android Studio to open the project and run directly
+- **Option B**: Launch the app on your Android TV emulator
 - Navigate to the Connect to Assurance button using arrow keys and press Enter to use Quick Connect
 
 ## Requirements
@@ -36,4 +37,3 @@ cd aepsdk-assurance-android/code
 - Android SDK API 21+
 - Valid Adobe Experience Platform configuration
 
---- 
