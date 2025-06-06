@@ -21,23 +21,6 @@
         <item name="android:textColorSecondary">@color/tv_text_secondary</item>
     </style>
 
-    <!-- TV Leanback Theme -->
-    <style name="Theme.Leanback" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/adobe_red</item>
-        <item name="colorPrimaryDark">@color/adobe_red_dark</item>
-        <item name="colorAccent">@color/adobe_red_light</item>
-        <item name="android:windowBackground">@color/tv_background_primary</item>
-        <item name="android:colorBackground">@color/tv_background_primary</item>
-    </style>
-
-    <style name="Theme.Aepsdkassuranceandroid.Leanback" parent="Theme.Leanback">
-        <item name="colorPrimary">@color/adobe_red</item>
-        <item name="colorPrimaryDark">@color/adobe_red_dark</item>
-        <item name="colorAccent">@color/adobe_red_light</item>
-        <item name="android:windowBackground">@color/tv_background_primary</item>
-        <item name="android:colorBackground">@color/tv_background_primary</item>
-    </style>
-
     <!-- TV Card Style -->
     <style name="TVCardStyle">
         <item name="android:layout_width">@dimen/tv_card_width</item>
