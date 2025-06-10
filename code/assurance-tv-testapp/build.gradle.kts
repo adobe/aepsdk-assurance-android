@@ -65,7 +65,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     implementation(project(":assurance"))
-    implementation(platform("com.adobe.marketing.mobile:sdk-bom:3.12.0"))
+    implementation(platform("com.adobe.marketing.mobile:sdk-bom:${project.property("sdkBomVersion")}"))
     implementation("com.adobe.marketing.mobile:core")
     implementation("com.adobe.marketing.mobile:edge")
     implementation("com.adobe.marketing.mobile:edgeidentity")

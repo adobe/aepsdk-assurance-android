@@ -15,14 +15,17 @@ import com.adobe.marketing.mobile.assurancetvtestapp.videosView.data.SampleVideo
 import com.adobe.marketing.mobile.assurancetvtestapp.videosView.model.Video
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import android.util.Log
 
 class VideoRepository {
-    fun getPopularVideos(page: Int = 1): Flow<List<Video>> = flow {
+    fun getPopularVideos(@Suppress("UNUSED_PARAMETER") page: Int = 1): Flow<List<Video>> = flow {
         try {
             // Simulate potential network delay
             kotlinx.coroutines.delay(500)
+            Log.d("VideoRepository", "Loading ${SampleVideos.videos.size} videos")
             emit(SampleVideos.videos)
         } catch (e: Exception) {
+            Log.e("VideoRepository", "Error loading videos: ${e.message}", e)
             throw e // Propagate error instead of swallowing it
         }
     }

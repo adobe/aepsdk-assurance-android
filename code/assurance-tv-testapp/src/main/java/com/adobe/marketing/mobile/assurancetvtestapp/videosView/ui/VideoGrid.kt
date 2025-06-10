@@ -158,7 +158,13 @@ fun VideoCard(
                 model = video.thumbnailUrl,
                 contentDescription = video.title,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onError = { error ->
+                    Log.e("VideoCard", "Failed to load thumbnail for ${video.title}: ${error.result.throwable?.message}")
+                },
+                onSuccess = { 
+                    Log.d("VideoCard", "Successfully loaded thumbnail for ${video.title}")
+                }
             )
             
             // Gradient overlay for better text visibility
