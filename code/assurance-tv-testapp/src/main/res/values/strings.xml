@@ -1,0 +1,103 @@
+<!--
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ -->
+
+<resources>
+    <!-- App Name -->
+    <string name="app_name">Adobe Assurance TV Test App</string>
+    <string name="app_name_short">Assurance TV</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_videos">Videos</string>
+    <string name="nav_about">About</string>
+    
+    <!-- Home Screen -->
+    <string name="home_title">Android Sample TV App</string>
+    <string name="home_subtitle">Adobe Experience Platform Mobile SDK</string>
+    <string name="quick_connect_title">Quick Connect</string>
+    <string name="edge_send_event_title">Edge SendEvent</string>
+    <string name="analytics_title">Analytics</string>
+    <string name="event_chunking_title">Event Chunking</string>
+    
+    <!-- Buttons -->
+    <string name="btn_connect_assurance">Connect to Assurance</string>
+    <string name="btn_send_edge_event">Send Edge Event</string>
+    <string name="btn_track_action">Track Action</string>
+    <string name="btn_small_payload">Small Payload</string>
+    <string name="btn_large_payload">Large Payload</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_retry">Retry</string>
+    <string name="btn_volume">Volume</string>
+    
+    <!-- Button Descriptions -->
+    <string name="desc_connect_assurance">Connect to Adobe Assurance</string>
+    <string name="desc_send_edge_event">Send event using Edge.sendEvent API</string>
+    <string name="desc_track_action">Send action using MobileCore.trackAction</string>
+    <string name="desc_small_payload">Send small event</string>
+    <string name="desc_large_payload">Send large event</string>
+    
+    <!-- Video Player -->
+    <string name="video_loading">Loading...</string>
+    <string name="video_error_title">Something went wrong</string>
+    <string name="video_controls_back">Back</string>
+    <string name="video_controls_volume">Volume Control</string>
+    <string name="video_tracking_active">Adobe Media Tracking</string>
+    
+    <!-- Video Player Controls -->
+    <string name="chapter_start">Chapter Start</string>
+    <string name="chapter_end">Chapter End</string>
+    <string name="chapter_back">Chapter Back</string>
+    <string name="chapter_next">Chapter Next</string>
+    <string name="ad_start">Ad Start</string>
+    <string name="ad_complete">Ad Complete</string>
+    <string name="ad_skip">Ad Skip</string>
+    
+    <!-- About Screen -->
+    <string name="about_title">About</string>
+    <string name="about_app_name">Android TV Test App</string>
+    <string name="about_version">Version 1.0.0</string>
+    <string name="about_description">Adobe Experience Platform Mobile SDK test application for Android TV</string>
+    
+    <!-- Error Messages -->
+    <string name="error_generic">An error occurred</string>
+    <string name="error_network">Network error occurred</string>
+    <string name="error_video_load">Failed to load video</string>
+    <string name="error_assurance_connect">Failed to connect to Assurance</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_app_logo">App logo</string>
+    <string name="cd_video_thumbnail">Video thumbnail</string>
+    <string name="cd_play_button">Play button</string>
+    <string name="cd_pause_button">Pause button</string>
+    <string name="cd_volume_slider">Volume slider</string>
+    <string name="cd_progress_bar">Video progress bar</string>
+    <string name="cd_navigation_icon">Navigation icon</string>
+    
+    <!-- Video Information -->
+    <string name="video_duration_format">%02d:%02d:%02d</string>
+    <string name="video_resolution_format">%dx%d</string>
+    <string name="video_chapter_format">Chapter: %s</string>
+    <string name="video_ad_format">AD: %s</string>
+    
+    <!-- Status Messages -->
+    <string name="status_connecting">Connecting...</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="status_buffering">Buffering...</string>
+    <string name="status_playing">Playing</string>
+    <string name="status_paused">Paused</string>
+    
+    <!-- Adobe SDK Messages -->
+    <string name="sdk_initialized">Adobe Mobile SDK initialized</string>
+    <string name="sdk_event_sent">Event sent successfully</string>
+    <string name="sdk_tracking_started">Media tracking started</string>
+    <string name="sdk_tracking_stopped">Media tracking stopped</string>
+</resources>

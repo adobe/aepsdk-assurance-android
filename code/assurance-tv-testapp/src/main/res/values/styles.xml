@@ -1,0 +1,87 @@
+<!--
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ -->
+
+<resources>
+    <!-- TV Focus Styles -->
+    <style name="TVFocusableItem">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/tv_selector_background</item>
+    </style>
+
+    <!-- TV Card Focus Style -->
+    <style name="TVCardFocus" parent="TVCardStyle">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:stateListAnimator">@animator/tv_card_focus_animator</item>
+    </style>
+
+    <!-- TV Button Focus Style -->
+    <style name="TVButtonFocus" parent="TVButtonStyle">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:stateListAnimator">@animator/tv_button_focus_animator</item>
+    </style>
+
+    <!-- TV Navigation Item Style -->
+    <style name="TVNavItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/tv_nav_item_height</item>
+        <item name="android:padding">@dimen/tv_nav_item_padding</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/tv_nav_selector</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!-- TV Video Player Overlay Style -->
+    <style name="TVVideoOverlay">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/tv_overlay_dark</item>
+        <item name="android:padding">@dimen/tv_player_overlay_padding</item>
+    </style>
+
+    <!-- TV Progress Bar Style -->
+    <style name="TVProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:layout_height">@dimen/tv_player_progress_height</item>
+        <item name="android:progressTint">@color/adobe_red</item>
+        <item name="android:progressBackgroundTint">@color/tv_text_tertiary</item>
+    </style>
+
+    <!-- TV Loading Style -->
+    <style name="TVLoadingIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminateTint">@color/adobe_red</item>
+    </style>
+
+    <!-- TV Error Style -->
+    <style name="TVErrorContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/tv_spacing_extra_large</item>
+        <item name="android:background">@color/tv_background_primary</item>
+    </style>
+
+    <!-- TV Grid Style -->
+    <style name="TVGridContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/tv_grid_spacing</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+</resources> 
