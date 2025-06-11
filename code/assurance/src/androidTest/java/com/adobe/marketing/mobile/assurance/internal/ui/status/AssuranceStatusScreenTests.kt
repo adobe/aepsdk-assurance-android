@@ -20,6 +20,7 @@ import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import com.adobe.marketing.mobile.MobileCore
 import com.adobe.marketing.mobile.assurance.internal.AssuranceComponentRegistry
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants
@@ -92,6 +93,64 @@ class AssuranceStatusScreenTests {
     }
 
     @Test
+    fun testAssuranceStatusScreenInLandscapeMode() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+
+        // Setup
+        val testLog1 = "Test Log 1"
+        val testLog2 = "Test Log 2"
+
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.LOW, testLog1)
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.HIGH, testLog2)
+
+        composeTestRule.setContent {
+            AssuranceStatusScreen()
+        }
+
+        composeTestRule.waitForIdle()
+
+        // Verify
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER)
+            .assertExists()
+            .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_CLOSE_BUTTON)
+            .assertExists()
+            .assertIsDisplayed()
+            .assertTextEquals("\u2715")
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_VIEW)
+            .assertExists()
+            .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
+            .assertExists()
+            .assertIsDisplayed()
+
+        val logContent = composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_CONTENT)
+            .assertExists()
+            .assertIsDisplayed()
+
+        logContent.onChildren().assertCountEquals(2)
+        val log1 = logContent.onChildren()[0]
+        log1.assertTextEquals(testLog1)
+        val log2 = logContent.onChildren()[1]
+        log2.assertTextEquals(testLog2)
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON)
+            .assertExists()
+            .assertTextEquals("Clear Log")
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON)
+            .assertExists()
+            .assertTextEquals("Disconnect")
+
+        uiDevice.setOrientationNatural()
+    }
+
+    @Test
     fun testStatusScreen_OnNewLogs() {
         // Setup
         val testLog1 = "Test Log 1"
@@ -157,6 +216,80 @@ class AssuranceStatusScreenTests {
 
         val log4 = logContent.onChildren()[3]
         log4.assertTextEquals(testLog4)
+    }
+
+    @Test
+    fun testStatusScreen_OnNewLogsInLandscapeMode() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+
+        // Setup
+        val testLog1 = "Test Log 1"
+        val testLog2 = "Test Log 2"
+
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.LOW, testLog1)
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.HIGH, testLog2)
+
+        composeTestRule.setContent {
+            AssuranceStatusScreen()
+        }
+
+        composeTestRule.waitForIdle()
+
+        // Verify
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.ASSURANCE_HEADER)
+            .assertExists()
+            .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_CLOSE_BUTTON)
+            .assertExists()
+            .assertIsDisplayed()
+            .assertTextEquals("\u2715")
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_VIEW)
+            .assertExists()
+            .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
+            .assertExists()
+            .assertIsDisplayed()
+
+        val logContent = composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.LOGS_CONTENT)
+            .assertExists()
+            .assertIsDisplayed()
+
+        logContent.onChildren().assertCountEquals(2)
+        val log1 = logContent.onChildren()[0]
+        log1.assertTextEquals(testLog1)
+        val log2 = logContent.onChildren()[1]
+        log2.assertTextEquals(testLog2)
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.CLEAR_LOG_BUTTON)
+            .assertExists()
+            .assertTextEquals("Clear Log")
+
+        composeTestRule.onNodeWithTag(AssuranceUiTestTags.StatusScreen.STATUS_DISCONNECT_BUTTON)
+            .assertExists()
+            .assertTextEquals("Disconnect")
+
+        // Add New Logs
+        val testLog3 = "Test Log 3"
+        val testLog4 = "Test Log 4"
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.LOW, testLog3)
+        AssuranceComponentRegistry.appState.logStatus(AssuranceConstants.UILogColorVisibility.HIGH, testLog4)
+
+        composeTestRule.waitForIdle()
+
+        // Verify
+        logContent.onChildren().assertCountEquals(4)
+        val log3 = logContent.onChildren()[2]
+        log3.assertTextEquals(testLog3)
+
+        val log4 = logContent.onChildren()[3]
+        log4.assertTextEquals(testLog4)
+
+        uiDevice.setOrientationNatural()
     }
 
     @Test

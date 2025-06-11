@@ -80,15 +80,15 @@ android {
         implementation("androidx.navigation:navigation-compose:2.4.0")
 
         // AEP SDK dependencies
+        implementation(platform("com.adobe.marketing.mobile:sdk-bom:3.9.2"))
+        implementation("com.adobe.marketing.mobile:core")
+        // Use the assurance module from the local project
         implementation(project(":assurance"))
-        implementation("com.adobe.marketing.mobile:core:3.0.0")
-        implementation("com.adobe.marketing.mobile:signal:3.0.0")
-        implementation("com.adobe.marketing.mobile:lifecycle:3.0.0")
-        // Messaging, Edge, and EdgeIdentity will be available after Core, Assurance release.
-        // Use Snapshot version for initial Assurance release.
-        implementation("com.adobe.marketing.mobile:messaging:3.0.0")
-        implementation("com.adobe.marketing.mobile:edge:3.0.0")
-        implementation("com.adobe.marketing.mobile:edgeidentity:3.0.0")
+        implementation("com.adobe.marketing.mobile:signal")
+        implementation("com.adobe.marketing.mobile:lifecycle")
+        implementation("com.adobe.marketing.mobile:messaging")
+        implementation("com.adobe.marketing.mobile:edge")
+        implementation("com.adobe.marketing.mobile:edgeidentity")
 
         testImplementation("junit:junit:4.13.2")
 
