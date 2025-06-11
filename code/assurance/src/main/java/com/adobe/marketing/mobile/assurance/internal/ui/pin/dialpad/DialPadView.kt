@@ -16,18 +16,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.adobe.marketing.mobile.assurance.R
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.common.AssuranceHeader
@@ -36,6 +40,7 @@ import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenState
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.backgroundColor
+import kotlin.math.min
 
 /**
  * DialPadView is the landing view for the Pin screen. It displays the pin feedback row,
@@ -50,17 +55,24 @@ internal fun DialPadView(
 ) {
 
     val scrollState = rememberScrollState()
+    val width = LocalConfiguration.current.screenWidthDp
+
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxHeight()
+            // Set the width to a minimum of 600dp or the screen width.
+            // This is to ensure that the dial pad buttons are not too large on squarish aspect ratios
+            .widthIn(max = min(600f, (width.toFloat())).dp)
             .verticalScroll(scrollState)
             .background(backgroundColor)
             .padding(horizontal = AssuranceTheme.dimensions.padding.xxLarge)
-            .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW)
+            .testTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW),
+
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium)
+            verticalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.medium),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AssuranceHeader()
             AssuranceSubHeader(text = stringResource(id = R.string.pin_screen_header))

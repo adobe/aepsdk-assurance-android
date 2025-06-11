@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 
 internal object AssuranceTheme {
     internal val backgroundColor = Color(0xFF1C1F28)
+    internal val statusLogBackgroundColor = Color(4281743682)
     internal val dimensions = Dimensions
     internal val typography = Fonts
 }

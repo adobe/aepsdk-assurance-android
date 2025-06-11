@@ -11,6 +11,7 @@
 
 package com.adobe.marketing.mobile.assurance.internal.ui.status
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -58,6 +60,13 @@ import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme.bac
 @Composable
 internal fun AssuranceStatusScreen() {
     val activity = LocalContext.current.findActivity() ?: return
+    val isTv = with(LocalConfiguration.current) {
+        remember { (this.uiMode and Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION }
+    }
+    val isLandscape = with(LocalConfiguration.current) {
+        remember { (this.orientation == Configuration.ORIENTATION_LANDSCAPE || this.orientation == Configuration.ORIENTATION_UNDEFINED) }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,12 +86,12 @@ internal fun AssuranceStatusScreen() {
             AssuranceComponentRegistry.appState.statusLogs
         }
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
+        Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f)
-                .background(Color(4281743682))
+                .fillMaxHeight(if (isTv || isLandscape) 0.7f else 0.9f)
+                .background(AssuranceTheme.statusLogBackgroundColor)
                 .testTag(AssuranceUiTestTags.StatusScreen.LOGS_PANEL)
         ) {
             // Lazy column to display the logs
