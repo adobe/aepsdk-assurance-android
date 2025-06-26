@@ -63,16 +63,14 @@ assemble-phone-release:
 assemble-app:
 	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
 
-ci-publish-staging: clean assemble-phone
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository --stacktrace)
+ci-publish-staging: clean
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish jreleaserFullRelease)
 
-ci-publish: ci-publish-main
-
-ci-publish-main: clean assemble-phone
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository -Prelease)
+ci-publish-main: clean
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish jreleaserFullRelease -Prelease)
 
 ci-publish-maven-local: clean assemble-phone
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal)
 
 ci-publish-maven-local-jitpack: clean assemble-phone
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack -x signReleasePublication)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -Pjitpack)

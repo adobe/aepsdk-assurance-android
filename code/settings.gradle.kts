@@ -11,11 +11,15 @@
 
 pluginManagement {
     repositories {
+        mavenLocal()
         gradlePluginPortal()
         google()
         mavenCentral()
-        mavenLocal()
     }
+//    plugins {
+//        id("com.android.application") version "8.2.0"
+//        id("org.jetbrains.kotlin.android") version "1.9.23"
+//    }
 }
 
 dependencyResolutionManagement {
