@@ -11,7 +11,7 @@ A sample Android TV application demonstrating Adobe Experience Platform Assuranc
 ## Quick Start
 
 ### 1. Configure Your App ID
-Replace `YOUR_APP_ID` with your actual Adobe configuration ID in the app initialization:
+Replace `YOUR_APP_ID` with your actual Adobe configuration ID in the app initialization (TvHomeActivity):
 
 ```kotlin
 MobileCore.initialize(

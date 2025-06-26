@@ -13,6 +13,7 @@
         android:required="false" />
 
     <application
+
         android:allowBackup="true"
         android:banner="@mipmap/ic_launcher"
         android:icon="@mipmap/ic_launcher"
@@ -20,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aepsdkassuranceandroid">
         <activity
-            android:name=".TvHomeActivity"
+            android:name="com.adobe.marketing.mobile.assurance.assurancetvtestapp.TvHomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

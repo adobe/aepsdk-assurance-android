@@ -82,8 +82,8 @@
     <string name="cd_navigation_icon">Navigation icon</string>
     
     <!-- Video Information -->
-    <string name="video_duration_format">%02d:%02d:%02d</string>
-    <string name="video_resolution_format">%dx%d</string>
+    <string name="video_duration_format" formatted="false">%02d:%02d:%02d</string>
+    <string name="video_resolution_format" formatted="false">%dx%d</string>
     <string name="video_chapter_format">Chapter: %s</string>
     <string name="video_ad_format">AD: %s</string>
     
