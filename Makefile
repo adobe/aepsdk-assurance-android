@@ -74,7 +74,9 @@ assemble-phone-debug:
 assemble-phone-release:
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME}  assemblePhoneRelease)
 
-assemble-app:
+assemble-app: assemble-mobile-app assemble-tv-app
+
+assemble-mobile-app:
 	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
 
 assemble-tv-app:
