@@ -13,7 +13,13 @@ package com.adobe.marketing.mobile.assurance.internal;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.PixelCopy;
 import android.view.View;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import com.adobe.marketing.mobile.Assurance;
 import com.adobe.marketing.mobile.assurance.internal.AssuranceConstants.UILogColorVisibility;
@@ -30,8 +36,6 @@ class AssurancePluginScreenshot implements AssurancePlugin {
     private static final String PAYLOAD_ERROR = "error";
     private AssuranceSession parentSession = null;
 
-    private CaptureScreenShotListener listener;
-
     @Override
     public String getVendor() {
         return AssuranceConstants.VENDOR_ASSURANCE_MOBILE;
@@ -45,19 +49,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
     /** This method will be invoked only if the control event is of type "screenshot" */
     @Override
     public void onEventReceived(final AssuranceEvent event) {
-        // we don't need to verify any controlDetails for this event
-        listener =
-                new CaptureScreenShotListener() {
-                    @Override
-                    public void onCaptureScreenshot(Bitmap bitmap) {
-                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        int quality = 100;
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
-                        sendScreenshot(baos);
-                    }
-                };
-
-        getCurrentScreenShot(listener);
+        manageScreenShot();
     }
 
     @Override
@@ -72,7 +64,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
 
     @Override
     public void onSessionDisconnected(final int code) {
-        listener = null;
+        /* no-op */
     }
 
     @Override
@@ -80,7 +72,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
         parentSession = null;
     }
 
-    private void getCurrentScreenShot(final CaptureScreenShotListener captureScreenShotListener) {
+    private void manageScreenShot() {
         if (parentSession == null) {
             Log.error(
                     Assurance.LOG_TAG,
@@ -89,26 +81,100 @@ class AssurancePluginScreenshot implements AssurancePlugin {
             return;
         }
 
-        // create bitmap screen capture
+        // Get current activity
         final Activity currentActivity =
                 ServiceProvider.getInstance().getAppContextService().getCurrentActivity();
 
-        if (currentActivity != null) {
-            currentActivity.runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            View currentWindow =
-                                    currentActivity.getWindow().getDecorView().getRootView();
-                            currentWindow.setDrawingCacheEnabled(true);
-                            Bitmap bitmap = Bitmap.createBitmap(currentWindow.getDrawingCache());
-                            currentWindow.setDrawingCacheEnabled(false);
+        if (currentActivity == null) {
+            Log.error(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Unable to take screenshot, current activity is null.");
+            return;
+        }
 
-                            if (captureScreenShotListener != null) {
-                                captureScreenShotListener.onCaptureScreenshot(bitmap);
-                            }
+        // Check if device supports PixelCopy API (Android 8.0 and above)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            Log.error(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Screenshot not supported on Android versions below 8.0 (API 26)");
+            if (parentSession != null) {
+                parentSession.logLocalUI(UILogColorVisibility.LOW, "Screenshot not supported on Android versions below 8.0 (API 26)");
+                sendErrorEvent("Screenshot not supported on Android versions below 8.0 (API 26)");
+            }
+            return;
+        }
+
+        try {
+            captureScreenshotWithPixelCopy(currentActivity);
+        } catch (Exception e) {
+            Log.error(
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Error while taking screenshot: " + e.getMessage());
+            sendErrorEvent("Screenshot capture failed: " + e.getMessage());
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void captureScreenshotWithPixelCopy(final Activity currentActivity) {
+        final View view = currentActivity.getWindow().getDecorView().getRootView();
+        final Bitmap bitmap = Bitmap.createBitmap(
+                view.getWidth(),
+                view.getHeight(),
+                Bitmap.Config.ARGB_8888
+        );
+
+        final int[] locationOnScreen = new int[2];
+        view.getLocationOnScreen(locationOnScreen);
+        
+        final Rect sourceRect = new Rect(
+                locationOnScreen[0],
+                locationOnScreen[1],
+                locationOnScreen[0] + view.getWidth(),
+                locationOnScreen[1] + view.getHeight()
+        );
+
+        final Handler handler = new Handler(Looper.getMainLooper());
+
+        PixelCopy.request(
+                currentActivity.getWindow(),
+                sourceRect,
+                bitmap,
+                new PixelCopy.OnPixelCopyFinishedListener() {
+                    @Override
+                    public void onPixelCopyFinished(int result) {
+                        if (result == PixelCopy.SUCCESS) {
+                            // Compress to PNG
+                            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                            sendScreenshot(baos);
+                        } else {
+                            Log.error(
+                                    Assurance.LOG_TAG,
+                                    LOG_TAG,
+                                    "PixelCopy failed with result: " + result);
+                            sendErrorEvent("PixelCopy failed with result: " + result);
                         }
-                    });
+                    }
+                },
+                handler
+        );
+    }
+
+    private void sendErrorEvent(final String errorMessage) {
+        final Map<String, Object> responsePayload = new HashMap<>();
+        responsePayload.put(PAYLOAD_BLOBID, "");
+        responsePayload.put(PAYLOAD_ERROR, errorMessage);
+        final AssuranceEvent screenshotFailEvent =
+                new AssuranceEvent(
+                        AssuranceConstants.AssuranceEventType.BLOB,
+                        responsePayload);
+        
+        if (parentSession != null) {
+            parentSession.logLocalUI(UILogColorVisibility.LOW, "Screenshot capture failed");
+            parentSession.queueOutboundEvent(screenshotFailEvent);
         }
     }
 
@@ -123,7 +189,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
 
         AssuranceBlob.upload(
                 baos.toByteArray(),
-                "image/jpeg",
+                "image/png",
                 parentSession,
                 new AssuranceBlob.BlobUploadCallback() {
                     @Override
@@ -179,19 +245,5 @@ class AssurancePluginScreenshot implements AssurancePlugin {
     @VisibleForTesting
     AssuranceSession getParentSession() {
         return parentSession;
-    }
-
-    /**
-     * Returns the screenshot listener associated with this plugin.
-     *
-     * @return the {@code CaptureScreenShotListener} for this plugin.
-     */
-    @VisibleForTesting
-    CaptureScreenShotListener getCaptureScreenShotListener() {
-        return listener;
-    }
-
-    interface CaptureScreenShotListener {
-        void onCaptureScreenshot(Bitmap bitmap);
     }
 }
