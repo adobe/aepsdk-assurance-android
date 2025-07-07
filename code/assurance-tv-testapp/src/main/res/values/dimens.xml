@@ -1,0 +1,63 @@
+<!--
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ -->
+
+<resources>
+    <!-- TV Screen Margins -->
+    <dimen name="tv_overscan_margin">48dp</dimen>
+    <dimen name="tv_safe_margin">24dp</dimen>
+    
+    <!-- Text Sizes for TV -->
+    <dimen name="tv_text_size_large">24sp</dimen>
+    <dimen name="tv_text_size_medium">18sp</dimen>
+    <dimen name="tv_text_size_small">14sp</dimen>
+    <dimen name="tv_text_size_extra_large">32sp</dimen>
+    
+    <!-- Card Dimensions -->
+    <dimen name="tv_card_width">320dp</dimen>
+    <dimen name="tv_card_height">180dp</dimen>
+    <dimen name="tv_card_corner_radius">12dp</dimen>
+    <dimen name="tv_card_elevation">8dp</dimen>
+    <dimen name="tv_card_margin">16dp</dimen>
+    
+    <!-- Button Dimensions -->
+    <dimen name="tv_button_height">56dp</dimen>
+    <dimen name="tv_button_width">160dp</dimen>
+    <dimen name="tv_button_corner_radius">8dp</dimen>
+    <dimen name="tv_button_padding_horizontal">24dp</dimen>
+    <dimen name="tv_button_padding_vertical">12dp</dimen>
+    
+    <!-- Navigation Dimensions -->
+    <dimen name="tv_nav_width">240dp</dimen>
+    <dimen name="tv_nav_item_height">56dp</dimen>
+    <dimen name="tv_nav_item_padding">16dp</dimen>
+    <dimen name="tv_nav_icon_size">24dp</dimen>
+    
+    <!-- Spacing -->
+    <dimen name="tv_spacing_tiny">4dp</dimen>
+    <dimen name="tv_spacing_small">8dp</dimen>
+    <dimen name="tv_spacing_medium">16dp</dimen>
+    <dimen name="tv_spacing_large">24dp</dimen>
+    <dimen name="tv_spacing_extra_large">32dp</dimen>
+    
+    <!-- Focus Dimensions -->
+    <dimen name="tv_focus_border_width">4dp</dimen>
+    <dimen name="tv_focus_corner_radius">8dp</dimen>
+    
+    <!-- Video Player Dimensions -->
+    <dimen name="tv_player_control_size">48dp</dimen>
+    <dimen name="tv_player_progress_height">8dp</dimen>
+    <dimen name="tv_player_overlay_padding">24dp</dimen>
+    
+    <!-- Grid Dimensions -->
+    <dimen name="tv_grid_spacing">24dp</dimen>
+    <dimen name="tv_grid_item_width">280dp</dimen>
+    <dimen name="tv_grid_item_height">160dp</dimen>
+</resources> 
