@@ -100,7 +100,9 @@ class AssurancePluginScreenshot implements AssurancePlugin {
                     LOG_TAG,
                     "Screenshot not supported on Android versions below 8.0 (API 26)");
             if (parentSession != null) {
-                parentSession.logLocalUI(UILogColorVisibility.LOW, "Screenshot not supported on Android versions below 8.0 (API 26)");
+                parentSession.logLocalUI(
+                        UILogColorVisibility.LOW,
+                        "Screenshot not supported on Android versions below 8.0 (API 26)");
                 sendErrorEvent("Screenshot not supported on Android versions below 8.0 (API 26)");
             }
             return;
@@ -110,9 +112,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
             captureScreenshotWithPixelCopy(currentActivity);
         } catch (Exception e) {
             Log.error(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    "Error while taking screenshot: " + e.getMessage());
+                    Assurance.LOG_TAG, LOG_TAG, "Error while taking screenshot: " + e.getMessage());
             sendErrorEvent("Screenshot capture failed: " + e.getMessage());
         }
     }
@@ -120,21 +120,18 @@ class AssurancePluginScreenshot implements AssurancePlugin {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void captureScreenshotWithPixelCopy(final Activity currentActivity) {
         final View view = currentActivity.getWindow().getDecorView().getRootView();
-        final Bitmap bitmap = Bitmap.createBitmap(
-                view.getWidth(),
-                view.getHeight(),
-                Bitmap.Config.ARGB_8888
-        );
+        final Bitmap bitmap =
+                Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
 
         final int[] locationOnScreen = new int[2];
         view.getLocationOnScreen(locationOnScreen);
-        
-        final Rect sourceRect = new Rect(
-                locationOnScreen[0],
-                locationOnScreen[1],
-                locationOnScreen[0] + view.getWidth(),
-                locationOnScreen[1] + view.getHeight()
-        );
+
+        final Rect sourceRect =
+                new Rect(
+                        locationOnScreen[0],
+                        locationOnScreen[1],
+                        locationOnScreen[0] + view.getWidth(),
+                        locationOnScreen[1] + view.getHeight());
 
         final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -159,8 +156,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
                         }
                     }
                 },
-                handler
-        );
+                handler);
     }
 
     private void sendErrorEvent(final String errorMessage) {
@@ -168,10 +164,8 @@ class AssurancePluginScreenshot implements AssurancePlugin {
         responsePayload.put(PAYLOAD_BLOBID, "");
         responsePayload.put(PAYLOAD_ERROR, errorMessage);
         final AssuranceEvent screenshotFailEvent =
-                new AssuranceEvent(
-                        AssuranceConstants.AssuranceEventType.BLOB,
-                        responsePayload);
-        
+                new AssuranceEvent(AssuranceConstants.AssuranceEventType.BLOB, responsePayload);
+
         if (parentSession != null) {
             parentSession.logLocalUI(UILogColorVisibility.LOW, "Screenshot capture failed");
             parentSession.queueOutboundEvent(screenshotFailEvent);

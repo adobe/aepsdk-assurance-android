@@ -32,8 +32,8 @@ import android.view.PixelCopy;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import com.adobe.marketing.mobile.services.ServiceProvider;
 import com.adobe.marketing.mobile.services.AppContextService;
+import com.adobe.marketing.mobile.services.ServiceProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class AssurancePluginScreenshotTest {
     private static final String PAYLOAD_BLOBID = "blobId";
     private static final String PAYLOAD_MIMETYPE = "mimeType";
     private static final String PAYLOAD_ERROR = "error";
-    
+
     // Test constants to eliminate magic numbers
     private static final int TEST_SCREEN_WIDTH = 1080;
     private static final int TEST_SCREEN_HEIGHT = 1920;
@@ -115,9 +115,14 @@ public class AssurancePluginScreenshotTest {
         // prepare
         MockBundle mocks = createMockBundle();
 
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class)) {
-            setupBasicActivityMocks(mocks.mockActivity, mocks.mockWindow, mocks.mockView, 
-                                   mocks.mockWindowManager, mockedServiceProvider);
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                mockStatic(ServiceProvider.class)) {
+            setupBasicActivityMocks(
+                    mocks.mockActivity,
+                    mocks.mockWindow,
+                    mocks.mockView,
+                    mocks.mockWindowManager,
+                    mockedServiceProvider);
 
             // test
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
@@ -137,18 +142,24 @@ public class AssurancePluginScreenshotTest {
         // prepare
         MockBundle mocks = createMockBundle();
 
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class);
-             MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                        mockStatic(ServiceProvider.class);
+                MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
 
-            setupBasicActivityMocks(mocks.mockActivity, mocks.mockWindow, mocks.mockView, 
-                                   mocks.mockWindowManager, mockedServiceProvider);
+            setupBasicActivityMocks(
+                    mocks.mockActivity,
+                    mocks.mockWindow,
+                    mocks.mockView,
+                    mocks.mockWindowManager,
+                    mockedServiceProvider);
             setupSuccessfulPixelCopy(mockedPixelCopy);
 
             // test
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify upload method call and trigger success callback
-            ArgumentCaptor<AssuranceBlob.BlobUploadCallback> callbackCaptor = verifyBlobUploadCall();
+            ArgumentCaptor<AssuranceBlob.BlobUploadCallback> callbackCaptor =
+                    verifyBlobUploadCall();
             callbackCaptor.getValue().onSuccess(TEST_BLOB_ID);
 
             // verify if screenshot event is queued
@@ -161,18 +172,25 @@ public class AssurancePluginScreenshotTest {
         // prepare
         MockBundle mocks = createMockBundle();
 
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class);
-             MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                        mockStatic(ServiceProvider.class);
+                MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
 
-            setupBasicActivityMocks(mocks.mockActivity, mocks.mockWindow, mocks.mockView, 
-                                   mocks.mockWindowManager, mockedServiceProvider);
+            setupBasicActivityMocks(
+                    mocks.mockActivity,
+                    mocks.mockWindow,
+                    mocks.mockView,
+                    mocks.mockWindowManager,
+                    mockedServiceProvider);
             setupFailedPixelCopy(mockedPixelCopy);
 
             // test
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify
-            verifyErrorEventWithPayload("Screenshot capture failed", "PixelCopy failed with result: " + PixelCopy.ERROR_SOURCE_INVALID);
+            verifyErrorEventWithPayload(
+                    "Screenshot capture failed",
+                    "PixelCopy failed with result: " + PixelCopy.ERROR_SOURCE_INVALID);
         }
     }
 
@@ -181,8 +199,11 @@ public class AssurancePluginScreenshotTest {
     public void test_onUnsupportedAndroidVersion() {
         // prepare
         Activity mockActivity = Mockito.mock(Activity.class);
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class)) {
-            mockedServiceProvider.when(ServiceProvider::getInstance).thenReturn(mockServiceProvider);
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                mockStatic(ServiceProvider.class)) {
+            mockedServiceProvider
+                    .when(ServiceProvider::getInstance)
+                    .thenReturn(mockServiceProvider);
             when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
             when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
 
@@ -190,15 +211,20 @@ public class AssurancePluginScreenshotTest {
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify
-            verifyErrorEventWithPayload("Screenshot not supported on Android versions below 8.0 (API 26)", "Screenshot not supported on Android versions below 8.0 (API 26)");
+            verifyErrorEventWithPayload(
+                    "Screenshot not supported on Android versions below 8.0 (API 26)",
+                    "Screenshot not supported on Android versions below 8.0 (API 26)");
         }
     }
 
     @Test
     public void test_onNullActivity() {
         // prepare
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class)) {
-            mockedServiceProvider.when(ServiceProvider::getInstance).thenReturn(mockServiceProvider);
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                mockStatic(ServiceProvider.class)) {
+            mockedServiceProvider
+                    .when(ServiceProvider::getInstance)
+                    .thenReturn(mockServiceProvider);
             when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
             when(mockAppContextService.getCurrentActivity()).thenReturn(null);
 
@@ -206,7 +232,8 @@ public class AssurancePluginScreenshotTest {
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify no interactions with session
-            verify(mockSession, never()).logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
+            verify(mockSession, never())
+                    .logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
             verify(mockSession, never()).queueOutboundEvent(any(AssuranceEvent.class));
         }
     }
@@ -215,8 +242,11 @@ public class AssurancePluginScreenshotTest {
     public void test_onNullParentSession() {
         // prepare
         Activity mockActivity = Mockito.mock(Activity.class);
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class)) {
-            mockedServiceProvider.when(ServiceProvider::getInstance).thenReturn(mockServiceProvider);
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                mockStatic(ServiceProvider.class)) {
+            mockedServiceProvider
+                    .when(ServiceProvider::getInstance)
+                    .thenReturn(mockServiceProvider);
             when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
             when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
 
@@ -227,7 +257,8 @@ public class AssurancePluginScreenshotTest {
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify no interactions with session
-            verify(mockSession, never()).logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
+            verify(mockSession, never())
+                    .logLocalUI(any(AssuranceConstants.UILogColorVisibility.class), anyString());
             verify(mockSession, never()).queueOutboundEvent(any(AssuranceEvent.class));
         }
     }
@@ -237,22 +268,30 @@ public class AssurancePluginScreenshotTest {
         // prepare
         MockBundle mocks = createMockBundle();
 
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class);
-             MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                        mockStatic(ServiceProvider.class);
+                MockedStatic<PixelCopy> mockedPixelCopy = mockStatic(PixelCopy.class)) {
 
-            setupBasicActivityMocks(mocks.mockActivity, mocks.mockWindow, mocks.mockView, 
-                                   mocks.mockWindowManager, mockedServiceProvider);
+            setupBasicActivityMocks(
+                    mocks.mockActivity,
+                    mocks.mockWindow,
+                    mocks.mockView,
+                    mocks.mockWindowManager,
+                    mockedServiceProvider);
             setupSuccessfulPixelCopy(mockedPixelCopy);
 
             // test
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify upload method call and simulate failure
-            ArgumentCaptor<AssuranceBlob.BlobUploadCallback> callbackCaptor = verifyBlobUploadCall();
+            ArgumentCaptor<AssuranceBlob.BlobUploadCallback> callbackCaptor =
+                    verifyBlobUploadCall();
             callbackCaptor.getValue().onFailure(TEST_UPLOAD_ERROR);
 
             // verify error handling
-            verifyErrorEventWithPayload("Error while taking screenshot - Description: " + TEST_UPLOAD_ERROR, TEST_UPLOAD_ERROR);
+            verifyErrorEventWithPayload(
+                    "Error while taking screenshot - Description: " + TEST_UPLOAD_ERROR,
+                    TEST_UPLOAD_ERROR);
         }
     }
 
@@ -261,8 +300,11 @@ public class AssurancePluginScreenshotTest {
         // prepare
         MockBundle mocks = createMockBundle();
 
-        try (MockedStatic<ServiceProvider> mockedServiceProvider = mockStatic(ServiceProvider.class)) {
-            mockedServiceProvider.when(ServiceProvider::getInstance).thenReturn(mockServiceProvider);
+        try (MockedStatic<ServiceProvider> mockedServiceProvider =
+                mockStatic(ServiceProvider.class)) {
+            mockedServiceProvider
+                    .when(ServiceProvider::getInstance)
+                    .thenReturn(mockServiceProvider);
             when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
             when(mockAppContextService.getCurrentActivity()).thenReturn(mocks.mockActivity);
             when(mocks.mockActivity.getWindow()).thenReturn(mocks.mockWindow);
@@ -274,7 +316,8 @@ public class AssurancePluginScreenshotTest {
             assurancePluginScreenshot.onEventReceived(mockAssuranceEvent);
 
             // verify error handling
-            verifyErrorEventWithPayload("Screenshot capture failed", "Screenshot capture failed: Test exception");
+            verifyErrorEventWithPayload(
+                    "Screenshot capture failed", "Screenshot capture failed: Test exception");
         }
     }
 
@@ -316,8 +359,12 @@ public class AssurancePluginScreenshotTest {
     }
 
     // Helper methods for setup
-    private void setupBasicActivityMocks(Activity mockActivity, Window mockWindow, View mockView, 
-                                       WindowManager mockWindowManager, MockedStatic<ServiceProvider> mockedServiceProvider) {
+    private void setupBasicActivityMocks(
+            Activity mockActivity,
+            Window mockWindow,
+            View mockView,
+            WindowManager mockWindowManager,
+            MockedStatic<ServiceProvider> mockedServiceProvider) {
         mockedServiceProvider.when(ServiceProvider::getInstance).thenReturn(mockServiceProvider);
         when(mockServiceProvider.getAppContextService()).thenReturn(mockAppContextService);
         when(mockAppContextService.getCurrentActivity()).thenReturn(mockActivity);
@@ -328,12 +375,15 @@ public class AssurancePluginScreenshotTest {
         when(mockView.getHeight()).thenReturn(TEST_SCREEN_HEIGHT);
         when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
         when(mockWindowManager.getDefaultDisplay()).thenReturn(mockDisplay);
-        doAnswer(invocation -> {
-            DisplayMetrics metrics = invocation.getArgument(0);
-            metrics.widthPixels = TEST_SCREEN_WIDTH;
-            metrics.heightPixels = TEST_SCREEN_HEIGHT;
-            return null;
-        }).when(mockDisplay).getMetrics(any(DisplayMetrics.class));
+        doAnswer(
+                        invocation -> {
+                            DisplayMetrics metrics = invocation.getArgument(0);
+                            metrics.widthPixels = TEST_SCREEN_WIDTH;
+                            metrics.heightPixels = TEST_SCREEN_HEIGHT;
+                            return null;
+                        })
+                .when(mockDisplay)
+                .getMetrics(any(DisplayMetrics.class));
     }
 
     private MockBundle createMockBundle() {
@@ -350,7 +400,11 @@ public class AssurancePluginScreenshotTest {
         final View mockView;
         final WindowManager mockWindowManager;
 
-        MockBundle(Activity mockActivity, Window mockWindow, View mockView, WindowManager mockWindowManager) {
+        MockBundle(
+                Activity mockActivity,
+                Window mockWindow,
+                View mockView,
+                WindowManager mockWindowManager) {
             this.mockActivity = mockActivity;
             this.mockWindow = mockWindow;
             this.mockView = mockView;
@@ -360,55 +414,66 @@ public class AssurancePluginScreenshotTest {
 
     // Additional helper methods for PixelCopy scenarios
     private void setupSuccessfulPixelCopy(MockedStatic<PixelCopy> mockedPixelCopy) {
-        mockedPixelCopy.when(() -> PixelCopy.request(
-                any(Window.class),
-                any(Rect.class),
-                any(Bitmap.class),
-                any(PixelCopy.OnPixelCopyFinishedListener.class),
-                any(Handler.class)
-        )).thenAnswer(invocation -> {
-            PixelCopy.OnPixelCopyFinishedListener listener = invocation.getArgument(3);
-            listener.onPixelCopyFinished(PixelCopy.SUCCESS);
-            return null;
-        });
+        mockedPixelCopy
+                .when(
+                        () ->
+                                PixelCopy.request(
+                                        any(Window.class),
+                                        any(Rect.class),
+                                        any(Bitmap.class),
+                                        any(PixelCopy.OnPixelCopyFinishedListener.class),
+                                        any(Handler.class)))
+                .thenAnswer(
+                        invocation -> {
+                            PixelCopy.OnPixelCopyFinishedListener listener =
+                                    invocation.getArgument(3);
+                            listener.onPixelCopyFinished(PixelCopy.SUCCESS);
+                            return null;
+                        });
     }
 
     private void setupFailedPixelCopy(MockedStatic<PixelCopy> mockedPixelCopy) {
-        mockedPixelCopy.when(() -> PixelCopy.request(
-                any(Window.class),
-                any(Rect.class),
-                any(Bitmap.class),
-                any(PixelCopy.OnPixelCopyFinishedListener.class),
-                any(Handler.class)
-        )).thenAnswer(invocation -> {
-            PixelCopy.OnPixelCopyFinishedListener listener = invocation.getArgument(3);
-            listener.onPixelCopyFinished(PixelCopy.ERROR_SOURCE_INVALID);
-            return null;
-        });
+        mockedPixelCopy
+                .when(
+                        () ->
+                                PixelCopy.request(
+                                        any(Window.class),
+                                        any(Rect.class),
+                                        any(Bitmap.class),
+                                        any(PixelCopy.OnPixelCopyFinishedListener.class),
+                                        any(Handler.class)))
+                .thenAnswer(
+                        invocation -> {
+                            PixelCopy.OnPixelCopyFinishedListener listener =
+                                    invocation.getArgument(3);
+                            listener.onPixelCopyFinished(PixelCopy.ERROR_SOURCE_INVALID);
+                            return null;
+                        });
     }
 
     private ArgumentCaptor<AssuranceBlob.BlobUploadCallback> verifyBlobUploadCall() {
         ArgumentCaptor<AssuranceBlob.BlobUploadCallback> callbackCaptor =
                 ArgumentCaptor.forClass(AssuranceBlob.BlobUploadCallback.class);
-        
+
         mockedStaticAssuranceBlob.verify(
-                () -> AssuranceBlob.upload(
-                        any(byte[].class),
-                        anyString(),
-                        any(AssuranceSession.class),
-                        callbackCaptor.capture()),
+                () ->
+                        AssuranceBlob.upload(
+                                any(byte[].class),
+                                anyString(),
+                                any(AssuranceSession.class),
+                                callbackCaptor.capture()),
                 times(1));
-        
+
         return callbackCaptor;
     }
 
     private void verifySuccessfulScreenshotEvent(String blobId) {
         ArgumentCaptor<AssuranceEvent> eventCaptor = ArgumentCaptor.forClass(AssuranceEvent.class);
-        
+
         verify(mockSession, times(1))
                 .logLocalUI(AssuranceConstants.UILogColorVisibility.LOW, "Screenshot taken");
         verify(mockSession, times(1)).queueOutboundEvent(eventCaptor.capture());
-        
+
         AssuranceEvent queuedEvent = eventCaptor.getValue();
         assertNotNull(queuedEvent);
         assertEquals(AssuranceConstants.AssuranceEventType.BLOB, queuedEvent.type);
@@ -416,17 +481,20 @@ public class AssurancePluginScreenshotTest {
         assertEquals("image/png", queuedEvent.payload.get(PAYLOAD_MIMETYPE));
     }
 
-    private void verifyErrorEventWithPayload(String expectedLogMessage, String expectedErrorMessage) {
+    private void verifyErrorEventWithPayload(
+            String expectedLogMessage, String expectedErrorMessage) {
         ArgumentCaptor<AssuranceEvent> eventCaptor = ArgumentCaptor.forClass(AssuranceEvent.class);
-        
+
         verify(mockSession, times(1))
                 .logLocalUI(AssuranceConstants.UILogColorVisibility.LOW, expectedLogMessage);
         verify(mockSession, times(1)).queueOutboundEvent(eventCaptor.capture());
-        
+
         AssuranceEvent queuedEvent = eventCaptor.getValue();
         assertNotNull(queuedEvent);
         assertEquals(AssuranceConstants.AssuranceEventType.BLOB, queuedEvent.type);
-        assertEquals("", queuedEvent.payload.get(PAYLOAD_BLOBID));                    // Empty blob ID on error
-        assertEquals(expectedErrorMessage, queuedEvent.payload.get(PAYLOAD_ERROR));   // Actual error message
+        assertEquals("", queuedEvent.payload.get(PAYLOAD_BLOBID)); // Empty blob ID on error
+        assertEquals(
+                expectedErrorMessage,
+                queuedEvent.payload.get(PAYLOAD_ERROR)); // Actual error message
     }
 }
