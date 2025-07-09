@@ -18,7 +18,7 @@ buildscript {
         maven { url = uri("https://jitpack.io") }
     }
     dependencies {
-//        classpath("com.github.adobe:aepsdk-commons:gp-3.0.0")
-        classpath("com.github.adobe.aepsdk-commons:aepsdk-gradle-plugin:4.0.0")
+        classpath("com.github.adobe:aepsdk-commons:gp-3.4.0-beta.1")
+//        classpath("com.github.adobe.aepsdk-commons:aepsdk-gradle-plugin:3.4.0")
     }
 }
