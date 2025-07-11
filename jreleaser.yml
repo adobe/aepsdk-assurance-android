@@ -33,7 +33,7 @@ deploy:
         verifyPom:  false       # AAR packages fail standard pom validation
         stagingRepositories:
           - build/staging-deploy
-        namespace: "${JRELEASER_PROJECT_JAVA_GROUPID}"  # e.g. com.adobe.marketing.mobile
+        namespace: "${JRELEASER_PROJECT_JAVA_GROUP_ID}"  # e.g. com.adobe.marketing.mobile
 
     nexus2:
       sonatypeSnapshots:
