@@ -21,9 +21,7 @@ deploy:
       sonatype:
         active: RELEASE
         stage:  UPLOAD          # stop after the upload/validation step
-        url: https://central.sonatype.com/api/v1/publisher   # SNAPSHOTS_URL or RELEASES_URL chosen by Gradle
-        username: "{{Env.CENTRAL_SONATYPE_USERNAME}}"
-        password: "{{Env.CENTRAL_SONATYPE_TOKEN}}"
+        url: https://central.sonatype.com/api/v1/publisher
         authorization: BEARER
         sign: true
         checksums: true
