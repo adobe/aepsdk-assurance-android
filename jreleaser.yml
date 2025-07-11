@@ -39,7 +39,8 @@ deploy:
         url: https://central.sonatype.com/repository/maven-snapshots/
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
         authorization: BEARER
-        # username: ${JRELEASER_NEXUS2_SONATYPESNAPSHOTS_USERNAME}
+        username: {{ env.CENTRAL_SONATYPE_USERNAME }}
+        password: {{ env.CENTRAL_SONATYPE_PASSWORD }}
         sign: true
         checksums: true
         sourceJar:  true
