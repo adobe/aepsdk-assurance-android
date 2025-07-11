@@ -13,8 +13,8 @@ signing:
   verify:  false                # skip post-sign verification
   command:
     executable: gpg             # BuildConstants.Publishing.SIGNING_GNUPG_EXECUTABLE
-    keyName:   "${GPG_KEY_ID}"  # BuildConstants.Publishing.SIGNING_GNUPG_KEY_NAME
-  passphrase: "${GPG_PASSPHRASE}"
+    keyName: "{{ env.GPG_KEY_ID }}"  # BuildConstants.Publishing.SIGNING_GNUPG_KEY_NAME
+  passphrase: "{{ env.GPG_PASSPHRASE }}"
 
 deploy:
   maven:
@@ -22,9 +22,9 @@ deploy:
       sonatype:
         active: RELEASE
         stage:  UPLOAD          # stop after the upload/validation step
-        url: "${PUBLISH_URL}"   # SNAPSHOTS_URL or RELEASES_URL chosen by Gradle
-        username: "${CENTRAL_SONATYPE_USERNAME}"
-        password: "${CENTRAL_SONATYPE_TOKEN}"
+        url: https://central.sonatype.com/api/v1/publisher   # SNAPSHOTS_URL or RELEASES_URL chosen by Gradle
+        username: "{{ env.CENTRAL_SONATYPE_USERNAME }}"
+        password: "{{ env.CENTRAL_SONATYPE_TOKEN }}"
         authorization: BEARER
         sign: true
         checksums: true
@@ -33,15 +33,15 @@ deploy:
         verifyPom:  false       # AAR packages fail standard pom validation
         stagingRepositories:
           - code/assurance/build/staging-deploy
-        namespace: "${JRELEASER_PROJECT_JAVA_GROUP_ID}"  # e.g. com.adobe.marketing.mobile
+        namespace: "{{ env.JRELEASER_PROJECT_JAVA_GROUP_ID }}"  # e.g. com.adobe.marketing.mobile
 
     nexus2:
       sonatypeSnapshots:
         active: SNAPSHOT
         url: https://central.sonatype.com/repository/maven-snapshots/
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
-        username: "${CENTRAL_SONATYPE_USERNAME}"
-        password: "${CENTRAL_SONATYPE_TOKEN}"
+        username: "{{ env.CENTRAL_SONATYPE_USERNAME }}"
+        password: "{{ env.CENTRAL_SONATYPE_TOKEN }}"
         authorization: BEARER
         sign: true
         checksums: true
