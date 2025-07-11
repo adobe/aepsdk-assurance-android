@@ -1,5 +1,5 @@
 # General
-gitRootSearch: true            # walk up the directory tree to locate .git
+# gitRootSearch: true            # walk up the directory tree to locate .git
 
 release:
   github:
