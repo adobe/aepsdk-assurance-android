@@ -32,7 +32,7 @@ deploy:
         javadocJar: true
         verifyPom:  false       # AAR packages fail standard pom validation
         stagingRepositories:
-          - build/staging-deploy
+          - code/assurance/build/staging-deploy
         namespace: "${JRELEASER_PROJECT_JAVA_GROUP_ID}"  # e.g. com.adobe.marketing.mobile
 
     nexus2:
@@ -52,4 +52,4 @@ deploy:
         closeRepository:   true   # auto-close staging repository
         releaseRepository: true   # auto-release staging repository
         stagingRepositories:
-          - build/staging-deploy
+          - code/assurance/build/staging-deploy
