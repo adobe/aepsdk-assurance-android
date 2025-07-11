@@ -1,5 +1,6 @@
 # General
-# gitRootSearch: true            # walk up the directory tree to locate .git
+project:
+  gitRootSearch: true            # walk up the directory tree to locate .git
 
 release:
   github:
@@ -33,7 +34,8 @@ deploy:
         sourceJar:  true
         javadocJar: true
         verifyPom:  false       # AAR packages fail standard pom validation
-        stagingRepository: build/staging-deploy
+        stagingRepositories:
+          - build/staging-deploy
         namespace: "${JRELEASER_PROJECT_JAVA_GROUPID}"  # e.g. com.adobe.marketing.mobile
 
     nexus2:
@@ -52,4 +54,5 @@ deploy:
         snapshotSupported: true
         closeRepository:   true   # auto-close staging repository
         releaseRepository: true   # auto-release staging repository
-        stagingRepository: build/staging-deploy
+        stagingRepositories:
+          - build/staging-deploy
