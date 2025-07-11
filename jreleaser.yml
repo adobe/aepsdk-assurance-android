@@ -13,8 +13,7 @@ signing:
   verify:  false                # skip post-sign verification
   command:
     executable: gpg             # BuildConstants.Publishing.SIGNING_GNUPG_EXECUTABLE
-    keyName: "{{Env.GPG_KEY_ID}}"  # BuildConstants.Publishing.SIGNING_GNUPG_KEY_NAME
-  passphrase: "{{Env.GPG_PASSPHRASE}}"
+  # KEY_ID and PASSPHRASE are set in the environment variables by the workflow
 
 deploy:
   maven:
