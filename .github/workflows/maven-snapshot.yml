@@ -19,5 +19,5 @@ jobs:
   publish:
     permissions:
         contents: write
-    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@dev
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@maven-central-workflow-updates
     secrets: inherit
