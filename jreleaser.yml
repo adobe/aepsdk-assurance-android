@@ -1,0 +1,55 @@
+# General
+gitRootSearch: true            # walk up the directory tree to locate .git
+
+release:
+  github:
+    # a token is required for validation even when skipping everything
+    token: "NOT_A_REAL_TOKEN"
+    skipRelease: true           # do not create a GitHub release
+    skipTag:     true           # do not create / push git tags
+
+signing:
+  active: ALWAYS                # always sign artifacts
+  mode: COMMAND                 # invoke the gpg executable
+  armored: true
+  verify:  false                # skip post-sign verification
+  command:
+    executable: gpg             # BuildConstants.Publishing.SIGNING_GNUPG_EXECUTABLE
+    keyName:   "${GPG_KEY_ID}"  # BuildConstants.Publishing.SIGNING_GNUPG_KEY_NAME
+  passphrase: "${GPG_PASSPHRASE}"
+
+deploy:
+  maven:
+    mavenCentral:
+      sonatype:
+        active: RELEASE
+        stage:  UPLOAD          # stop after the upload/validation step
+        url: "${PUBLISH_URL}"   # SNAPSHOTS_URL or RELEASES_URL chosen by Gradle
+        username: "${CENTRAL_SONATYPE_USERNAME}"
+        password: "${CENTRAL_SONATYPE_TOKEN}"
+        authorization: BEARER
+        sign: true
+        checksums: true
+        sourceJar:  true
+        javadocJar: true
+        verifyPom:  false       # AAR packages fail standard pom validation
+        stagingRepository: build/staging-deploy
+        namespace: "${JRELEASER_PROJECT_JAVA_GROUPID}"  # e.g. com.adobe.marketing.mobile
+
+    nexus2:
+      sonatypeSnapshots:
+        active: SNAPSHOT
+        url: https://central.sonatype.com/repository/maven-snapshots/
+        snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
+        username: "${CENTRAL_SONATYPE_USERNAME}"
+        password: "${CENTRAL_SONATYPE_TOKEN}"
+        authorization: BEARER
+        sign: true
+        checksums: true
+        sourceJar:  true
+        javadocJar: true
+        verifyPom:  false
+        snapshotSupported: true
+        closeRepository:   true   # auto-close staging repository
+        releaseRepository: true   # auto-release staging repository
+        stagingRepository: build/staging-deploy
