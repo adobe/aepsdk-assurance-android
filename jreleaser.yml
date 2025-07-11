@@ -40,8 +40,6 @@ deploy:
         active: SNAPSHOT
         url: https://central.sonatype.com/repository/maven-snapshots/
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
-        username: "{{Env.CENTRAL_SONATYPE_USERNAME}}"
-        password: "{{Env.CENTRAL_SONATYPE_TOKEN}}"
         authorization: BEARER
         sign: true
         checksums: true
