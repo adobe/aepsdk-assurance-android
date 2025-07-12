@@ -30,8 +30,6 @@ deploy:
         verifyPom:  false       # AAR packages fail standard pom validation
         stagingRepositories:
           - code/assurance/build/staging-deploy
-          # TODO: set this as an env var on the workflow side
-        # namespace: "{{Env.JRELEASER_PROJECT_JAVA_GROUP_ID}}"  # e.g. com.adobe.marketing.mobile
 
     nexus2:
       sonatypeSnapshots:
