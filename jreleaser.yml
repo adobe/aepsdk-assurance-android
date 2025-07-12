@@ -1,39 +1,93 @@
+#
+# Copyright 2025 Adobe. All rights reserved.
+# This file is licensed to you under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License. You may obtain a copy
+# of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+# OF ANY KIND, either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.
+#
+
+# This file is used to configure JReleaser for the Assurance SDK Android project.
+# It is used to configure the release process, signing, and deployment to Maven Central.
+# It handles both SNAPSHOT and RELEASE deployments.
 
 release:
   github:
-    # a token is required for validation even when skipping everything
+    # Set just to pass validation
     token: "NOT_A_REAL_TOKEN"
-    skipRelease: true           # do not create a GitHub release
-    skipTag:     true           # do not create / push git tags
+    # Prevent JReleaser from creating a GitHub release
+    skipRelease: true
+    # Prevent JReleaser from creating and pushing git tags
+    skipTag: true
 
 signing:
-  active: ALWAYS                # always sign artifacts
-  mode: COMMAND                 # invoke the gpg executable
+  # Controls which "mode" this configuration is allowed to be applied to (ex: SNAPSHOT, RELEASE)
+  # ALWAYS allows it to apply for both cases
+  active: ALWAYS
+  # COMMAND mode means that `gpg` is used to sign the artifacts.
+  mode: COMMAND
   armored: true
-  verify:  false                # skip post-sign verification
+  # Skip verifying the signature of the artifacts using the public key (since we don't provide it).
+  verify: false
   command:
-    executable: gpg             # BuildConstants.Publishing.SIGNING_GNUPG_EXECUTABLE
-  # KEY_ID and PASSPHRASE are set in the environment variables by the workflow
+    executable: gpg
+  # Note: KEY_ID and PASSPHRASE are set in the environment variables by the workflow
 
 deploy:
   maven:
+    # Note: this deployer cannot be used for SNAPSHOTs
     mavenCentral:
       sonatype:
+        # Note: `username` and `password`/`token` are set in the environment variables by the workflow
+
         active: RELEASE
-        stage:  UPLOAD          # stop after the upload/validation step
+        # Only do up to the UPLOAD step (UPLOAD, PUBLISH, or FULL) so we can use
+        # the Maven Central UI to do the final publishing
+        #
+        # * UPLOAD
+        #   - JReleaser zips the staging-deploy directory, calls /upload, waits until
+        #     the deployment becomes VALIDATED, then stops.
+        #   - JReleaser provides the deploymentId if needed in future steps. We currently
+        #     do not use this in the workflow.
+        #   - You can run the publish step manually (UI) or via stage=PUBLISH.
+        #
+        # * PUBLISH
+        #   - JReleaser skips the upload.
+        #   - You must pass the previously obtained deploymentId
+        #     (deploy.maven.mavenCentral.<name>.deploymentId property or env-var).
+        #   - JReleaser fetches the deployment's status and, if it is VALIDATED,
+        #     calls /deployment/{id} to publish.
+        #
+        # * FULL (default)
+        #   - JReleaser performs both steps back-to-back:
+        #     upload -> wait for validation -> publish.
+        stage: UPLOAD          # stop after the upload/validation step
         url: https://central.sonatype.com/api/v1/publisher
+        # The Maven Central deployer will use bearer for upload authentication regardless
+        # The BASIC authorization works around JReleaser's logic to only import the password
+        # when using BEARER mode
         authorization: BASIC
+
+        #Signs using the `signing` configuration above
         sign: true
+
         checksums: true
-        sourceJar:  true
+        sourceJar: true
         javadocJar: true
-        verifyPom:  false       # AAR packages fail standard pom validation
+        # Skip, since pom validation always fails for `<packaging>aar</packaging>`
+        verifyPom: false
+
+        # Where to find the artifact files
         stagingRepositories:
           - code/assurance/build/staging-deploy
 
     nexus2:
       sonatypeSnapshots:
         active: SNAPSHOT
+        # Set just to pass validation - deployer actually uses snapshotUrl when in SNAPSHOT mode
         url: https://central.sonatype.com/repository/maven-snapshots/
         snapshotUrl: https://central.sonatype.com/repository/maven-snapshots/
         authorization: BASIC
@@ -43,7 +97,9 @@ deploy:
         javadocJar: true
         verifyPom:  false
         snapshotSupported: true
-        closeRepository:   true   # auto-close staging repository
-        releaseRepository: true   # auto-release staging repository
+        # Auto close the staging repository after the upload step
+        closeRepository: true
+        # Auto release the staging repository after the upload step
+        releaseRepository: true
         stagingRepositories:
           - code/assurance/build/staging-deploy
