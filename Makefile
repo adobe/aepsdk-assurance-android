@@ -64,12 +64,12 @@ assemble-app:
 	(./code/gradlew -p code/$(TEST-APP-FOLDER-NAME) assemble)
 
 ci-publish-staging: clean
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish jreleaserFullRelease)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish --stacktrace)
 
 ci-publish: ci-publish-main
 
 ci-publish-main: clean
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish jreleaserFullRelease -Prelease)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish -Prelease)
 
 ci-publish-maven-local: clean assemble-phone
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal)
