@@ -16,15 +16,15 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Git reference (branch, tag, or SHA) to check out when publishing the snapshot. Defaults to 'main'."
+        description: "Git reference (branch, tag, or SHA) to check out when publishing the snapshot. Defaults to 'staging'."
         required: false
-        default: "main"
+        default: "staging"
 
 jobs:
   publish:
     permissions:
         contents: write
-    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@gha-android-3.4.0
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-snapshot.yml@gha-android-3.4.1
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
