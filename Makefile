@@ -56,10 +56,12 @@ build-release:
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} clean lint assemblePhoneRelease)
 
 ci-publish-staging: clean build-release
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository --stacktrace)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish --stacktrace)
+
+ci-publish: ci-publish-main
 
 ci-publish-main: clean build-release
-	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToSonatypeRepository -Prelease)
+	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publish -Prelease)
 
 ci-publish-maven-local: clean build-release
 	(./code/gradlew -p code/${EXTENSION-LIBRARY-FOLDER-NAME} publishReleasePublicationToMavenLocal -x signReleasePublication)
