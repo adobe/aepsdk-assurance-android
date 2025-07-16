@@ -18,7 +18,7 @@ on:
       ref:
         description: "Git reference (branch, tag, or SHA) to check out when publishing the snapshot. Defaults to 'staging'."
         required: false
-        default: "staging"
+        default: 'staging'
 
 jobs:
   publish:
