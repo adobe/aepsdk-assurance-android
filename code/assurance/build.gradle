@@ -13,7 +13,6 @@ plugins {
     id 'com.android.library'
     id 'jacoco'
     id 'maven-publish'
-    id 'signing'
     id 'com.diffplug.spotless'
     id 'kotlin-android'
 }
@@ -23,20 +22,6 @@ apply from: '../codeformat.gradle'
 
 jacoco {
     toolVersion = rootProject.ext.jacocoVersion
-}
-
-if (project.hasProperty("signKeyLoc") && project.hasProperty("signKeyId") && project.hasProperty("signPass")) {
-    ext["signing.secretKeyRingFile"] = "$signKeyLoc"
-    ext["signing.keyId"] = "$signKeyId"
-    ext["signing.password"] = "$signPass"
-}
-
-if (project.hasProperty("sonatypeUser") && project.hasProperty("sonatypePass")) {
-    ext["ossrhUsername"] = "$sonatypeUser"
-    ext["ossrhPassword"] = "$sonatypePass"
-} else {
-    ext["ossrhUsername"] = ""
-    ext["ossrhPassword"] = ""
 }
 
 android {
@@ -187,28 +172,11 @@ publishing {
     }
     repositories {
         maven {
-            name = "sonatype"
-            url = version.endsWith('SNAPSHOT') ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME")
-                password = System.getenv("SONATYPE_PASSWORD")
-            }
+            // Configures where the generated artifacts are published to.
+            // In this case, the local machine's `<module>/build/staging-deploy` directory.
+            url = project.layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
         }
     }
-}
-
-ext."signing.gnupg.executable"="gpg"
-ext."signing.gnupg.keyName"=System.getenv("GPG_KEY_ID")
-ext."signing.gnupg.passphrase"=System.getenv("GPG_PASSPHRASE")
-
-signing {
-    useGpgCmd()
-    required {
-        tasks.withType(PublishToMavenRepository).find {
-            gradle.taskGraph.hasTask it
-        }
-    }
-    sign publishing.publications
 }
 
 task platformUnitTestJacocoReport(type: JacocoReport, dependsOn: "testPhoneDebugUnitTest") {
@@ -263,4 +231,17 @@ dependencies {
     androidTestImplementation "androidx.test:core:1.4.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+}
+
+// Emit JReleaser required values to the GitHub Actions environment file when running
+// inside CI (GitHub Actions, when GITHUB_ENV is present).
+gradle.taskGraph.whenReady { graph ->
+    def envPath = System.getenv('GITHUB_ENV')
+    if (envPath) {
+        def envFile = new File(envPath)
+        envFile << """
+JRELEASER_PROJECT_VERSION=${project.version}
+JRELEASER_PROJECT_JAVA_GROUP_ID=${project.group ?: 'com.adobe.marketing.mobile'}
+"""
+    }
 }

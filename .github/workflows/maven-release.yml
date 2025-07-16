@@ -1,34 +1,54 @@
-name: Publish package to the Maven Central Repository
-on:
-  push:
-    branches:
-      - main-v2.x
+#
+# Copyright 2022 Adobe. All rights reserved.
+# This file is licensed to you under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License. You may obtain a copy
+# of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+# OF ANY KIND, either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.
+#
+
+name: Publish Release (2.x)
+
+on: 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The tag (version) to be released (ex: 1.2.3).'
+        type: string
+        required: true
+
+      create-github-release:
+        description: 'Create GitHub release using tag. If the provided `tag` does not exist, it will be created.'
+        type: boolean
+        required: true
+        default: true
+
+      core-dependency:
+        description: 'The Core dependency version in gradle.properties to be validated (ex: 1.2.3).'
+        type: string
+        required: true
+
+      ref:
+        description: |
+          The git reference (branch, tag, or SHA) to check out when publishing the release.
+          Defaults to 'main-v2.x'.
+        required: false
+        type: string
+        default: 'main-v2.x'
+
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Cache Gradle packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Import GPG key
-        env:
-          GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
-          GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
-        run: |
-          echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
-          echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
-      - name: Publish to maven central repository
-        run: make ci-publish-main
-        env:
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+    permissions:
+        contents: write
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-release.yml@gha-android-3.4.1
+    with:
+      tag: ${{ github.event.inputs.tag }}
+      create-github-release: ${{ github.event.inputs.create-github-release == 'true' }}
+      version-validation-paths: code/gradle.properties, code/assurance/src/main/java/com/adobe/marketing/mobile/Assurance.java
+      version-validation-dependencies: Core ${{ github.event.inputs.core-dependency }}
+      staging-dir: code/assurance/build/staging-deploy
+      ref: ${{ github.event.inputs.ref }}
+    secrets: inherit
