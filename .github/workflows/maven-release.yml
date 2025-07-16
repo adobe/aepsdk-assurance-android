@@ -31,15 +31,24 @@ on:
         type: string
         required: true
 
+      ref:
+        description: |
+          The git reference (branch, tag, or SHA) to check out when publishing the release.
+          Defaults to 'main'.
+        required: false
+        type: string
+        default: 'main'
+
 jobs:
   publish:
     permissions:
         contents: write
-    uses: adobe/aepsdk-commons/.github/workflows/android-maven-release.yml@gha-android-3.4.0
+    uses: adobe/aepsdk-commons/.github/workflows/android-maven-release.yml@gha-android-3.4.1
     with:
       tag: ${{ github.event.inputs.tag }}
       create-github-release: ${{ github.event.inputs.create-github-release == 'true' }}
       version-validation-paths: code/gradle.properties, code/assurance/src/main/java/com/adobe/marketing/mobile/Assurance.java
       version-validation-dependencies: Core ${{ github.event.inputs.core-dependency }}
       staging-dir: code/assurance/build/staging-deploy
+      ref: ${{ github.event.inputs.ref }}
     secrets: inherit
