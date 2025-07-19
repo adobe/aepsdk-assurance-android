@@ -231,7 +231,6 @@ public class AssurancePluginScreenshotTest {
         }
     }
 
-
     @Test
     @Config(sdk = 28) // API 28 - Should use PixelCopy
     public void test_onPixelCopyScreenshotForAPI26Plus() {
