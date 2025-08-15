@@ -124,7 +124,7 @@ class AssurancePluginScreenshot implements AssurancePlugin {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Android 8.0+ (API 26+): Use PixelCopy for full hardware + software support
             captureScreenshotWithPixelCopy(currentActivity);
-        } 
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -141,7 +141,8 @@ class AssurancePluginScreenshot implements AssurancePlugin {
                             int height = view.getHeight();
 
                             // Apply size limits like Canvas method for consistency
-                            ScaledDimensions scaledDimensions = applyScreenshotScaling(width, height, "PixelCopy", false);
+                            ScaledDimensions scaledDimensions =
+                                    applyScreenshotScaling(width, height, "PixelCopy", false);
                             width = scaledDimensions.width;
                             height = scaledDimensions.height;
 
@@ -208,7 +209,8 @@ class AssurancePluginScreenshot implements AssurancePlugin {
                             int height = view.getHeight();
 
                             // Limit bitmap size to prevent OutOfMemoryError
-                            ScaledDimensions scaledDimensions = applyScreenshotScaling(width, height, "Canvas", true);
+                            ScaledDimensions scaledDimensions =
+                                    applyScreenshotScaling(width, height, "Canvas", true);
                             width = scaledDimensions.width;
                             height = scaledDimensions.height;
                             float scale = scaledDimensions.scale;
@@ -340,35 +342,47 @@ class AssurancePluginScreenshot implements AssurancePlugin {
     }
 
     /**
-     * Applies scaling to screenshot dimensions if needed to prevent OutOfMemoryError.
-     * Preserves the original Canvas method pattern with scale = 1.0f initialization.
+     * Applies scaling to screenshot dimensions if needed to prevent OutOfMemoryError. Preserves the
+     * original Canvas method pattern with scale = 1.0f initialization.
      *
      * @param originalWidth Original width in pixels
      * @param originalHeight Original height in pixels
      * @param methodName Name of the screenshot method for logging
-     * @param needsScaleInit Whether to initialize scale to 1.0f (Canvas needs this, PixelCopy doesn't)
+     * @param needsScaleInit Whether to initialize scale to 1.0f (Canvas needs this, PixelCopy
+     *     doesn't)
      * @return ScaledDimensions containing scaled width, height, and scale factor
      */
-    private ScaledDimensions applyScreenshotScaling(int originalWidth, int originalHeight, String methodName, boolean needsScaleInit) {
+    private ScaledDimensions applyScreenshotScaling(
+            int originalWidth, int originalHeight, String methodName, boolean needsScaleInit) {
         float scale = needsScaleInit ? 1.0f : 0.0f; // Canvas pattern vs PixelCopy pattern
-        
-        if (originalWidth > MAX_SCREENSHOT_SIZE_PIXELS || originalHeight > MAX_SCREENSHOT_SIZE_PIXELS) {
-            scale = Math.min(
-                    (float) MAX_SCREENSHOT_SIZE_PIXELS / originalWidth,
-                    (float) MAX_SCREENSHOT_SIZE_PIXELS / originalHeight);
+
+        if (originalWidth > MAX_SCREENSHOT_SIZE_PIXELS
+                || originalHeight > MAX_SCREENSHOT_SIZE_PIXELS) {
+            scale =
+                    Math.min(
+                            (float) MAX_SCREENSHOT_SIZE_PIXELS / originalWidth,
+                            (float) MAX_SCREENSHOT_SIZE_PIXELS / originalHeight);
             int scaledWidth = (int) (originalWidth * scale);
             int scaledHeight = (int) (originalHeight * scale);
-            
+
             Log.debug(
                     Assurance.LOG_TAG,
                     LOG_TAG,
-                    "Scaling " + methodName + " screenshot to: " + scaledWidth + "x" + scaledHeight);
-            
+                    "Scaling "
+                            + methodName
+                            + " screenshot to: "
+                            + scaledWidth
+                            + "x"
+                            + scaledHeight);
+
             return new ScaledDimensions(scaledWidth, scaledHeight, scale);
         }
-        
+
         // When no scaling needed
-        scale = needsScaleInit ? scale : 1.0f; // Preserve Canvas pattern or set default for PixelCopy
+        scale =
+                needsScaleInit
+                        ? scale
+                        : 1.0f; // Preserve Canvas pattern or set default for PixelCopy
         return new ScaledDimensions(originalWidth, originalHeight, scale);
     }
 
