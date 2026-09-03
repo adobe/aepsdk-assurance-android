@@ -164,14 +164,22 @@ private fun DialPadLandscapeContent(
                 .padding(start = AssuranceTheme.dimensions.padding.large),
             contentAlignment = Alignment.Center
         ) {
-            val rowSpacing = AssuranceTheme.dimensions.spacing.small
+            // Keep the rows tightly spaced in landscape - vertical space is scarce here, and a
+            // large gap forces the buttons down to their minimum size and the action button row
+            // against the bottom edge on short screens.
+            val rowSpacing = AssuranceTheme.dimensions.padding.small
             // Rough space needed for the pin feedback row and action button row, so the 4 button
             // rows in between can be sized to use up the rest of the available height. Reserving
             // this space up front - rather than measuring it - lets both panes share the same
             // centered-on-full-height alignment, so they line up regardless of device height.
-            val feedbackRowHeight = 56.dp
+            val feedbackRowHeight = 72.dp
             val actionRowHeight = 64.dp
-            val gridHeight = maxHeight - feedbackRowHeight - actionRowHeight - rowSpacing * 5
+            // Reserve a margin so the content never fills the pane completely; this keeps the pin
+            // feedback and action button rows clear of the top/bottom edges (where they would be
+            // clipped) on short landscape screens.
+            val verticalBreathingSpace = AssuranceTheme.dimensions.padding.xLarge
+            val gridHeight =
+                maxHeight - feedbackRowHeight - actionRowHeight - rowSpacing * 5 - verticalBreathingSpace
             val gridWidth = maxWidth - rowSpacing * 2
             val buttonSize = minOf(gridHeight / 4, gridWidth / 3).coerceAtLeast(24.dp)
 
