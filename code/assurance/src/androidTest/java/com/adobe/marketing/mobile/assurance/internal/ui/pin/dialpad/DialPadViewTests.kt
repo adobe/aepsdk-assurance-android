@@ -19,6 +19,7 @@ import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -30,6 +31,7 @@ import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenState
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenVerificationUtils.childrenDisplayed
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenVerificationUtils.verifyDialPadIdleSetup
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -40,6 +42,26 @@ class DialPadViewTests {
     val composeTestRule = createComposeRule()
 
     private var pinScreenActions: MutableList<PinScreenAction> = mutableListOf()
+
+    @After
+    fun resetOrientation() {
+        val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        uiDevice.setOrientationNatural()
+        uiDevice.waitForIdle()
+    }
+
+    /**
+     * Rotates the device to landscape and waits for the rotation (and the resulting activity
+     * recreation) to settle before the caller sets content. Doing this up front avoids the
+     * "No compose hierarchies found" race where the recreation discards the test's setContent.
+     */
+    private fun rotateToLandscape() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val uiDevice = UiDevice.getInstance(instrumentation)
+        uiDevice.setOrientationLandscape()
+        uiDevice.waitForIdle()
+        instrumentation.waitForIdleSync()
+    }
 
     @Test
     fun testDialPadViewIdleSetup() {
@@ -58,9 +80,7 @@ class DialPadViewTests {
 
     @Test
     fun testDialPadViewIdleSetupInLandscapeMode() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val uiDevice = UiDevice.getInstance(instrumentation)
-        uiDevice.setOrientationLandscape()
+        rotateToLandscape()
 
         val pinScreenState = mutableStateOf(PinScreenState())
         composeTestRule.setContent {
@@ -71,11 +91,8 @@ class DialPadViewTests {
         }
         composeTestRule.waitForIdle()
 
-        // Verify
-        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
-
-        // Reset orientation
-        uiDevice.setOrientationNatural()
+        // Verify. The landscape two-pane layout sizes everything to fit, so it does not scroll.
+        verifyDialPadIdleSetup(composeTestRule, isScrollable = false)
     }
 
     @Test
@@ -93,12 +110,10 @@ class DialPadViewTests {
 
         assertTrue(pinScreenActions.isEmpty())
 
-        val numberRows = composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
+        val numberRows = composeTestRule.onAllNodesWithTag(
+            AssuranceUiTestTags.PinScreen.NUMBER_ROW,
             useUnmergedTree = true
         )
-            .onChildren()
-            .filter(hasTestTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW))
 
         // Enter a pin 1358
         numberRows[0].onChildren()[0].performClick() // 1
@@ -116,9 +131,7 @@ class DialPadViewTests {
 
     @Test
     fun testDialPadViewWhenPinIsEnteredInLandscapeMode() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val uiDevice = UiDevice.getInstance(instrumentation)
-        uiDevice.setOrientationLandscape()
+        rotateToLandscape()
 
         val pinScreenState = mutableStateOf(PinScreenState())
         composeTestRule.setContent {
@@ -128,22 +141,21 @@ class DialPadViewTests {
             )
         }
 
-        // Verify idle setup
-        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
+        // Verify idle setup. The landscape two-pane layout fits on screen without scrolling.
+        verifyDialPadIdleSetup(composeTestRule, isScrollable = false)
 
         assertTrue(pinScreenActions.isEmpty())
 
-        val numberRows = composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
+        val numberRows = composeTestRule.onAllNodesWithTag(
+            AssuranceUiTestTags.PinScreen.NUMBER_ROW,
             useUnmergedTree = true
-        ).onChildren()
-            .filter(hasTestTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW))
+        )
 
         // Enter a pin 1358
-        numberRows[0].performScrollTo().onChildren()[0].performClick() // 1
-        numberRows[0].performScrollTo().onChildren()[2].performClick() // 3
-        numberRows[1].performScrollTo().onChildren()[1].performClick() // 5
-        numberRows[2].performScrollTo().onChildren()[1].performClick() // 8
+        numberRows[0].onChildren()[0].performClick() // 1
+        numberRows[0].onChildren()[2].performClick() // 3
+        numberRows[1].onChildren()[1].performClick() // 5
+        numberRows[2].onChildren()[1].performClick() // 8
         composeTestRule.waitForIdle()
 
         // Verify that the pin screen actions are recorded
@@ -151,9 +163,6 @@ class DialPadViewTests {
         assertEquals(PinScreenAction.Number("3"), pinScreenActions[1])
         assertEquals(PinScreenAction.Number("5"), pinScreenActions[2])
         assertEquals(PinScreenAction.Number("8"), pinScreenActions[3])
-
-        // Reset orientation
-        uiDevice.setOrientationNatural()
     }
 
     @Test
@@ -170,12 +179,10 @@ class DialPadViewTests {
         verifyDialPadIdleSetup(composeTestRule)
         assertTrue(pinScreenActions.isEmpty())
 
-        val numberRows = composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
+        val numberRows = composeTestRule.onAllNodesWithTag(
+            AssuranceUiTestTags.PinScreen.NUMBER_ROW,
             useUnmergedTree = true
         )
-            .onChildren()
-            .filter(hasTestTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW))
 
         // Enter a pin 1231
         numberRows[0].onChildren()[0].performClick() // 1
@@ -201,9 +208,7 @@ class DialPadViewTests {
 
     @Test
     fun testDialPadViewWhenPinIsEnteredAndClearedInLandscapeMode() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val uiDevice = UiDevice.getInstance(instrumentation)
-        uiDevice.setOrientationLandscape()
+        rotateToLandscape()
 
         val pinScreenState = mutableStateOf(PinScreenState())
         composeTestRule.setContent {
@@ -213,22 +218,20 @@ class DialPadViewTests {
             )
         }
 
-        // Verify idle setup
-        verifyDialPadIdleSetup(composeTestRule, scrollIfNecessary = true)
+        // Verify idle setup. The landscape two-pane layout fits on screen without scrolling.
+        verifyDialPadIdleSetup(composeTestRule, isScrollable = false)
         assertTrue(pinScreenActions.isEmpty())
 
-        val numberRows = composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
+        val numberRows = composeTestRule.onAllNodesWithTag(
+            AssuranceUiTestTags.PinScreen.NUMBER_ROW,
             useUnmergedTree = true
         )
-            .onChildren()
-            .filter(hasTestTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW))
 
         // Enter a pin 1231
-        numberRows[0].performScrollTo().onChildren()[0].performClick() // 1
-        numberRows[0].performScrollTo().onChildren()[1].performClick() // 2
-        numberRows[0].performScrollTo().onChildren()[2].performClick() // 3
-        numberRows[0].performScrollTo().onChildren()[0].performClick() // 1
+        numberRows[0].onChildren()[0].performClick() // 1
+        numberRows[0].onChildren()[1].performClick() // 2
+        numberRows[0].onChildren()[2].performClick() // 3
+        numberRows[0].onChildren()[0].performClick() // 1
 
         val symbolRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.SYMBOL_ROW,
@@ -236,7 +239,7 @@ class DialPadViewTests {
         )
 
         // Clear the pin with the delete button
-        symbolRow.performScrollTo().onChildren()[2].performClick() // delete
+        symbolRow.onChildren()[2].performClick() // delete
 
         // Verify that the pin screen actions are recorded
         assertEquals(PinScreenAction.Number("1"), pinScreenActions[0])
@@ -244,9 +247,6 @@ class DialPadViewTests {
         assertEquals(PinScreenAction.Number("3"), pinScreenActions[2])
         assertEquals(PinScreenAction.Number("1"), pinScreenActions[3])
         assertEquals(PinScreenAction.Delete, pinScreenActions[4])
-
-        // Reset orientation
-        uiDevice.setOrientationNatural()
     }
 
     @Test
@@ -324,9 +324,7 @@ class DialPadViewTests {
 
     @Test
     fun testDialPadViewWithFullPinEnteredInLandscapeMode() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val uiDevice = UiDevice.getInstance(instrumentation)
-        uiDevice.setOrientationLandscape()
+        rotateToLandscape()
 
         // Simulate a pin screen with a pin fully entered
         val pinScreenState = mutableStateOf(PinScreenState(pin = "1234"))
@@ -337,13 +335,14 @@ class DialPadViewTests {
             )
         }
 
-        // Verify the action button row exists and is displayed
+        // Verify the action button row exists and is displayed. The landscape two-pane layout
+        // fits on screen without scrolling, so no performScrollTo is needed.
         val actionButtonRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.DIAL_PAD_ACTION_BUTTON_ROW,
             useUnmergedTree = true
-        ).performScrollTo()
+        )
 
-        actionButtonRow.assertExists().performScrollTo().assertIsDisplayed()
+        actionButtonRow.assertExists().assertIsDisplayed()
 
         // Verify the action button row buttons
         actionButtonRow.onChildren()
@@ -362,8 +361,5 @@ class DialPadViewTests {
                 it[0].onChildren()
                     .assertAny(hasText("Connect"))
             }
-
-        // Reset orientation
-        uiDevice.setOrientationNatural()
     }
 }
