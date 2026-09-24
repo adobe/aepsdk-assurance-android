@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright 2024 Adobe. All rights reserved.
+    This file is licensed to you under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License. You may obtain a copy
+    of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software distributed under
+    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+    OF ANY KIND, either express or implied. See the License for the specific language
+    governing permissions and limitations under the License.
+
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <!--
+            createComposeRule() hosts the composables in androidx.activity.ComponentActivity.
+            Two defaults break the orientation tests, so override them here:
+
+            1. theme: it otherwise inherits a default theme WITH an ActionBar, which steals
+               vertical space the real AssuranceActivity does not (it uses a NoActionBar theme).
+               That crams the landscape dial pad and pushes the action buttons off the bottom of
+               the screen. Host the test activity in the same NoActionBar theme as production so
+               the composables get the full available height, matching what users actually see.
+
+            2. configChanges: by default the activity is recreated on rotation, which discards
+               the test's setContent and intermittently fails landscape tests with
+               "No compose hierarchies found". Declaring the orientation config changes lets the
+               activity handle rotation in place, so the composition (and its idle-sync) survive.
+        -->
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
+            android:theme="@style/AssuranceAppThemeDark"
+            tools:replace="android:theme,android:configChanges" />
+    </application>
+</manifest>
