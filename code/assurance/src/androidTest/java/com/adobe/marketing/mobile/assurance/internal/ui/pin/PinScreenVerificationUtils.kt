@@ -22,6 +22,7 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollTo
@@ -32,7 +33,7 @@ internal object PinScreenVerificationUtils {
     private const val ASSURANCE_HEADER_TEXT = "Assurance"
     private const val ASSURANCE_SUB_HEADER_TEXT = "Enter the 4 digit PIN to continue"
 
-    internal fun verifyDialPadIdleSetup(composeTestRule: ComposeContentTestRule, scrollIfNecessary: Boolean = false) {
+    internal fun verifyDialPadIdleSetup(composeTestRule: ComposeContentTestRule, isScrollable: Boolean = true) {
         // Verify the dial pad view exists and is displayed
         composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
@@ -55,21 +56,22 @@ internal object PinScreenVerificationUtils {
         )
         verifyInputFeedback(inputFeedbackRow, "") // four empty spaces
 
-        // Verify the number row exists and is displayed
-        val numberRows = composeTestRule.onNodeWithTag(
-            AssuranceUiTestTags.PinScreen.DIAL_PAD_VIEW,
+        // Verify the number row exists and is displayed.
+        // Use onAllNodesWithTag rather than DIAL_PAD_VIEW.onChildren() so the lookup is
+        // independent of how deeply the rows are nested - the portrait and landscape adaptive
+        // layouts wrap the rows at different depths under DIAL_PAD_VIEW.
+        val numberRows = composeTestRule.onAllNodesWithTag(
+            AssuranceUiTestTags.PinScreen.NUMBER_ROW,
             useUnmergedTree = true
         )
-            .onChildren()
-            .filter(hasTestTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW))
-        verifyDialPad(numberRows, scrollIfNecessary)
+        verifyDialPad(numberRows, isScrollable)
 
         // Verify the symbol row exists and is displayed
         val symbolRow = composeTestRule.onNodeWithTag(
             AssuranceUiTestTags.PinScreen.SYMBOL_ROW,
             useUnmergedTree = true
         )
-        verifySymbolRow(symbolRow, scrollIfNecessary)
+        verifySymbolRow(symbolRow, isScrollable)
 
         // Verify the action button row exists and is displayed
         val actionButtonRow = composeTestRule.onNodeWithTag(
@@ -77,7 +79,7 @@ internal object PinScreenVerificationUtils {
             useUnmergedTree = true
         )
         actionButtonRow.assertExists()
-            .performScrollTo()
+            .apply { if (isScrollable) performScrollTo() }
             .assertIsDisplayed()
 
         // Verify the action button row buttons
@@ -96,7 +98,7 @@ internal object PinScreenVerificationUtils {
             .assertCountEquals(0)
     }
 
-    private fun verifyDialPad(numberRows: SemanticsNodeInteractionCollection, scrollIfNecessary: Boolean) {
+    private fun verifyDialPad(numberRows: SemanticsNodeInteractionCollection, isScrollable: Boolean) {
         // Verify the number row exists and is displayed
         numberRows.assertCountEquals(3)
 
@@ -104,7 +106,7 @@ internal object PinScreenVerificationUtils {
         // - Each number row should have 3 buttons
         // - Each button should have a text child
         numberRows[0]
-            .apply { if (scrollIfNecessary) performScrollTo() }
+            .apply { if (isScrollable) performScrollTo() }
             .onChildren().assertCountEquals(3)
             .filter(hasTestTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_BUTTON))
             .apply {
@@ -123,7 +125,7 @@ internal object PinScreenVerificationUtils {
             }
 
         numberRows[1]
-            .apply { if (scrollIfNecessary) performScrollTo() }
+            .apply { if (isScrollable) performScrollTo() }
             .onChildren()
             .assertCountEquals(3)
             .filter(hasTestTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_BUTTON))
@@ -144,7 +146,7 @@ internal object PinScreenVerificationUtils {
             }
 
         numberRows[2]
-            .apply { if (scrollIfNecessary) performScrollTo() }
+            .apply { if (isScrollable) performScrollTo() }
             .onChildren()
             .assertCountEquals(3)
             .filter(hasTestTag(AssuranceUiTestTags.PinScreen.DIAL_PAD_BUTTON))
@@ -176,13 +178,13 @@ internal object PinScreenVerificationUtils {
         }
     }
 
-    private fun verifySymbolRow(symbolRow: SemanticsNodeInteraction, scrollIfNecessary: Boolean) {
+    private fun verifySymbolRow(symbolRow: SemanticsNodeInteraction, isScrollable: Boolean) {
 
         symbolRow.assertExists()
-            .apply { if (scrollIfNecessary) performScrollTo() }
+            .apply { if (isScrollable) performScrollTo() }
             .assertIsDisplayed()
         symbolRow
-            .apply { if (scrollIfNecessary) performScrollTo() }
+            .apply { if (isScrollable) performScrollTo() }
             .onChildren()
             .apply {
                 get(0).onChildren()[0].assertTextEquals("")

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
@@ -36,22 +38,28 @@ import com.adobe.marketing.mobile.util.StreamUtils
 /**
  * Represents a row of miscellaneous symbols and numbers. Used to display the 0, delete, and empty
  * buttons i.e the last row of the dial pad.
+ * @param buttonSize when provided, each button is sized to this fixed size instead of sharing
+ * the row width equally. Used to shrink the dial pad to fit constrained available space.
  * @param onClick the callback invoked when the button is clicked
  */
 @Composable
-internal fun SymbolRow(onClick: (PinScreenAction) -> Unit) {
+internal fun SymbolRow(buttonSize: Dp? = null, onClick: (PinScreenAction) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = (if (buttonSize == null) Modifier.fillMaxWidth() else Modifier)
             .testTag(AssuranceUiTestTags.PinScreen.SYMBOL_ROW),
         horizontalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.small)
     ) {
+        val buttonModifier = if (buttonSize != null) {
+            Modifier.size(buttonSize)
+        } else {
+            Modifier.aspectRatio(1f).weight(1f)
+        }
+
         // Intentionally empty content button for filling the grid evenly
         DialPadButton(
             content = { Text(text = "") },
             borderColor = Color.Transparent,
-            modifier = Modifier
-                .aspectRatio(1f)
-                .weight(1f)
+            modifier = buttonModifier
         ) { /* no-op */ }
 
         // 0 Button
@@ -65,9 +73,7 @@ internal fun SymbolRow(onClick: (PinScreenAction) -> Unit) {
                 )
             },
             borderColor = Color.White,
-            modifier = Modifier
-                .aspectRatio(1f)
-                .weight(1f)
+            modifier = buttonModifier
         ) {
             onClick(
                 PinScreenAction.Number("0")
@@ -87,9 +93,7 @@ internal fun SymbolRow(onClick: (PinScreenAction) -> Unit) {
                 )
             },
             borderColor = Color.Transparent,
-            modifier = Modifier
-                .aspectRatio(1f)
-                .weight(1f)
+            modifier = buttonModifier
         ) { onClick(PinScreenAction.Delete) }
     }
 }

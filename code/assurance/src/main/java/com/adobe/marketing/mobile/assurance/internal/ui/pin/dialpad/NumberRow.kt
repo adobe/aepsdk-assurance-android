@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.adobe.marketing.mobile.assurance.internal.ui.AssuranceUiTestTags
 import com.adobe.marketing.mobile.assurance.internal.ui.pin.PinScreenAction
@@ -29,13 +31,18 @@ import com.adobe.marketing.mobile.assurance.internal.ui.theme.AssuranceTheme
 /**
  * A row of dial pad buttons that are digits.
  * @param contents the contents of the row
+ * @param buttonSize when provided, each button is sized to this fixed size instead of sharing
+ * the row width equally. Used to shrink the dial pad to fit constrained available space.
  * @param onClick the callback invoked when a number button is clicked
  */
 @Composable
-internal fun NumberRow(contents: List<String>, onClick: (PinScreenAction) -> Unit) {
+internal fun NumberRow(
+    contents: List<String>,
+    buttonSize: Dp? = null,
+    onClick: (PinScreenAction) -> Unit
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = (if (buttonSize == null) Modifier.fillMaxWidth() else Modifier)
             .testTag(AssuranceUiTestTags.PinScreen.NUMBER_ROW),
         horizontalArrangement = Arrangement.spacedBy(AssuranceTheme.dimensions.spacing.small)
     ) {
@@ -51,9 +58,11 @@ internal fun NumberRow(contents: List<String>, onClick: (PinScreenAction) -> Uni
                     )
                 },
                 borderColor = Color.White,
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .weight(1f)
+                modifier = if (buttonSize != null) {
+                    Modifier.size(buttonSize)
+                } else {
+                    Modifier.aspectRatio(1f).weight(1f)
+                }
             ) {
                 onClick(PinScreenAction.Number(symbol))
             }
